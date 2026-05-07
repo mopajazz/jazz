@@ -1,0 +1,350 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content="Jazz Interactive beta testing questionnaire for educators and musicians.">
+  <meta name="theme-color" content="#f5f0e8">
+  <title>Beta Tester Questionnaire - Jazz Interactive</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=DM+Mono:ital,wght@0,300;0,400;0,500;1,300;1,400&family=Playfair+Display:ital,wght@0,400;0,700;1,400;1,700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="./ji-polish.css">
+  <style>
+    main {
+      width: min(100%, 920px);
+      margin: 0 auto;
+      padding: clamp(2rem, 6vw, 5rem) 1.25rem;
+    }
+
+    .form-shell {
+      min-height: 70vh;
+      display: grid;
+      align-items: center;
+    }
+
+    .question-card {
+      display: none;
+      gap: 1.5rem;
+      padding: clamp(2rem, 6vw, 4.5rem);
+      border-radius: 8px;
+      background: rgba(255, 252, 244, 0.78);
+      border: 1px solid rgba(24, 23, 19, 0.16);
+    }
+
+    .question-card.active {
+      display: grid;
+    }
+
+    .question-kicker {
+      font-family: var(--ji-mono);
+      font-size: 0.78rem;
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+      color: var(--ji-brass-deep);
+    }
+
+    .question-card h1,
+    .question-card h2 {
+      font-family: var(--ji-display);
+      font-size: clamp(2.6rem, 7vw, 5.5rem);
+      line-height: 0.95;
+      letter-spacing: 0;
+      color: var(--ji-ink);
+      text-wrap: balance;
+    }
+
+    .question-card p {
+      max-width: 62ch;
+      color: var(--ji-ink-soft);
+      font-size: 1.05rem;
+      line-height: 1.75;
+    }
+
+    .answer-grid {
+      display: grid;
+      gap: 0.75rem;
+    }
+
+    .answer-grid.two {
+      grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+    }
+
+    label.choice {
+      display: flex;
+      gap: 0.75rem;
+      align-items: flex-start;
+      min-height: 52px;
+      padding: 1rem;
+      border: 1px solid rgba(24, 23, 19, 0.18);
+      border-radius: 7px;
+      background: rgba(244, 239, 227, 0.72);
+      cursor: pointer;
+    }
+
+    label.choice input {
+      margin-top: 0.25rem;
+      accent-color: var(--ji-green);
+    }
+
+    input[type="text"],
+    input[type="email"],
+    textarea,
+    select {
+      width: 100%;
+      border: 1px solid rgba(24, 23, 19, 0.24);
+      border-radius: 7px;
+      background: rgba(255, 252, 244, 0.86);
+      color: var(--ji-ink);
+      font: inherit;
+      padding: 1rem;
+    }
+
+    textarea {
+      min-height: 150px;
+      resize: vertical;
+    }
+
+    .form-actions {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 0.75rem;
+      align-items: center;
+      justify-content: space-between;
+      margin-top: 1rem;
+    }
+
+    .step-count {
+      font-family: var(--ji-mono);
+      font-size: 0.78rem;
+      color: var(--ji-muted);
+    }
+
+    .back-link {
+      display: inline-flex;
+      margin-bottom: 1.5rem;
+      color: var(--ji-ink-soft);
+      font-family: var(--ji-mono);
+      font-size: 0.85rem;
+    }
+
+    @media (max-width: 620px) {
+      .question-card {
+        padding: 1.5rem;
+      }
+
+      .form-actions .btn {
+        width: 100%;
+      }
+    }
+  </style>
+</head>
+<body>
+<a href="#questionnaire" class="skip-link">Skip to questionnaire</a>
+
+<header>
+  <div class="header-content">
+    <a href="./index.html" class="logo" aria-label="Jazz Interactive home">
+      <span class="logo-text">Jazz Interactive</span>
+      <span class="logo-dot" aria-hidden="true"></span>
+    </a>
+    <nav aria-label="Main navigation">
+      <div class="nav-links">
+        <a href="./index.html#modules" class="nav-link">Modules</a>
+        <a href="./index.html#about" class="nav-link">About</a>
+        <a href="./index.html#feedback" class="nav-link">Feedback</a>
+      </div>
+    </nav>
+  </div>
+</header>
+
+<main id="questionnaire">
+  <a class="back-link" href="./index.html#feedback">Back to Jazz Interactive</a>
+
+  <form class="form-shell" id="beta-form">
+    <section class="question-card active">
+      <div class="question-kicker">Beta questionnaire</div>
+      <h1>Help shape phase 2.</h1>
+      <p>This takes about 5-7 minutes. Try one or more modules first, then tell us what works, what confuses you, and what would make this useful for practice or teaching.</p>
+      <div class="form-actions">
+        <span class="step-count">Question 1 of 9</span>
+        <button class="btn btn-primary" type="button" data-next>Start</button>
+      </div>
+    </section>
+
+    <section class="question-card">
+      <div class="question-kicker">Your role</div>
+      <h2>Which best describes you?</h2>
+      <div class="answer-grid two">
+        <label class="choice"><input type="radio" name="role" value="Jazz educator"> Jazz educator</label>
+        <label class="choice"><input type="radio" name="role" value="Private instructor"> Private instructor</label>
+        <label class="choice"><input type="radio" name="role" value="College student"> College student</label>
+        <label class="choice"><input type="radio" name="role" value="Advanced musician"> Advanced musician</label>
+        <label class="choice"><input type="radio" name="role" value="Other"> Other</label>
+      </div>
+      <div class="form-actions">
+        <button class="btn btn-secondary" type="button" data-prev>Back</button>
+        <span class="step-count">Question 2 of 9</span>
+        <button class="btn btn-primary" type="button" data-next>Next</button>
+      </div>
+    </section>
+
+    <section class="question-card">
+      <div class="question-kicker">Experience</div>
+      <h2>How familiar are you with Jerry Coker's Elements of the Jazz Language?</h2>
+      <div class="answer-grid">
+        <label class="choice"><input type="radio" name="coker_familiarity" value="Very familiar"> Very familiar</label>
+        <label class="choice"><input type="radio" name="coker_familiarity" value="Somewhat familiar"> Somewhat familiar</label>
+        <label class="choice"><input type="radio" name="coker_familiarity" value="I've heard of it"> I've heard of it</label>
+        <label class="choice"><input type="radio" name="coker_familiarity" value="New to me"> New to me</label>
+      </div>
+      <div class="form-actions">
+        <button class="btn btn-secondary" type="button" data-prev>Back</button>
+        <span class="step-count">Question 3 of 9</span>
+        <button class="btn btn-primary" type="button" data-next>Next</button>
+      </div>
+    </section>
+
+    <section class="question-card">
+      <div class="question-kicker">Modules tested</div>
+      <h2>Which modules did you try?</h2>
+      <div class="answer-grid two">
+        <label class="choice"><input type="checkbox" name="modules" value="Change-Running"> Change-Running</label>
+        <label class="choice"><input type="checkbox" name="modules" value="Digital & Scalar Patterns"> Digital & Scalar Patterns</label>
+        <label class="choice"><input type="checkbox" name="modules" value="7-3 Resolution"> 7-3 Resolution</label>
+        <label class="choice"><input type="checkbox" name="modules" value="3-b9"> 3-b9</label>
+        <label class="choice"><input type="checkbox" name="modules" value="Bebop Scale"> Bebop Scale</label>
+        <label class="choice"><input type="checkbox" name="modules" value="Bebop Lick"> Bebop Lick</label>
+      </div>
+      <div class="form-actions">
+        <button class="btn btn-secondary" type="button" data-prev>Back</button>
+        <span class="step-count">Question 4 of 9</span>
+        <button class="btn btn-primary" type="button" data-next>Next</button>
+      </div>
+    </section>
+
+    <section class="question-card">
+      <div class="question-kicker">Learning value</div>
+      <h2>What did the modules make clearer?</h2>
+      <textarea name="clearer" placeholder="Example: hearing the chord under the line, seeing scale degrees, understanding the tension/release..."></textarea>
+      <div class="form-actions">
+        <button class="btn btn-secondary" type="button" data-prev>Back</button>
+        <span class="step-count">Question 5 of 9</span>
+        <button class="btn btn-primary" type="button" data-next>Next</button>
+      </div>
+    </section>
+
+    <section class="question-card">
+      <div class="question-kicker">Friction</div>
+      <h2>Where did you get stuck, bored, or unsure what to do next?</h2>
+      <textarea name="friction" placeholder="Tell us about unclear instructions, confusing controls, audio issues, pacing, missing context, or anything that slowed you down."></textarea>
+      <div class="form-actions">
+        <button class="btn btn-secondary" type="button" data-prev>Back</button>
+        <span class="step-count">Question 6 of 9</span>
+        <button class="btn btn-primary" type="button" data-next>Next</button>
+      </div>
+    </section>
+
+    <section class="question-card">
+      <div class="question-kicker">Classroom fit</div>
+      <h2>Would this be useful in a lesson, ensemble, theory class, or practice routine?</h2>
+      <textarea name="teaching_fit" placeholder="Where would it fit? What would you assign? What would you change before using it with students?"></textarea>
+      <div class="form-actions">
+        <button class="btn btn-secondary" type="button" data-prev>Back</button>
+        <span class="step-count">Question 7 of 9</span>
+        <button class="btn btn-primary" type="button" data-next>Next</button>
+      </div>
+    </section>
+
+    <section class="question-card">
+      <div class="question-kicker">Phase 2 priorities</div>
+      <h2>What should we build or improve next?</h2>
+      <div class="answer-grid two">
+        <label class="choice"><input type="checkbox" name="priorities" value="More devices"> More Coker devices</label>
+        <label class="choice"><input type="checkbox" name="priorities" value="Better audio"> Better audio and voicings</label>
+        <label class="choice"><input type="checkbox" name="priorities" value="Notation"> Staff notation or lead-sheet view</label>
+        <label class="choice"><input type="checkbox" name="priorities" value="Assignments"> Teacher assignment tools</label>
+        <label class="choice"><input type="checkbox" name="priorities" value="Progress tracking"> Student progress tracking</label>
+        <label class="choice"><input type="checkbox" name="priorities" value="Mobile polish"> Mobile practice polish</label>
+      </div>
+      <div class="form-actions">
+        <button class="btn btn-secondary" type="button" data-prev>Back</button>
+        <span class="step-count">Question 8 of 9</span>
+        <button class="btn btn-primary" type="button" data-next>Next</button>
+      </div>
+    </section>
+
+    <section class="question-card">
+      <div class="question-kicker">Follow up</div>
+      <h2>Where should we send follow-up questions?</h2>
+      <div class="answer-grid">
+        <input type="text" name="name" autocomplete="name" placeholder="Name">
+        <input type="email" name="email" autocomplete="email" placeholder="Email">
+        <textarea name="final_note" placeholder="Anything else we should know?"></textarea>
+      </div>
+      <div class="form-actions">
+        <button class="btn btn-secondary" type="button" data-prev>Back</button>
+        <span class="step-count">Question 9 of 9</span>
+        <button class="btn btn-primary" type="submit">Send responses</button>
+      </div>
+    </section>
+  </form>
+</main>
+
+<footer class="lesson-footer">
+  <p>Jazz Interactive · All content is provided for educational purposes only.</p>
+</footer>
+
+<script>
+const cards = [...document.querySelectorAll('.question-card')];
+let current = 0;
+
+function showCard(index) {
+  current = Math.max(0, Math.min(index, cards.length - 1));
+  cards.forEach((card, i) => card.classList.toggle('active', i === current));
+  cards[current].querySelector('input, textarea, button')?.focus({ preventScroll: true });
+  window.scrollTo({ top: 0, behavior: 'smooth' });
+}
+
+document.querySelectorAll('[data-next]').forEach(btn => {
+  btn.addEventListener('click', () => showCard(current + 1));
+});
+
+document.querySelectorAll('[data-prev]').forEach(btn => {
+  btn.addEventListener('click', () => showCard(current - 1));
+});
+
+document.getElementById('beta-form').addEventListener('submit', event => {
+  event.preventDefault();
+  const form = event.currentTarget;
+  const data = new FormData(form);
+  const grouped = {};
+
+  for (const [key, value] of data.entries()) {
+    if (!value) continue;
+    if (!grouped[key]) grouped[key] = [];
+    grouped[key].push(value);
+  }
+
+  const labels = {
+    role: 'Role',
+    coker_familiarity: 'Coker familiarity',
+    modules: 'Modules tested',
+    clearer: 'What became clearer',
+    friction: 'Where they got stuck',
+    teaching_fit: 'Teaching or practice fit',
+    priorities: 'Phase 2 priorities',
+    name: 'Name',
+    email: 'Email',
+    final_note: 'Final note'
+  };
+
+  const body = Object.entries(labels)
+    .map(([key, label]) => `${label}:\n${(grouped[key] || ['']).join(', ')}`)
+    .join('\n\n');
+
+  window.location.href = `mailto:mopajazz@gmail.com?subject=${encodeURIComponent('Jazz Interactive beta feedback')}&body=${encodeURIComponent(body)}`;
+});
+</script>
+</body>
+</html>

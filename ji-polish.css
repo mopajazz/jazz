@@ -1,0 +1,512 @@
+/* Jazz Interactive visual polish layer
+   Shared across the standalone lesson pages. */
+
+:root {
+  --ji-ink: #181713;
+  --ji-ink-soft: #3d382f;
+  --ji-muted: #6c6457;
+  --ji-paper: #f4efe3;
+  --ji-paper-warm: #ece2d0;
+  --ji-paper-cool: #e7eadf;
+  --ji-line: #cdbf9f;
+  --ji-brass: #b97824;
+  --ji-brass-deep: #7d4a17;
+  --ji-rouge: #8d2736;
+  --ji-green: #2f6f5f;
+  --ji-blue: #264e73;
+  --ji-shadow: 0 20px 60px rgba(40, 31, 18, 0.12);
+  --ji-shadow-sm: 0 10px 28px rgba(40, 31, 18, 0.08);
+  --ji-radius: 7px;
+  --ji-sans: "Aptos", "Segoe UI", system-ui, -apple-system, BlinkMacSystemFont, sans-serif;
+  --ji-mono: "DM Mono", "SFMono-Regular", Consolas, monospace;
+  --ji-display: "Playfair Display", Georgia, serif;
+
+  --ink: var(--ji-ink);
+  --ink-2: var(--ji-ink-soft);
+  --ink-3: var(--ji-muted);
+  --paper: var(--ji-paper);
+  --paper-2: var(--ji-paper-warm);
+  --paper-3: var(--ji-line);
+  --gold: var(--ji-brass);
+  --blue: var(--ji-blue);
+  --red: var(--ji-rouge);
+  --green: var(--ji-green);
+  --active: var(--ji-brass);
+  --played: var(--ji-blue);
+  --radius: var(--ji-radius);
+  --focus-outline: 3px solid var(--ji-green);
+}
+
+html {
+  color-scheme: light;
+}
+
+body {
+  font-family: var(--ji-sans);
+  font-kerning: normal;
+  background: var(--ji-paper);
+  color: var(--ji-ink);
+  line-height: 1.55;
+}
+
+/* Engraved music-staff field.
+   Each "staff" is five hairlines spaced 7px apart; staves repeat every 96px,
+   leaving a generous gutter between them so the page breathes.
+   The mask fades the pattern at the page edges so it never feels like a grid. */
+body::before {
+  content: "";
+  position: fixed;
+  inset: 0;
+  z-index: -1;
+  pointer-events: none;
+  background-image:
+    repeating-linear-gradient(
+      to bottom,
+      rgba(40, 31, 18, 0.18) 0,
+      rgba(40, 31, 18, 0.18) 1px,
+      transparent 1px,
+      transparent 7px,
+      rgba(40, 31, 18, 0.18) 7px,
+      rgba(40, 31, 18, 0.18) 8px,
+      transparent 8px,
+      transparent 14px,
+      rgba(40, 31, 18, 0.18) 14px,
+      rgba(40, 31, 18, 0.18) 15px,
+      transparent 15px,
+      transparent 21px,
+      rgba(40, 31, 18, 0.18) 21px,
+      rgba(40, 31, 18, 0.18) 22px,
+      transparent 22px,
+      transparent 28px,
+      rgba(40, 31, 18, 0.18) 28px,
+      rgba(40, 31, 18, 0.18) 29px,
+      transparent 29px,
+      transparent 96px
+    );
+  background-position: 0 64px;
+  -webkit-mask-image:
+    linear-gradient(to bottom, transparent 0, #000 120px, #000 calc(100% - 160px), transparent 100%),
+    linear-gradient(to right, transparent 0, #000 8%, #000 92%, transparent 100%);
+  -webkit-mask-composite: source-in;
+          mask-image:
+    linear-gradient(to bottom, transparent 0, #000 120px, #000 calc(100% - 160px), transparent 100%),
+    linear-gradient(to right, transparent 0, #000 8%, #000 92%, transparent 100%);
+          mask-composite: intersect;
+  opacity: 0.72;
+}
+
+/* A single warm bloom keeps the page from looking flat without adding noise. */
+body::after {
+  content: "";
+  position: fixed;
+  inset: 0;
+  z-index: -1;
+  pointer-events: none;
+  background:
+    radial-gradient(ellipse 60% 40% at 22% 10%, rgba(185, 120, 36, 0.07), transparent 70%),
+    radial-gradient(ellipse 50% 50% at 88% 96%, rgba(47, 111, 95, 0.05), transparent 70%);
+}
+
+*::selection {
+  background: #f1cf78;
+  color: var(--ji-ink);
+}
+
+*:focus-visible {
+  outline: 3px solid var(--ji-green);
+  outline-offset: 3px;
+}
+
+header {
+  border-bottom: 1px solid rgba(24, 23, 19, 0.16) !important;
+  background: rgba(244, 239, 227, 0.86) !important;
+  backdrop-filter: blur(18px) saturate(1.1);
+}
+
+.header-content,
+header {
+  font-family: var(--ji-mono);
+}
+
+.logo-text,
+.site-name {
+  font-family: var(--ji-display);
+  font-style: italic;
+  color: var(--ji-ink);
+}
+
+.logo-dot,
+.dot.done,
+.dot.current {
+  background: var(--ji-rouge) !important;
+}
+
+.element-badge,
+.module-badge,
+.section-label,
+.insight-label,
+.nav-label,
+.meta-label,
+.cycle-label,
+.tempo-label,
+.mode-label {
+  font-family: var(--ji-mono);
+  letter-spacing: 0.08em !important;
+  color: var(--ji-brass-deep) !important;
+}
+
+.element-badge {
+  border-color: rgba(125, 74, 23, 0.42) !important;
+  background: rgba(255, 251, 239, 0.54) !important;
+}
+
+h1,
+h2,
+h3,
+.hero h1,
+.module-title,
+.chord-symbol,
+.chord-symbol-xl,
+.chord-name-big,
+.stat-number,
+.stat-num {
+  text-wrap: balance;
+}
+
+h1,
+.hero h1 {
+  font-family: var(--ji-display);
+  letter-spacing: 0 !important;
+}
+
+.hero {
+  position: relative;
+  text-align: center;
+  padding-top: clamp(4rem, 9vw, 7rem) !important;
+  padding-bottom: clamp(4rem, 9vw, 7rem) !important;
+}
+
+.hero h1 {
+  font-size: clamp(3rem, 8vw, 6.8rem) !important;
+  line-height: 0.92 !important;
+  max-width: 9ch;
+  margin-bottom: 1.5rem !important;
+}
+
+.hero h1 em {
+  color: var(--ji-rouge) !important;
+}
+
+.hero .tagline {
+  max-width: 58ch !important;
+  margin-left: 0 !important;
+  color: var(--ji-ink-soft) !important;
+  font-size: 1.05rem !important;
+  line-height: 1.75 !important;
+}
+
+.title-block {
+  position: relative;
+  border-left: 0 !important;
+  padding: 1.25rem 0 1.35rem 1.5rem !important;
+  margin-bottom: 2.75rem !important;
+}
+
+.title-block::before {
+  content: "";
+  position: absolute;
+  left: 0;
+  top: 0.25rem;
+  bottom: 0.25rem;
+  width: 5px;
+  background: linear-gradient(var(--ji-rouge), var(--ji-brass) 55%, var(--ji-green));
+  border-radius: 99px;
+}
+
+.definition,
+.manifesto p,
+.module-desc,
+.context-card p,
+.explainer-content p,
+.insight-text,
+.cycle-description,
+.tone-hint,
+.tritone-card-body {
+  color: var(--ji-ink-soft) !important;
+  text-wrap: pretty;
+}
+
+.manifesto,
+.explainer,
+.cta-section,
+.context-block,
+.insight,
+.cycle-selector-group,
+.chord-display,
+.tone-row,
+.pattern-preview,
+.lick-stage,
+.stat-block,
+.tritone-card,
+.connection-callout,
+.scale-builder,
+.resolution-stage,
+.modules {
+  border-color: rgba(24, 23, 19, 0.16) !important;
+}
+
+.module-card,
+.context-card,
+.method-item,
+.pattern-card,
+.scale-card,
+.tone-row,
+.pattern-preview,
+.chord-display,
+.insight,
+.stat-block,
+.tritone-card,
+.connection-callout,
+.lick-stage,
+.resolution-stage,
+.scale-builder {
+  background:
+    linear-gradient(180deg, rgba(255, 252, 244, 0.78), rgba(236, 226, 208, 0.72)) !important;
+  border: 1px solid rgba(24, 23, 19, 0.18) !important;
+  border-radius: var(--ji-radius) !important;
+  box-shadow: none !important;
+}
+
+.module-card {
+  position: relative;
+  overflow: hidden;
+  transition: transform 180ms ease, border-color 180ms ease, box-shadow 180ms ease, background-color 180ms ease !important;
+}
+
+.module-card::after {
+  content: "";
+  position: absolute;
+  inset: auto 1.25rem 1rem 1.25rem;
+  height: 5px;
+  background: repeating-linear-gradient(90deg, var(--ji-ink) 0 12px, transparent 12px 18px);
+  opacity: 0.18;
+}
+
+.module-card:hover,
+.nav-item:hover,
+.pattern-card:hover,
+.scale-card:hover {
+  transform: translateY(-3px);
+  border-color: rgba(141, 39, 54, 0.55) !important;
+  box-shadow: var(--ji-shadow-sm) !important;
+}
+
+.module-title,
+.context-card-title,
+.method-item h3,
+.tritone-card-title {
+  color: var(--ji-ink) !important;
+}
+
+.cta-button,
+.cta-button-light,
+.btn,
+.pill,
+.cycle-pill,
+.mode-pill,
+.tab-btn,
+.pattern-card,
+.scale-card,
+.tone-btn,
+.scale-step,
+.beat-cell {
+  border-radius: var(--ji-radius) !important;
+  font-family: var(--ji-mono) !important;
+}
+
+.actions {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 0.75rem !important;
+}
+
+.actions .tempo-control {
+  min-width: min(100%, 220px);
+}
+
+.cta-button,
+.btn-primary,
+.btn:not(.btn-secondary),
+.cta-button-light {
+  background: var(--ji-ink) !important;
+  border-color: var(--ji-ink) !important;
+  color: var(--ji-paper) !important;
+  box-shadow: 5px 5px 0 var(--ji-brass) !important;
+}
+
+.cta-button:hover,
+.btn-primary:hover,
+.btn:not(.btn-secondary):hover,
+.cta-button-light:hover {
+  background: var(--ji-rouge) !important;
+  border-color: var(--ji-rouge) !important;
+  color: #fff8e8 !important;
+  transform: translate(-1px, -1px);
+  box-shadow: 7px 7px 0 var(--ji-green) !important;
+}
+
+.btn-secondary,
+.pill,
+.cycle-pill,
+.mode-pill,
+.tab-btn {
+  background: rgba(255, 252, 244, 0.68) !important;
+  border-color: rgba(24, 23, 19, 0.2) !important;
+  color: var(--ji-ink-soft) !important;
+}
+
+.pill:hover,
+.cycle-pill:hover,
+.mode-pill:hover,
+.tab-btn:hover {
+  border-color: var(--ji-brass) !important;
+  color: var(--ji-brass-deep) !important;
+}
+
+.pill.active,
+.cycle-pill.active,
+.mode-pill.active,
+.tab-btn.active,
+.pattern-card.active,
+.scale-card.active {
+  background: var(--ji-green) !important;
+  border-color: var(--ji-green) !important;
+  color: #f9f4e8 !important;
+}
+
+.tone-btn,
+.tone-bubble,
+.preview-step,
+.phrase-note,
+.note-pip,
+.scale-step,
+.beat-cell,
+.legend-swatch,
+.conn-badge {
+  box-shadow: none !important;
+}
+
+.tone-btn,
+.preview-step,
+.phrase-note,
+.scale-step,
+.beat-cell,
+.note-pip,
+.tone-bubble {
+  border-color: rgba(24, 23, 19, 0.2) !important;
+}
+
+.tone-btn:hover,
+.scale-step:hover,
+.beat-cell:hover {
+  border-color: var(--ji-rouge) !important;
+}
+
+.wave-bar,
+.bar,
+.active,
+.playing,
+.in-phrase,
+.selected {
+  accent-color: var(--ji-rouge);
+}
+
+input[type="range"] {
+  accent-color: var(--ji-green);
+}
+
+.nav-strip {
+  gap: 1rem !important;
+}
+
+.nav-item {
+  background: rgba(255, 252, 244, 0.64) !important;
+  border: 1px solid rgba(24, 23, 19, 0.16) !important;
+  border-radius: var(--ji-radius) !important;
+  transition: transform 180ms ease, border-color 180ms ease, box-shadow 180ms ease !important;
+}
+
+footer {
+  background: #191713 !important;
+  color: #f3ead8 !important;
+}
+
+footer a,
+footer p,
+footer .footer-bottom {
+  color: rgba(243, 234, 216, 0.76) !important;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    scroll-behavior: auto !important;
+    transition-duration: 0.01ms !important;
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+  }
+}
+
+@media (max-width: 820px) {
+  .hero {
+    grid-template-columns: 1fr;
+    text-align: left !important;
+  }
+
+  .hero::after {
+    min-height: 260px;
+    width: min(78vw, 320px);
+    justify-self: center;
+  }
+}
+
+@media (max-width: 620px) {
+  body {
+    background-size: 64px 100%, 100% 80px, auto;
+  }
+
+  header,
+  .header-content {
+    align-items: flex-start !important;
+  }
+
+  .hero::before {
+    left: 1.25rem;
+  }
+
+  .hero h1 {
+    font-size: clamp(2.7rem, 18vw, 4.35rem) !important;
+  }
+
+  .cta-button,
+  .cta-button-light,
+  .btn {
+    min-height: 44px;
+  }
+
+  .actions {
+    align-items: stretch;
+  }
+
+  .actions .btn,
+  .actions .tempo-control {
+    width: 100%;
+    margin-left: 0 !important;
+  }
+
+  .module-card::after {
+    display: none;
+  }
+}

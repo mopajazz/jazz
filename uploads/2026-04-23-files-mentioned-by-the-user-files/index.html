@@ -1,10 +1,6 @@
-<!DOCTYPE html><html lang="en"><head>
-
-
-
-
-
-
+<!DOCTYPE html>
+<html lang="en">
+<head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <meta name="description" content="Jazz Interactive: Learn the language of jazz through interactive lessons based on Jerry Coker's Elements of the Jazz Language. Master the 18 devices used by every great improviser.">
@@ -17,8 +13,8 @@
   <meta name="twitter:description" content="Interactive jazz lessons inspired by Jerry Coker's Elements of the Jazz Language.">
   <title>Jazz Interactive - Learn the Language of Jazz</title>
   <link rel="preconnect" href="https://fonts.googleapis.com">
-  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin="">
-  <link href="https://fonts.googleapis.com/css2?family=DM+Mono:ital,wght@0,300;0,400;0,500;1,300;1,400&amp;family=Playfair+Display:ital,wght@0,400;0,700;1,400;1,700&amp;display=swap" rel="stylesheet">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=DM+Mono:ital,wght@0,300;0,400;0,500;1,300;1,400&family=Playfair+Display:ital,wght@0,400;0,700;1,400;1,700&display=swap" rel="stylesheet">
   <style>
     * { margin: 0; padding: 0; box-sizing: border-box; }
     
@@ -399,11 +395,6 @@
       color: var(--paper);
       border-radius: 8px;
       text-align: center;
-      display: flex;
-      flex-direction: column;
-      justify-content: center;
-      align-items: center;
-      gap: 1rem;
     }
 
     .cta-section h2 {
@@ -448,20 +439,54 @@
     /* ═══ FOOTER ═══ */
     footer {
       border-top: 1px solid var(--paper-3);
-      padding: 2rem;
+      padding: 3rem 2rem;
       color: var(--ink-3);
       font-size: 1rem;
       text-align: center;
     }
 
+    .footer-content {
+      max-width: 1200px;
+      margin: 0 auto;
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+      gap: 2rem;
+      text-align: left;
+      margin-bottom: 2rem;
+    }
+
+    .footer-section h3 {
+      font-size: 1rem;
+      text-transform: uppercase;
+      letter-spacing: 0.08em;
+      color: var(--ink);
+      margin-bottom: 1rem;
+      font-weight: 600;
+    }
+
+    .footer-section a {
+      display: block;
+      text-decoration: underline;
+      color: var(--ink-2);
+      margin-bottom: 0.5rem;
+      transition: color 0.2s;
+    }
+
+    .footer-section a:hover {
+      color: var(--gold);
+    }
+
+    .footer-section a:focus-visible {
+      outline: var(--focus-outline);
+      outline-offset: var(--focus-offset);
+    }
+
     .footer-bottom {
       text-align: center;
-      padding: 0;
-      border-top: none;
+      padding-top: 2rem;
+      border-top: 1px solid var(--paper-3);
       color: var(--ink-3);
-      font-size: 0.95rem;
-      max-width: 500px;
-      margin: 0 auto;
+      font-size: 1rem;
     }
 
     /* ═══ RESPONSIVE ═══ */
@@ -572,7 +597,7 @@
   </style>
   <link rel="stylesheet" href="./ji-polish.css">
 </head>
-<body style="">
+<body>
 
 <!-- Skip to main content link for keyboard navigation -->
 <a href="#modules" class="skip-link">Skip to main content</a>
@@ -596,32 +621,28 @@
 </header>
 
 <!-- HERO -->
-<section class="hero" style="display: flex; gap: 2rem; align-items: center;">
-  <div style="flex: 1; display: flex; flex-direction: column; gap: 2rem;">
-    <h1 style="text-align: center">Learn the <em>Language</em> of Jazz</h1>
-    <p class="tagline">
-      Interactive lessons on Coker's 18 "devices" — the essential vocabulary every jazz musician needs.
-      Play. Listen. Understand. Then improvise.
-    </p>
-    <a href="#modules" class="cta-button">Explore the Modules</a>
-  </div>
-  
-  <div style="flex: 1;"></div>
+<section class="hero">
+  <h1>Learn the <em>Language</em> of Jazz</h1>
+  <p class="tagline">
+    Interactive lessons on Coker's 18 "devices" — the essential vocabulary every jazz musician needs.
+    Play. Listen. Understand. Then improvise.
+  </p>
+  <a href="#modules" class="cta-button">Explore the Modules</a>
 </section>
 
 <!-- MANIFESTO -->
-<section class="manifesto" id="about" style="text-align: left; margin: 66.4241px 555.758px 64px 393.94px;">
-  <h2 style="text-align: left;">Why this exists</h2>
-  <p style="text-align: left;">
-    In <em style="text-align: left;">Elements of the Jazz Language</em>, Jerry Coker identified 18 "devices" — patterns, phrasings, and techniques used by every great jazz improviser from Charlie Parker to John Coltrane. These aren't theory rules. They're the actual vocabulary of jazz speech.
+<section class="manifesto" id="about">
+  <h2>Why this exists</h2>
+  <p>
+    In <em>Elements of the Jazz Language</em>, Jerry Coker identified 18 "devices" — patterns, phrasings, and techniques used by every great jazz improviser from Charlie Parker to John Coltrane. These aren't theory rules. They're the actual vocabulary of jazz speech.
   </p>
-  <p style="text-align: left;">
+  <p>
     Problem: Coker's book is textbook jazz education. Most students read the definitions, see transcribed solos, and... get stuck. Because understanding intellectually is different from hearing it, playing it, and internalizing it.
   </p>
-  <p style="text-align: left;">
-    <strong style="text-align: left;">Jazz Interactive makes these devices playable.</strong> Each lesson is interactive — you hear the device in context, you can experiment with variations, you see how it connects to the harmony. You're not just reading about change-running or the 7-3 resolution. You're inside it.
+  <p>
+    <strong>Jazz Interactive makes these devices playable.</strong> Each lesson is interactive — you hear the device in context, you can experiment with variations, you see how it connects to the harmony. You're not just reading about change-running or the 7-3 resolution. You're inside it.
   </p>
-  <p class="quote-attr" style="text-align: left;">
+  <p class="quote-attr">
     "Jazz improvisation is not a mystery. It's a language. And like any language, it can be learned." — Jerry Coker
   </p>
 </section>
@@ -630,8 +651,7 @@
 <section class="modules" id="modules">
   <div class="section-heading">
     <h2>Six Playable Devices</h2>
-    <p class="subtitle">
-</p>
+    <p class="subtitle">Phase 1 of 18. Test these with us.</p>
   </div>
 
   <div class="modules-grid">
@@ -657,7 +677,7 @@
     <!-- Element 02: Digital & Scalar Patterns -->
     <a href="./02-digital-scalar-patterns.html" class="module-card">
       <span class="module-badge">Element 02</span>
-      <h3 class="module-title">Digital &amp; Scalar Patterns</h3>
+      <h3 class="module-title">Digital & Scalar Patterns</h3>
       <p class="module-desc">
         Short numbered cells (1-2-3-5) and continuous scalar runs. Coltrane built 35% of his improvisations on these patterns. Now you can too.
       </p>
@@ -754,20 +774,34 @@
       <span class="module-badge">Practice / 01</span>
       <h3 class="module-title">Looping Changes</h3>
       <p class="module-desc">
-        Run any chord quality through the chromatic cycle or the cycle of fourths.
-        Tempo slider, count-in, click, bass, and a 12-key preview rail. Practice your vocabulary in every key.
+        Run any chord quality through the chromatic cycle or the cycle of fourths. Tempo slider, count-in, click, bass, and a 12-key preview rail. Practice your vocabulary in every key.
       </p>
       <div class="module-meta">
         <div class="meta-item">
-          <span class="meta-label">Difficulty</span>
-          <span class="meta-value">All levels</span>
+          <span class="meta-label">Type</span>
+          <span class="meta-value">Practice</span>
         </div>
         <div class="meta-item">
-          <span class="meta-label">Status</span>
-          <span class="meta-value">Live</span>
+          <span class="meta-label">Loops</span>
+          <span class="meta-value">All 12 keys</span>
         </div>
       </div>
     </a>
+
+    <!-- Element 07+ (Coming Soon) -->
+    <div class="module-card" style="opacity: 0.6; pointer-events: none;">
+      <span class="module-badge">Elements 07+</span>
+      <h3 class="module-title">More Devices</h3>
+      <p class="module-desc">
+        Coming in Phase 2. We're testing these five modules first with educators and musicians to refine the approach.
+      </p>
+      <div class="module-meta">
+        <div class="meta-item">
+          <span class="meta-label">Status</span>
+          <span class="meta-value">Beta Phase 1</span>
+        </div>
+      </div>
+    </div>
   </div>
 </section>
 
@@ -806,12 +840,12 @@
 
 <!-- FEEDBACK CTA -->
 <section class="cta-section" id="feedback">
-  <h2 style="">Help shape phase 2</h2>
+  <h2>Help shape phase 2</h2>
   <p>
     We're currently testing these modules with jazz educators and advanced musicians. If you're interested in trying them out and sharing feedback, we'd love to hear from you.
   </p>
-  <p style="text-align: center; line-height: 1.4;">
-    <a href="./beta-questionnaire.html" class="cta-button-light" aria-label="Open the Beta Tester questionnaire" style="text-align: center; line-height: 1.4;">
+  <p>
+    <a href="mailto:hello@jazzinteractive.org?subject=Beta%20Tester%20Interest" class="cta-button-light" aria-label="Become a Beta Tester by email">
       Become a Beta Tester
     </a>
   </p>
@@ -822,12 +856,30 @@
 
 <!-- FOOTER -->
 <footer>
+  <div class="footer-content">
+    <div class="footer-section">
+      <h3>Project</h3>
+      <a href="#modules">Modules</a>
+      <a href="#about">About</a>
+      <a href="#feedback">Feedback</a>
+    </div>
+    <div class="footer-section">
+      <h3>Resources</h3>
+      <a href="https://www.jerrycokermusic.com" target="_blank" rel="noopener noreferrer">Jerry Coker's Work <span aria-label="opens in new window">(new window)</span></a>
+      <a href="https://www.jazzstudiespress.com" target="_blank" rel="noopener noreferrer">Jazz Studies Press <span aria-label="opens in new window">(new window)</span></a>
+    </div>
+    <div class="footer-section">
+      <h3>Connect</h3>
+      <a href="mailto:hello@jazzinteractive.org">Email</a>
+      <a href="https://twitter.com" target="_blank" rel="noopener noreferrer">Twitter <span aria-label="opens in new window">(new window)</span></a>
+      <a href="https://discord.gg" target="_blank" rel="noopener noreferrer">Discord <span aria-label="opens in new window">(new window)</span></a>
+    </div>
+  </div>
   <div class="footer-bottom">
     <p>Jazz Interactive · A pedagogical project inspired by Jerry Coker's Elements of the Jazz Language</p>
-    <p style="margin-top: 0.75rem; color: var(--paper-3); font-size: 0.9rem;">© 2026 · Beta Phase 1</p>
+    <p style="margin-top: 1rem; color: var(--paper-3);">© 2025 · Beta Phase 1</p>
   </div>
 </footer>
 
-
-
-</body></html>
+</body>
+</html>
