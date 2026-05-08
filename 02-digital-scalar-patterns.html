@@ -33,6 +33,70 @@
     --radius: 4px;
   }
 
+  [data-theme="dark"] {
+    --ink: #f0ebe0;
+    --ink-2: #b8b0a0;
+    --ink-3: #7a7268;
+    --paper: #1a1814;
+    --paper-2: #242018;
+    --paper-3: #302c24;
+    --gold: #e8a83a;
+    --blue: #6a8fd8;
+  }
+
+  /* ═══ DARK MODE TOGGLE ═══ */
+  .theme-toggle {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    margin-left: auto;
+  }
+  .theme-toggle-label {
+    font-size: 0.72rem;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    color: var(--ink-2);
+    font-weight: 500;
+    user-select: none;
+  }
+  .toggle-switch {
+    position: relative;
+    width: 40px;
+    height: 22px;
+    flex-shrink: 0;
+  }
+  .toggle-switch input {
+    opacity: 0;
+    width: 0;
+    height: 0;
+    position: absolute;
+  }
+  .toggle-track {
+    position: absolute;
+    inset: 0;
+    background: var(--paper-3);
+    border-radius: 22px;
+    cursor: pointer;
+    transition: background 0.2s;
+  }
+  .toggle-switch input:checked + .toggle-track { background: var(--gold); }
+  .toggle-track::after {
+    content: '';
+    position: absolute;
+    width: 16px;
+    height: 16px;
+    border-radius: 50%;
+    background: var(--paper);
+    top: 3px;
+    left: 3px;
+    transition: transform 0.2s;
+  }
+  .toggle-switch input:checked + .toggle-track::after { transform: translateX(18px); }
+  .toggle-switch input:focus-visible + .toggle-track {
+    outline: 3px solid var(--blue);
+    outline-offset: 2px;
+  }
+
   body {
     font-family: 'DM Mono', monospace;
     background: var(--paper);
@@ -598,7 +662,7 @@
     position: sticky;
     top: 0;
     z-index: 100;
-    background: rgba(245, 240, 232, 0.92);
+    background: color-mix(in srgb, var(--paper) 92%, transparent);
     backdrop-filter: blur(14px);
   }
   main { width: min(100%, 74rem); }
@@ -692,6 +756,13 @@
     <div class="dot"></div><div class="dot"></div>
     <div class="dot"></div><div class="dot"></div>
     <div class="dot"></div>
+  </div>
+  <div class="theme-toggle">
+    <span class="theme-toggle-label" aria-hidden="true">Dark</span>
+    <label class="toggle-switch">
+      <input type="checkbox" id="theme-toggle" aria-label="Toggle dark mode" role="switch">
+      <span class="toggle-track"></span>
+    </label>
   </div>
 </header>
 
@@ -1530,6 +1601,16 @@ function init() {
 }
 
 init();
+</script>
+<script>
+  const toggle = document.getElementById('theme-toggle');
+  const root = document.documentElement;
+  const saved = localStorage.getItem('ji-theme');
+  if (saved === 'dark') { root.setAttribute('data-theme', 'dark'); toggle.checked = true; }
+  toggle.addEventListener('change', () => {
+    if (toggle.checked) { root.setAttribute('data-theme', 'dark'); localStorage.setItem('ji-theme', 'dark'); }
+    else { root.removeAttribute('data-theme'); localStorage.setItem('ji-theme', 'light'); }
+  });
 </script>
 </body>
 </html>
