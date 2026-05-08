@@ -1,0 +1,1182 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="description" content="Practice a classic bebop lick with chromatic and cycle-of-fourths roots, chord context, and progression playback.">
+<meta name="theme-color" content="#f5f0e8">
+<meta property="og:type" content="website">
+<meta property="og:title" content="Bebop Lick - Jazz Interactive">
+<meta property="og:description" content="Hear and rehearse a signature bebop line across roots and ii-V contexts.">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="Bebop Lick - Jazz Interactive">
+<meta name="twitter:description" content="Hear and rehearse a signature bebop line across roots and ii-V contexts.">
+<title>Bebop Lick - Jazz Interactive</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=DM+Mono:ital,wght@0,300;0,400;0,500;1,300;1,400&family=Playfair+Display:ital,wght@0,400;0,700;1,400;1,700&display=swap" rel="stylesheet">
+<style>
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+  :root {
+    --ink: #1a1814;
+    --ink-2: #4a4640;
+    --ink-3: #8a8480;
+    --paper: #f5f0e8;
+    --paper-2: #ede8dc;
+    --paper-3: #ddd8cc;
+    --gold: #c8922a;
+    --blue: #2a4a8a;
+    --red: #8a2a2a;
+    --green: #2a6a3a;
+    --radius: 4px;
+    --lick-color: #8a2a2a;
+    --scale-color: #2a6a3a;
+    --chrom-color: #c8922a;
+  }
+
+  body {
+    font-family: 'DM Mono', monospace;
+    background: var(--paper);
+    color: var(--ink);
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+  }
+
+  header {
+    border-bottom: 1px solid var(--paper-3);
+    padding: 1.5rem 2rem;
+    display: flex;
+    align-items: baseline;
+    gap: 1.5rem;
+  }
+  .site-name { font-family: 'Playfair Display', serif; font-size: 1.1rem; font-style: italic; color: var(--ink-3); }
+  .element-badge { font-size: 0.65rem; font-weight: 500; letter-spacing: 0.12em; text-transform: uppercase; color: var(--gold); border: 1px solid var(--gold); padding: 3px 8px; border-radius: var(--radius); }
+  .progress-dots { display: flex; gap: 6px; align-items: center; margin-left: auto; }
+  .dot { width: 6px; height: 6px; border-radius: 50%; background: var(--paper-3); }
+  .dot.done { background: var(--gold); }
+  .dot.current { background: var(--ink-2); }
+
+  main { flex: 1; max-width: 900px; margin: 0 auto; padding: 3rem 2rem 4rem; width: 100%; }
+
+  .title-block { margin-bottom: 2.5rem; border-left: 3px solid var(--gold); padding-left: 1.25rem; }
+  h1 { font-family: 'Playfair Display', serif; font-size: 2.2rem; font-weight: 700; line-height: 1.1; letter-spacing: -0.02em; }
+  h1 em { font-style: italic; color: var(--ink-2); }
+  .definition { margin-top: 0.75rem; font-size: 0.78rem; color: var(--ink-3); line-height: 1.65; max-width: 620px; }
+  .definition strong { color: var(--ink-2); font-weight: 500; }
+
+  .section-label { font-size: 0.6rem; font-weight: 500; letter-spacing: 0.14em; text-transform: uppercase; color: var(--ink-3); margin-bottom: 0.75rem; }
+
+  /* — CONNECTION CALLOUT — */
+  .connection-callout {
+    background: var(--paper-2);
+    border-radius: var(--radius);
+    padding: 1.25rem 1.5rem;
+    margin-bottom: 2rem;
+    display: grid;
+    grid-template-columns: auto auto auto auto auto 1fr;
+    gap: 0.9rem;
+    align-items: center;
+  }
+  .conn-step { display: flex; flex-direction: column; align-items: center; gap: 4px; min-width: 72px; }
+  .conn-badge {
+    width: 42px; height: 42px; border-radius: 50%;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 0.82rem; font-weight: 500; color: white;
+  }
+  .conn-badge.scale { background: var(--scale-color); }
+  .conn-badge.lick { background: var(--lick-color); }
+  .conn-badge.general { background: var(--blue); }
+  .conn-label { font-size: 0.62rem; color: var(--ink-3); text-align: center; line-height: 1.3; }
+  .conn-arrow { font-size: 1.1rem; color: var(--ink-3); }
+  .conn-desc { font-size: 0.72rem; color: var(--ink-2); line-height: 1.55; grid-column: 1 / -1; margin-top: 0.4rem; }
+  .conn-desc strong { color: var(--ink); font-weight: 500; }
+
+  /* — CONTROLS — */
+  .controls-row { display: flex; flex-direction: column; gap: 1.25rem; margin-bottom: 1.5rem; }
+  .control-group { display: flex; flex-direction: column; gap: 0.5rem; }
+  .pill-row { display: flex; flex-wrap: wrap; gap: 6px; }
+  .pill {
+    font-family: 'DM Mono', monospace;
+    background: transparent;
+    border: 1px solid var(--paper-3);
+    border-radius: var(--radius);
+    color: var(--ink-2);
+    padding: 6px 11px;
+    font-size: 0.72rem;
+    cursor: pointer;
+    transition: all 0.12s;
+  }
+  .pill:hover { border-color: var(--ink-3); color: var(--ink); }
+  .pill.active { background: var(--ink); color: var(--paper); border-color: var(--ink); }
+
+  .chord-type-row {
+    display: flex;
+    gap: 8px;
+    align-items: center;
+    font-size: 0.7rem;
+    color: var(--ink-3);
+  }
+  .chord-type-row .label { margin-right: 6px; }
+
+  .mode-pill {
+    font-family: 'DM Mono', monospace;
+    background: transparent;
+    border: 1px solid var(--paper-3);
+    border-radius: var(--radius);
+    color: var(--ink-2);
+    padding: 7px 13px;
+    font-size: 0.68rem;
+    cursor: pointer;
+    transition: all 0.12s;
+  }
+  .mode-pill:hover { border-color: var(--ink-3); }
+  .mode-pill.active { background: var(--ink-2); color: var(--paper); border-color: var(--ink-2); }
+
+  /* — THE LICK STAGE — */
+  .lick-stage {
+    background: white;
+    border: 1px solid var(--paper-3);
+    border-radius: var(--radius);
+    padding: 2rem 1.75rem 1.75rem;
+    margin-bottom: 1.5rem;
+    position: relative;
+    overflow: hidden;
+  }
+
+  .chord-header {
+    display: flex;
+    align-items: baseline;
+    gap: 1rem;
+    margin-bottom: 1.5rem;
+    padding-bottom: 1rem;
+    border-bottom: 1px solid var(--paper-3);
+  }
+  .chord-symbol-xl {
+    font-family: 'Playfair Display', serif;
+    font-size: 2.2rem;
+    font-weight: 700;
+    color: var(--ink);
+    line-height: 1;
+  }
+  .chord-symbol-xl sup { font-size: 0.55em; position: relative; top: -0.7em; }
+  .chord-type-label {
+    font-size: 0.68rem;
+    color: var(--ink-3);
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+  }
+  .form-label {
+    font-size: 0.72rem;
+    color: var(--ink-2);
+    font-style: italic;
+    margin-top: 2px;
+  }
+
+  /* note sequence — the bebop lick visualized as a row of pips */
+  .lick-row {
+    display: flex;
+    align-items: flex-end;
+    gap: 10px;
+    padding: 1rem 0;
+    justify-content: center;
+    min-height: 130px;
+    flex-wrap: wrap;
+  }
+  .lick-note {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 5px;
+    transition: transform 0.15s;
+    min-width: 44px;
+  }
+  .lick-note.playing { transform: translateY(-6px); }
+
+  .note-pip {
+    width: 42px;
+    height: 42px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 0.82rem;
+    font-weight: 500;
+    color: var(--ink-3);
+    background: var(--paper-2);
+    border: 1px solid var(--paper-3);
+    transition: all 0.15s;
+  }
+  .note-pip.chord-tone { color: var(--scale-color); border-color: var(--scale-color); background: #f0f5f0; }
+  .note-pip.bebop-note { color: var(--chrom-color); border-color: var(--chrom-color); background: #fbf4e4; font-style: italic; }
+  .note-pip.chromatic { color: var(--lick-color); border-color: var(--lick-color); background: #fbefef; }
+
+  .note-pip.playing {
+    background: var(--ink);
+    color: var(--paper);
+    border-color: var(--ink);
+    transform: scale(1.12);
+    box-shadow: 0 2px 8px rgba(0,0,0,0.15);
+  }
+  .note-fn {
+    font-size: 0.55rem;
+    color: var(--ink-3);
+    letter-spacing: 0.05em;
+    text-transform: uppercase;
+  }
+  .note-pip.playing + .note-fn { color: var(--ink-2); }
+
+  /* legend */
+  .legend-row {
+    display: flex;
+    gap: 1.25rem;
+    justify-content: center;
+    margin-top: 1rem;
+    padding-top: 1rem;
+    border-top: 1px dashed var(--paper-3);
+    flex-wrap: wrap;
+  }
+  .legend-item { display: flex; align-items: center; gap: 6px; font-size: 0.62rem; color: var(--ink-3); }
+  .legend-swatch {
+    width: 10px; height: 10px; border-radius: 50%;
+    border: 1px solid;
+  }
+  .legend-swatch.chord-tone { border-color: var(--scale-color); background: #f0f5f0; }
+  .legend-swatch.bebop-note { border-color: var(--chrom-color); background: #fbf4e4; }
+  .legend-swatch.chromatic { border-color: var(--lick-color); background: #fbefef; }
+
+  /* — ACTIONS — */
+  .actions {
+    display: flex;
+    gap: 0.75rem;
+    flex-wrap: wrap;
+    align-items: center;
+    margin-bottom: 2rem;
+  }
+  .btn {
+    font-family: 'DM Mono', monospace;
+    border: 1px solid var(--ink-2);
+    background: var(--ink);
+    color: var(--paper);
+    padding: 10px 18px;
+    font-size: 0.72rem;
+    font-weight: 500;
+    letter-spacing: 0.04em;
+    cursor: pointer;
+    border-radius: var(--radius);
+    transition: all 0.12s;
+  }
+  .btn:hover { background: var(--ink-2); }
+  .btn-secondary { background: transparent; color: var(--ink); border-color: var(--paper-3); }
+  .btn-secondary:hover { border-color: var(--ink-3); background: var(--paper-2); }
+
+  .tempo-control { display: flex; align-items: center; gap: 0.6rem; margin-left: auto; font-size: 0.68rem; color: var(--ink-3); }
+  .tempo-control input[type=range] { width: 110px; accent-color: var(--ink-2); }
+  .tempo-val { color: var(--ink-2); min-width: 28px; text-align: right; }
+
+  /* — INSIGHT — */
+  .insight {
+    background: var(--paper-2);
+    border-left: 3px solid var(--gold);
+    border-radius: 0 var(--radius) var(--radius) 0;
+    padding: 1rem 1.25rem;
+    margin-bottom: 2rem;
+  }
+  .insight-label { font-size: 0.6rem; letter-spacing: 0.12em; text-transform: uppercase; color: var(--ink-3); margin-bottom: 0.4rem; }
+  .insight-text { font-size: 0.76rem; color: var(--ink-2); line-height: 1.6; }
+  .insight-text strong { color: var(--ink); font-weight: 500; }
+
+  /* — COKER CONTEXT — */
+  .context-block { margin-bottom: 2.5rem; }
+  .context-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 1rem; }
+  .context-card { background: var(--paper-2); border-radius: var(--radius); padding: 1rem 1.25rem; }
+  .context-card-title { font-size: 0.65rem; letter-spacing: 0.1em; text-transform: uppercase; color: var(--ink-3); margin-bottom: 0.6rem; font-weight: 500; }
+  .context-card p { font-size: 0.75rem; color: var(--ink-2); line-height: 1.65; }
+  .context-card p + p { margin-top: 0.5rem; }
+  .context-card em { color: var(--ink-3); font-style: italic; }
+  .player-list { list-style: none; display: flex; flex-direction: column; gap: 6px; }
+  .player-list li { font-size: 0.72rem; color: var(--ink-2); display: flex; flex-direction: column; gap: 1px; }
+  .player-name { font-weight: 500; color: var(--ink); }
+  .player-tune { color: var(--ink-3); font-size: 0.65rem; font-style: italic; }
+
+  /* — TRI-TONE SUB CARD — */
+  .tritone-card {
+    background: white;
+    border: 1px solid var(--paper-3);
+    border-left: 3px solid var(--blue);
+    border-radius: 0 var(--radius) var(--radius) 0;
+    padding: 1.25rem 1.5rem;
+    margin-bottom: 2.5rem;
+  }
+  .tritone-card-title {
+    font-family: 'Playfair Display', serif;
+    font-size: 1rem;
+    font-style: italic;
+    color: var(--ink);
+    margin-bottom: 0.5rem;
+  }
+  .tritone-card-body { font-size: 0.74rem; color: var(--ink-2); line-height: 1.6; }
+  .tritone-card-body strong { color: var(--ink); font-weight: 500; }
+  .tritone-card-body code {
+    font-family: 'DM Mono', monospace;
+    background: var(--paper-2);
+    padding: 1px 5px;
+    border-radius: 2px;
+    font-size: 0.9em;
+    color: var(--blue);
+  }
+
+  /* — NAV — */
+  .nav-strip { display: flex; justify-content: space-between; border-top: 1px solid var(--paper-3); padding-top: 2rem; margin-top: 2rem; }
+  .nav-item { 
+    display: flex; 
+    flex-direction: column; 
+    gap: 2px;
+    text-decoration: none;
+    color: inherit;
+    transition: opacity 0.2s ease;
+  }
+  .nav-item:hover {
+    opacity: 0.7;
+  }
+  .nav-item:focus-visible {
+    outline: 2px solid var(--blue);
+    outline-offset: 2px;
+  }
+  .nav-label { font-size: 0.6rem; color: var(--ink-3); letter-spacing: 0.1em; text-transform: uppercase; }
+  .nav-name { font-family: 'Playfair Display', serif; font-size: 1rem; font-style: italic; color: var(--ink-2); }
+  .nav-arrow { font-size: 1.2rem; color: var(--gold); cursor: pointer; transition: transform 0.15s; text-decoration: none; align-self: center; }
+  .nav-arrow:hover { transform: translateX(3px); }
+
+  @keyframes pulse { 0%,100%{opacity:1} 50%{opacity:0.6} }
+  .pulsing { animation: pulse 0.6s ease infinite; }
+
+  /* ═══ WCAG: SKIP LINK ═══ */
+  .skip-link {
+    position: absolute;
+    top: -40px;
+    left: 0;
+    background: var(--blue);
+    color: var(--paper);
+    padding: 8px 16px;
+    text-decoration: none;
+    z-index: 1000;
+    font-size: 1rem;
+    font-weight: 500;
+  }
+  .skip-link:focus { top: 0; }
+
+  /* ═══ WCAG: FOCUS INDICATORS ═══ */
+  *:focus-visible {
+    outline: 3px solid var(--blue);
+    outline-offset: 2px;
+  }
+
+  /* ═══ WCAG: MOTION PREFERENCES ═══ */
+  @media (prefers-reduced-motion: reduce) {
+    * { 
+      animation-duration: 0.01ms !important; 
+      animation-iteration-count: 1 !important; 
+      transition-duration: 0.01ms !important;
+    }
+  }
+
+  @media (max-width: 620px) {
+    h1 { font-size: 1.7rem; }
+    .connection-callout { grid-template-columns: 1fr; justify-items: center; }
+    .conn-arrow { transform: rotate(90deg); }
+    .context-grid { grid-template-columns: 1fr; }
+    .chord-header { flex-direction: column; gap: 0.5rem; align-items: flex-start; }
+    .lick-row { gap: 6px; }
+    .note-pip { width: 36px; height: 36px; font-size: 0.72rem; }
+    .lick-note { min-width: 38px; }
+  }
+
+  /* Polish pass */
+  html { scroll-padding-top: 5.5rem; }
+  body {
+    text-rendering: optimizeLegibility;
+    -webkit-font-smoothing: antialiased;
+    font-optical-sizing: auto;
+  }
+  h1, h2, h3 { text-wrap: balance; }
+  p { text-wrap: pretty; }
+  header {
+    position: sticky;
+    top: 0;
+    z-index: 100;
+    background: rgba(245, 240, 232, 0.92);
+    backdrop-filter: blur(14px);
+  }
+  main { width: min(100%, 74rem); }
+  .definition,
+  .cycle-description,
+  .legend,
+  .section-copy,
+  .form-label {
+    max-width: 65ch;
+  }
+  .pill,
+  .cycle-pill,
+  .mode-pill,
+  .btn,
+  .nav-item {
+    min-height: 44px;
+  }
+  .cycle-pill,
+  .mode-pill,
+  .btn,
+  .nav-item,
+  .lick-note {
+    transition: transform 0.18s ease, box-shadow 0.18s ease, border-color 0.18s ease, background-color 0.18s ease;
+  }
+  @media (hover: hover) {
+    .btn:hover,
+    .cycle-pill:hover,
+    .mode-pill:hover,
+    .nav-item:hover {
+      transform: translateY(-1px);
+      box-shadow: 0 10px 24px rgba(26, 24, 20, 0.08);
+    }
+  }
+  @media (max-width: 720px) {
+    header {
+      padding: 1rem;
+      flex-wrap: wrap;
+      align-items: center;
+    }
+    main {
+      padding: 1.25rem 1rem 3rem;
+    }
+    .progress-dots {
+      margin-left: 0 !important;
+      width: 100%;
+      justify-content: flex-start;
+    }
+    .cycle-toggle,
+    .mode-row,
+    .actions,
+    .nav-row {
+      gap: 0.75rem;
+      align-items: stretch;
+    }
+    .nav-row {
+      flex-direction: column;
+    }
+    .nav-item {
+      width: 100%;
+      justify-content: space-between;
+    }
+  }
+</style>
+<link rel="stylesheet" href="./ji-polish.css">
+</head>
+<body>
+
+<a href="#main" class="skip-link">Skip to main content</a>
+
+<header>
+  <span class="site-name">Jazz Interactive</span>
+  <span class="element-badge">Element 06 of 18</span>
+  <div class="progress-dots">
+    <div class="dot done"></div><div class="dot done"></div>
+    <div class="dot done"></div><div class="dot done"></div>
+    <div class="dot done"></div><div class="dot current"></div>
+    <div class="dot"></div><div class="dot"></div><div class="dot"></div>
+    <div class="dot"></div><div class="dot"></div><div class="dot"></div>
+    <div class="dot"></div><div class="dot"></div><div class="dot"></div>
+    <div class="dot"></div><div class="dot"></div><div class="dot"></div>
+  </div>
+</header>
+
+<main id="main">
+  <div class="title-block">
+    <h1>The Bebop <em>Lick</em></h1>
+    <p class="definition">
+      A short, specific melodic fragment — generally played over <strong>dominant 7th and minor 7th chords</strong> —
+      built from the bebop scale. Discovered and named by David Baker through analysis of transcribed solos.
+      Short enough to memorize instantly, portable across all twelve keys, and instantly recognizable once internalized.
+    </p>
+  </div>
+
+  <!-- DUAL CHORD CYCLE SELECTORS -->
+  <div class="cycle-selector-group">
+    <div class="control-group">
+      <div class="cycle-toggle">
+        <span class="cycle-label">Progression</span>
+        <button class="cycle-pill active" id="chromatic-cycle-btn" onclick="selectCycle('chromatic')" aria-label="Select chromatic cycle" aria-pressed="true">Chromatic</button>
+        <button class="cycle-pill" id="fourths-cycle-btn" onclick="selectCycle('fourths')" aria-label="Select cycle of fourths" aria-pressed="false">4ths</button>
+      </div>
+  <div class="cycle-description" id="cycle-desc">All 12 notes in chromatic order: C, D♭, D, E♭, E, F, G♭, G, A♭, A, B♭, B</div>
+    </div>
+  </div>
+
+  <!-- CONNECTION -->
+  <div class="connection-callout">
+    <div class="conn-step">
+      <div class="conn-badge scale">BS</div>
+      <div class="conn-label">Bebop<br>Scale</div>
+    </div>
+    <div class="conn-arrow">→</div>
+    <div class="conn-step">
+      <div class="conn-badge lick">BL</div>
+      <div class="conn-label">Bebop<br>Lick</div>
+    </div>
+    <div class="conn-arrow">→</div>
+    <div class="conn-step">
+      <div class="conn-badge general">HG</div>
+      <div class="conn-label">Harmonic<br>Generalization</div>
+    </div>
+    <div class="conn-desc">
+      The <strong>bebop lick</strong> crystallizes a specific fragment of the <strong>bebop scale</strong> into a
+      <em>fixed melodic phrase</em>. Unlike the scale itself, the lick is a finished piece of vocabulary — something
+      players memorize and internalize. It appears consistently on both ii–7 and V7 chords, which leads into
+      <strong>harmonic generalization</strong>: one idea spanning multiple harmonic contexts.
+    </div>
+  </div>
+
+  <!-- CONTROLS -->
+  <div class="controls-row">
+    <!-- Progression mode selector -->
+    <div class="control-group">
+      <div class="section-label">Practice mode</div>
+      <div style="display:flex; gap:8px; align-items:center;">
+        <button class="mode-pill active" onclick="setProgressionMode('chromatic')">Chromatic — all 12 keys</button>
+        <button class="mode-pill" onclick="setProgressionMode('cycle4')">Cycle of Fourths</button>
+      </div>
+    </div>
+
+    <!-- Chord root selector (chromatic) -->
+    <div class="control-group" id="chromatic-roots-group">
+      <div class="section-label">Chord root (chromatic)</div>
+      <div class="pill-row" id="root-pills"></div>
+    </div>
+
+    <!-- Cycle of fourths selector -->
+    <div class="control-group" id="cycle4-roots-group" style="display:none;">
+      <div class="section-label">Starting chord (cycle of fourths)</div>
+      <div class="pill-row" id="cycle4-pills"></div>
+    </div>
+
+    <!-- Chord type selector -->
+    <div class="chord-type-row">
+      <span class="label">Chord type:</span>
+      <button class="mode-pill active" onclick="setChordType('min7')">ii–7 (minor 7th) — Form B: 4-3-♭3-5-2-1</button>
+      <button class="mode-pill" onclick="setChordType('dom7')">V7 (dominant 7th) — Form A: 8-7-♭7-9-6-5</button>
+    </div>
+  </div>
+
+  <!-- LICK STAGE -->
+  <div class="section-label">The lick — notes &amp; function</div>
+  <div class="lick-stage">
+    <div class="chord-header">
+      <div class="chord-symbol-xl" id="chord-symbol">G<sup>–7</sup></div>
+      <div>
+        <div class="chord-type-label" id="chord-type-label">Minor seventh</div>
+        <div class="form-label" id="form-label">Form B — 4-3-♭3-5-2-1</div>
+      </div>
+    </div>
+    <div class="lick-row" id="lick-row"></div>
+    <div class="legend-row">
+      <div class="legend-item"><span class="legend-swatch chord-tone"></span>chord tone (1, 3, 5, ♭7)</div>
+      <div class="legend-item"><span class="legend-swatch bebop-note"></span>bebop passing note (major 3 or natural 7)</div>
+      <div class="legend-item"><span class="legend-swatch chromatic"></span>chromatic color tone (2, 4, 6, 9)</div>
+    </div>
+  </div>
+
+  <!-- ACTIONS -->
+  <div class="actions">
+    <button class="btn" id="play-btn" onclick="playLick()">▶ hear the lick</button>
+    <button class="btn btn-secondary" onclick="playCurrentChord()">▶ hear chord</button>
+    <button class="btn btn-secondary" onclick="playWithChord()">▶ with chord backing</button>
+    <button class="btn btn-secondary" id="play-progression-btn" onclick="toggleProgression()">▶ play through progression</button>
+    <div class="tempo-control">
+      <span>tempo</span>
+      <input type="range" id="tempo-slider" min="50" max="200" value="100" oninput="updateTempo(this.value)">
+      <span class="tempo-val" id="tempo-val">100</span>
+    </div>
+  </div>
+
+  <!-- INSIGHT -->
+  <div class="insight">
+    <div class="insight-label">Notice</div>
+    <div class="insight-text" id="insight-text">
+      The two forms define themselves by context: on the <strong>ii–7</strong>, start from the <strong>4th</strong>;
+      on the <strong>V7</strong>, start from the <strong>root</strong>. Each uses the bebop scale's built-in
+      passing tone (either the major 3rd or natural 7th) to create the seamless eighth-note flow that's pure bebop.
+    </div>
+  </div>
+
+  <!-- TRI-TONE SUBSTITUTION -->
+  <div class="tritone-card">
+    <div class="tritone-card-title">Advanced use — tri-tone substitution</div>
+    <div class="tritone-card-body">
+      Coker notes an elegant shortcut: play a bebop lick <strong>a tri-tone above</strong> the written V7 chord.
+      For example, over <code>G7</code>, play the lick rooted on <code>D♭7</code>. The lick notes don't change,
+      but you've now voiced the <strong>altered dominant</strong> (♭9, ♯9, ♭5, ♯5 extensions) without a single note swap.
+      One phrase, two harmonic readings — the economy of bebop language.
+    </div>
+  </div>
+
+  <!-- CONTEXT -->
+  <div class="context-block">
+    <div class="section-label">Coker's context</div>
+    <div class="context-grid">
+      <div class="context-card">
+        <div class="context-card-title">Not improvised — internalized</div>
+        <p>The bebop lick isn't something players invent in real time. It's a piece of memorized vocabulary, acquired
+        through listening and repetition. Coker emphasizes it's <em>"easily acquired, due to its brevity and simplicity,"</em>
+        but adds the crucial second step: <strong>learn to weave it into longer lines.</strong></p>
+        <p>The practice path: master the lick in isolation across all twelve keys on both ii–7 and V7. Then deliberately
+        surround it with non-lick material — learn to integrate it into eighth-note passages as the masters do.</p>
+      </div>
+      <div class="context-card">
+        <div class="context-card-title">Players to study</div>
+        <ul class="player-list">
+          <li><span class="player-name">Charlie Parker</span><span class="player-tune">"Au Privave" — the definitive form</span></li>
+          <li><span class="player-name">Cannonball Adderley</span><span class="player-tune">"Green Dolphin Street," "Straight No Chaser"</span></li>
+          <li><span class="player-name">Chet Baker</span><span class="player-tune">"Autumn Leaves" — lyrical trumpet setting</span></li>
+          <li><span class="player-name">Dizzy Gillespie</span><span class="player-tune">"Hot House" — the originator's version</span></li>
+          <li><span class="player-name">Clifford Brown</span><span class="player-tune">"Pent-Up House" — woven into the line</span></li>
+          <li><span class="player-name">Lee Morgan</span><span class="player-tune">"Speed Ball" — hard bop context</span></li>
+          <li><span class="player-name">McCoy Tyner</span><span class="player-tune">"Birdlike" — the lick on piano</span></li>
+          <li><span class="player-name">Phil Woods</span><span class="player-tune">"Airegin" — alto sax extended version</span></li>
+          <li><span class="player-name">Sonny Stitt</span><span class="player-tune">"By Accident" — tenor sax classic form</span></li>
+        </ul>
+      </div>
+    </div>
+  </div>
+
+  <div class="nav-strip" role="navigation" aria-label="Element navigation">
+    <a href="./05-bebop-scale.html" class="nav-item" aria-label="Go to previous element: Bebop Scale">
+      <span class="nav-label">Previous</span>
+      <span class="nav-name">Bebop Scale</span>
+    </a>
+    <div></div>
+  </div>
+</main>
+
+<script>
+// ─── DATA ──────────────────────────────────────────────────────────────
+const ROOTS = ['C','D♭','D','E♭','E','F','G♭','G','A♭','A','B♭','B'];
+const SEMIS = {
+  'C':0, 'C#':1, 'D♭':1, 'D':2, 'D#':3, 'E♭':3, 'E':4, 'F':5,
+  'F#':6, 'G♭':6, 'G':7, 'G#':8, 'A♭':8, 'A':9, 'A#':10, 'B♭':10, 'B':11
+};
+const NOTE_NAMES = ['C','D♭','D','E♭','E','F','F#','G','A♭','A','B♭','B'];
+function displayRootSpelling(noteName, originalRoot) {
+  return originalRoot === 'G♭' && noteName === 'F#' ? 'G♭' : noteName;
+}
+
+// ─── CHORD CYCLES ──────────────────────────────────────────────────────────
+const CHROMATIC = {
+  id: 'chromatic',
+  roots: ['C', 'D♭', 'D', 'E♭', 'E', 'F', 'G♭', 'G', 'A♭', 'A', 'B♭', 'B'],
+  description: 'All 12 notes in chromatic order: C, D♭, D, E♭, E, F, G♭, G, A♭, A, B♭, B'
+};
+
+const FOURTHS = {
+  id: 'fourths',
+  roots: ['C', 'F', 'B♭', 'E♭', 'A♭', 'D♭', 'G♭', 'B', 'E', 'A', 'D', 'G'],
+  description: 'Harmonic progression: C, F, B♭, E♭, A♭, D♭, G♭, B, E, A, D, G'
+};
+
+let selectedCycle = CHROMATIC;
+
+function selectCycle(cycleId) {
+  selectedCycle = cycleId === 'chromatic' ? CHROMATIC : FOURTHS;
+  document.getElementById('chromatic-cycle-btn').classList.toggle('active', cycleId === 'chromatic');
+  document.getElementById('chromatic-cycle-btn').setAttribute('aria-pressed', cycleId === 'chromatic');
+  document.getElementById('fourths-cycle-btn').classList.toggle('active', cycleId === 'fourths');
+  document.getElementById('fourths-cycle-btn').setAttribute('aria-pressed', cycleId === 'fourths');
+  document.getElementById('cycle-desc').textContent = selectedCycle.description;
+  window.ROOTS = selectedCycle.roots;
+  renderRootPills();
+  if (!selectedCycle.roots.includes(selectedRoot)) {
+    selectRoot('C');
+  }
+}
+
+function midiToHz(midi) { return 440 * Math.pow(2, (midi - 69) / 12); }
+function noteNameFromSemis(rootSemi, offset) {
+  return NOTE_NAMES[(rootSemi + offset + 120) % 12];
+}
+
+// ─── THE LICK FORMS ─────────────────────────────────────────────────────
+// Form A (dominant 7): 1, 7, ♭7, 9, 6, 5
+// Form B (minor 7): 4, 3, ♭3, 5, 2, 1
+
+const LICK_FORMS = {
+  dom7: [
+    // Form A — dominant 7: 8-7-♭7-9-6-5 = G-F#-F-A-E-D
+    // G(12) down to F#(11) down to F(10) UP to A(14) down to E(9) down to D(7)
+    [
+      { semi: 12, fn: '8',  kind: 'chord'  }, // G, octave/root
+      { semi: 11, fn: '7',  kind: 'bebop'  }, // F#, natural 7 (bebop passing tone)
+      { semi: 10, fn: '♭7', kind: 'chord'  }, // F, flat 7
+      { semi: 14, fn: '9',  kind: 'chrom'  }, // A, major 9 (major 3rd leap UP)
+      { semi: 9,  fn: '6',  kind: 'chord'  }, // E, major 6
+      { semi: 7,  fn: '5',  kind: 'chord'  }, // D, 5th
+    ],
+  ],
+  min7: [
+    // Form B — minor 7: 4, 3, ♭3, 5, 2, 1
+    [
+      { semi: 5,  fn: '4',  kind: 'chrom'  },
+      { semi: 4,  fn: '3',  kind: 'bebop'  }, // major 3 as passing tone
+      { semi: 3,  fn: '♭3', kind: 'chord'  },
+      { semi: 7,  fn: '5',  kind: 'chord'  },
+      { semi: 2,  fn: '2',  kind: 'chrom'  },
+      { semi: 0,  fn: '1',  kind: 'chord'  },
+    ],
+  ],
+};
+
+// ─── STATE ─────────────────────────────────────────────────────────────
+let selectedRoot = 'G';
+let chordType = 'min7';      // 'min7' | 'dom7'
+let progressionMode = 'chromatic'; // 'chromatic' | 'cycle4'
+let cycle4StartIdx = 0;      // index into the cycle of fourths
+let tempo = 100;
+let isPlaying = false;
+let audioCtx = null;
+let masterBus = null;
+
+// Cycle of fourths: descending by 4ths (ascending by 5ths)
+const CYCLE_OF_FOURTHS = ['C','F','B♭','E♭','A♭','D♭','G♭','B','E','A','D','G'];
+
+// ─── AUDIO ENGINE ──────────────────────────────────────────────────────
+function getAudioCtx() {
+  if (!audioCtx) {
+    audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+    const comp = audioCtx.createDynamicsCompressor();
+    comp.threshold.value = -18;
+    comp.knee.value = 10;
+    comp.ratio.value = 4;
+    comp.attack.value = 0.003;
+    comp.release.value = 0.15;
+    const masterGain = audioCtx.createGain();
+    masterGain.gain.value = 0.72;
+    comp.connect(masterGain);
+    masterGain.connect(audioCtx.destination);
+    masterBus = comp;
+  }
+  return audioCtx;
+}
+function getBus() { getAudioCtx(); return masterBus; }
+
+const VOICING_SHAPES = {
+  'maj7': { A:[4,7,11,14], B:[11,14,16,21] },
+  'dom7': { A:[4,7,10,14], B:[10,14,16,21] },
+  'min7': { A:[3,7,10,14], B:[10,14,15,19] },
+};
+function buildVoicing(rootName, quality, type='A') {
+  const shapes = VOICING_SHAPES[quality] || VOICING_SHAPES['dom7'];
+  const semis = shapes[type] || shapes['A'];
+  const root = SEMIS[rootName] ?? 0;
+  let rootMidi = 53 - semis[0];
+  rootMidi += (root - ((rootMidi % 12 + 12) % 12) + 12) % 12;
+  const low = rootMidi + semis[0];
+  if (low < 48) rootMidi += 12;
+  if (low > 62) rootMidi -= 12;
+  return semis.map(s => midiToHz(rootMidi + s));
+}
+function playJazzChord(rootName, quality, startTime, dur, ctx, type='A') {
+  const freqs = buildVoicing(rootName, quality, type);
+  freqs.forEach((freq, i) => {
+    const t = startTime + i * 0.018;
+    const isTop = i === freqs.length - 1;
+    playVoiceTone(freq, t, dur, ctx, isTop ? 0.16 : 0.10, isTop ? 'triangle' : 'sine');
+  });
+}
+function playVoiceTone(freq, startTime, dur, ctx, vol, type='sine') {
+  const osc = ctx.createOscillator();
+  const gain = ctx.createGain();
+  const filt = ctx.createBiquadFilter();
+  filt.type = 'lowpass'; filt.frequency.value = 2200; filt.Q.value = 0.4;
+  osc.connect(filt); filt.connect(gain); gain.connect(getBus());
+  osc.type = type;
+  osc.frequency.setValueAtTime(freq, startTime);
+  gain.gain.setValueAtTime(0, startTime);
+  gain.gain.linearRampToValueAtTime(vol, startTime + 0.04);
+  gain.gain.setValueAtTime(vol * 0.85, startTime + dur * 0.3);
+  gain.gain.linearRampToValueAtTime(vol * 0.5, startTime + dur * 0.7);
+  gain.gain.linearRampToValueAtTime(0, startTime + dur + 0.1);
+  osc.start(startTime); osc.stop(startTime + dur + 0.2);
+}
+
+function playTone(freq, startTime, dur, ctx, vol = 0.5, type = 'triangle') {
+  const osc = ctx.createOscillator();
+  const gain = ctx.createGain();
+  const filt = ctx.createBiquadFilter();
+  filt.type = 'lowpass'; filt.frequency.value = 2600; filt.Q.value = 0.5;
+  osc.connect(filt); filt.connect(gain); gain.connect(getBus());
+  osc.type = type;
+  osc.frequency.setValueAtTime(freq, startTime);
+  gain.gain.setValueAtTime(0, startTime);
+  gain.gain.linearRampToValueAtTime(vol, startTime + 0.02);
+  gain.gain.setValueAtTime(vol, startTime + dur * 0.6);
+  gain.gain.linearRampToValueAtTime(0, startTime + dur);
+  osc.start(startTime); osc.stop(startTime + dur + 0.05);
+}
+
+function playCurrentChord() {
+  const ctx = getAudioCtx();
+  if (ctx.state === 'suspended') ctx.resume();
+  playJazzChord(selectedRoot, chordType, ctx.currentTime, 1.45, ctx, 'A');
+}
+
+function playBass(freq, startTime, dur, ctx) {
+  const osc = ctx.createOscillator();
+  const gain = ctx.createGain();
+  const filt = ctx.createBiquadFilter();
+  filt.type = 'lowpass'; filt.frequency.value = 340;
+  osc.connect(filt); filt.connect(gain); gain.connect(getBus());
+  osc.type = 'sine'; osc.frequency.value = freq / 2;
+  gain.gain.setValueAtTime(0, startTime);
+  gain.gain.linearRampToValueAtTime(0.28, startTime + 0.04);
+  gain.gain.setValueAtTime(0.28, startTime + dur * 0.5);
+  gain.gain.linearRampToValueAtTime(0, startTime + dur);
+  osc.start(startTime); osc.stop(startTime + dur + 0.05);
+}
+
+// ─── LICK TO FREQUENCIES ────────────────────────────────────────────────
+function getCurrentLick() {
+  return LICK_FORMS[chordType][0];  // Only one form per chord type now
+}
+
+function getLickFreqs() {
+  const rootSemi = SEMIS[selectedRoot];
+  const lick = getCurrentLick();
+  const rootMidi = 60 + rootSemi;
+  let r = rootMidi;
+  if (rootSemi >= 6) r -= 12;
+  return lick.map(n => midiToHz(r + n.semi));
+}
+
+// ─── RENDERING ─────────────────────────────────────────────────────────
+function renderRootPills() {
+  document.getElementById('root-pills').innerHTML = selectedCycle.roots.map(r =>
+    `<button class="pill ${r === selectedRoot ? 'active' : ''}" onclick="selectRoot('${r}')">${r}</button>`
+  ).join('');
+}
+
+function renderCycle4Pills() {
+  const el = document.getElementById('cycle4-pills');
+  if (el) {
+    el.innerHTML = CYCLE_OF_FOURTHS.map((r, idx) =>
+      `<button class="pill ${idx === cycle4StartIdx ? 'active' : ''}" onclick="selectCycle4Start(${idx})">${r}</button>`
+    ).join('');
+  }
+}
+
+function renderChordHeader() {
+  const sym = selectedRoot.replace('♭','<span style="font-size:0.65em">♭</span>').replace('#','<span style="font-size:0.65em">♯</span>');
+  const suffix = chordType === 'min7' ? `<sup>–7</sup>` : `<sup>7</sup>`;
+  const formLabel = chordType === 'min7' ? 'Form B — 4-3-♭3-5-2-1' : 'Form A — 8-7-♭7-9-6-5';
+  const typeLabel = chordType === 'min7' ? 'Minor seventh' : 'Dominant seventh';
+  document.getElementById('chord-symbol').innerHTML = sym + suffix;
+  document.getElementById('chord-type-label').textContent = typeLabel;
+  document.getElementById('form-label').textContent = formLabel;
+}
+
+function renderLickRow() {
+  const rootSemi = SEMIS[selectedRoot];
+  if (rootSemi === undefined) {
+    console.warn('renderLickRow: selectedRoot is invalid:', selectedRoot);
+    return;
+  }
+  const lick = getCurrentLick();
+  const html = lick.map((n, i) => {
+    const noteIdx = (rootSemi + n.semi + 120) % 12;
+    const name = displayRootSpelling(NOTE_NAMES[noteIdx], selectedRoot);
+    const kindCls = n.kind === 'chord' ? 'chord-tone'
+                  : n.kind === 'bebop' ? 'bebop-note'
+                  : 'chromatic';
+    return `
+      <div class="lick-note" data-idx="${i}">
+        <div class="note-pip ${kindCls}" id="pip-${i}">${name}</div>
+        <div class="note-fn">${n.fn}</div>
+      </div>
+    `;
+  }).join('');
+  document.getElementById('lick-row').innerHTML = html;
+}
+
+// ─── PLAYBACK ──────────────────────────────────────────────────────────
+function sleep(ms) { return new Promise(r => setTimeout(r, ms)); }
+
+function clearHighlights() {
+  document.querySelectorAll('.note-pip').forEach(p => p.classList.remove('playing'));
+  document.querySelectorAll('.lick-note').forEach(p => p.classList.remove('playing'));
+  document.querySelectorAll('.line-token').forEach(p => p.classList.remove('playing'));
+}
+
+async function playLick() {
+  if (isPlaying) return;
+  isPlaying = true;
+  clearHighlights();
+
+  // Ensure rendering is up to date
+  renderLickRow();
+
+  const ctx = getAudioCtx();
+  const freqs = getLickFreqs();
+  const lick = getCurrentLick();
+
+  for (let i = 0; i < freqs.length && isPlaying; i++) {
+    // Recalculate tempo on each iteration for real-time changes
+    const beat = 60 / tempo;
+    const noteDur = beat * 0.5;
+    
+    const pip = document.getElementById(`pip-${i}`);
+    if (!pip) continue; // Skip if element doesn't exist
+    const noteEl = pip.parentElement;
+    pip.classList.add('playing');
+    if (noteEl) noteEl.classList.add('playing');
+
+    const isLast = i === freqs.length - 1;
+    const thisDur = isLast ? noteDur * 2 : noteDur;
+    playTone(freqs[i], ctx.currentTime, thisDur * 1.1, ctx, 0.42);
+    
+    // Sleep in small chunks to allow tempo changes to take effect
+    const sleepEnd = Date.now() + (thisDur * 1000);
+    while (Date.now() < sleepEnd && isPlaying) {
+      await sleep(Math.min(50, Math.max(0, sleepEnd - Date.now())));
+    }
+
+    pip.classList.remove('playing');
+    if (noteEl) noteEl.classList.remove('playing');
+  }
+
+  isPlaying = false;
+}
+
+async function playWithChord() {
+  if (isPlaying) return;
+  isPlaying = true;
+  clearHighlights();
+
+  // Ensure rendering is up to date
+  renderLickRow();
+
+  const ctx = getAudioCtx();
+  const freqs = getLickFreqs();
+
+  // Calculate initial chord/bass duration (will be updated with tempo)
+  let beat = 60 / tempo;
+  let noteDur = beat * 0.5;
+  let totalDur = noteDur * (freqs.length - 1) + noteDur * 2;
+  
+  // Start chord and bass (note: these won't respond to tempo changes mid-playback)
+  const rootFreq = midiToHz(60 + SEMIS[selectedRoot] - (SEMIS[selectedRoot] >= 6 ? 12 : 0));
+  playJazzChord(selectedRoot, chordType, ctx.currentTime, totalDur, ctx, 'A');
+  playBass(rootFreq, ctx.currentTime, totalDur, ctx);
+
+  for (let i = 0; i < freqs.length && isPlaying; i++) {
+    // Recalculate tempo on each iteration for real-time changes
+    beat = 60 / tempo;
+    noteDur = beat * 0.5;
+    
+    const pip = document.getElementById(`pip-${i}`);
+    if (!pip) continue; // Skip if element doesn't exist
+    const noteEl = pip.parentElement;
+    pip.classList.add('playing');
+    if (noteEl) noteEl.classList.add('playing');
+
+    const isLast = i === freqs.length - 1;
+    const thisDur = isLast ? noteDur * 2 : noteDur;
+    playTone(freqs[i], ctx.currentTime, thisDur * 1.1, ctx, 0.42);
+    
+    // Sleep in small chunks to allow tempo changes to take effect
+    const sleepEnd = Date.now() + (thisDur * 1000);
+    while (Date.now() < sleepEnd && isPlaying) {
+      await sleep(Math.min(50, Math.max(0, sleepEnd - Date.now())));
+    }
+
+    pip.classList.remove('playing');
+    if (noteEl) noteEl.classList.remove('playing');
+  }
+
+  isPlaying = false;
+}
+
+async function playProgression() {
+  if (isPlaying) return;
+  isPlaying = true;
+  updateProgressionButton();
+
+  const progression = progressionMode === 'cycle4' 
+    ? CYCLE_OF_FOURTHS.slice(cycle4StartIdx).concat(CYCLE_OF_FOURTHS.slice(0, cycle4StartIdx))
+    : ROOTS;
+
+  for (let i = 0; i < progression.length; i++) {
+    if (!isPlaying) break; // Exit if stopped
+    selectRoot(progression[i]);
+    await playLickWithChordQuick();
+  }
+  isPlaying = false;
+  updateProgressionButton();
+}
+
+function toggleProgression() {
+  if (isPlaying) {
+    isPlaying = false;
+    updateProgressionButton();
+  } else {
+    playProgression();
+  }
+}
+
+async function playLickWithChordQuick() {
+  const ctx = getAudioCtx();
+  const freqs = getLickFreqs();
+  
+  let noteIndex = 0;
+  
+  while (noteIndex < freqs.length && isPlaying) {
+    // Recalculate beat/tempo on each note iteration for real-time changes
+    const beat = 60 / tempo;
+    const noteDur = beat * 0.5;
+    
+    // On first note, start chord and bass
+    if (noteIndex === 0) {
+      const lickDur = noteDur * (freqs.length - 1) + noteDur * 2;
+      const totalDur = lickDur + 0.3;
+      const startTime = ctx.currentTime;
+      
+      playJazzChord(selectedRoot, chordType, startTime, totalDur, ctx, 'A');
+      const rootSemi = SEMIS[selectedRoot];
+      const rootMidi = 60 + rootSemi - (rootSemi >= 6 ? 12 : 0);
+      const bassFreq = midiToHz(rootMidi);
+      playBass(bassFreq, startTime, totalDur, ctx);
+    }
+    
+    // Play the note
+    const pip = document.getElementById(`pip-${noteIndex}`);
+    if (pip) {
+      pip.classList.add('playing');
+      const noteEl = pip.parentElement;
+      if (noteEl) noteEl.classList.add('playing');
+    }
+    
+    const isLast = noteIndex === freqs.length - 1;
+    const thisDur = isLast ? noteDur * 2 : noteDur;
+    playTone(freqs[noteIndex], ctx.currentTime, thisDur * 1.05, ctx, 0.4);
+    
+    // Sleep for the calculated duration, checking tempo changes every 50ms
+    const sleepEnd = Date.now() + (noteDur * 1000);
+    while (Date.now() < sleepEnd && isPlaying) {
+      await sleep(Math.min(50, Math.max(0, sleepEnd - Date.now())));
+    }
+    
+    if (pip) {
+      pip.classList.remove('playing');
+      const noteEl = pip.parentElement;
+      if (noteEl) noteEl.classList.remove('playing');
+    }
+    
+    noteIndex++;
+  }
+  
+  // Wait for chord sustain to finish
+  await sleep(300);
+}
+
+async function playLickQuick() {
+  const ctx = getAudioCtx();
+  const beat = 60 / tempo;
+  const noteDur = beat * 0.5;
+  const freqs = getLickFreqs();
+  for (let i = 0; i < freqs.length; i++) {
+    const pip = document.getElementById(`pip-${i}`);
+    pip.classList.add('playing');
+    playTone(freqs[i], ctx.currentTime, noteDur * 1.05, ctx, 0.4);
+    await sleep(noteDur * 1000);
+    pip.classList.remove('playing');
+  }
+}
+
+// ─── ACTIONS ───────────────────────────────────────────────────────────
+function selectRoot(r) {
+  selectedRoot = r;
+  renderRootPills();
+  renderChordHeader();
+  renderLickRow();
+}
+
+function selectCycle4Start(idx) {
+  cycle4StartIdx = idx;
+  selectedRoot = CYCLE_OF_FOURTHS[idx];
+  renderCycle4Pills();
+  renderChordHeader();
+  renderLickRow();
+}
+
+function setProgressionMode(mode) {
+  isPlaying = false; // Stop any ongoing playback when switching modes
+  progressionMode = mode;
+  // Toggle the mode buttons
+  const modeGroup = document.querySelector('.control-group');
+  if (modeGroup) {
+    const modeBtns = modeGroup.querySelectorAll('button');
+    modeBtns.forEach((btn, idx) => {
+      btn.classList.toggle('active', (idx === 0 && mode === 'chromatic') || (idx === 1 && mode === 'cycle4'));
+    });
+  }
+  // Show/hide appropriate root selector
+  const chromaticGroup = document.getElementById('chromatic-roots-group');
+  const cycle4Group = document.getElementById('cycle4-roots-group');
+  if (chromaticGroup) chromaticGroup.style.display = mode === 'chromatic' ? 'block' : 'none';
+  if (cycle4Group) cycle4Group.style.display = mode === 'cycle4' ? 'block' : 'none';
+  
+  // Update button text based on mode
+  updateProgressionButton();
+}
+
+function updateProgressionButton() {
+  const btn = document.getElementById('play-progression-btn');
+  if (btn) {
+    if (progressionMode === 'chromatic') {
+      btn.textContent = '↻ cycle all 12 keys';
+    } else {
+      btn.textContent = isPlaying ? '⏹ stop' : '▶ play through progression';
+    }
+  }
+}
+
+function setChordType(t) {
+  chordType = t;
+  document.querySelectorAll('.chord-type-row .mode-pill').forEach(el => el.classList.remove('active'));
+  const idx = t === 'min7' ? 0 : 1;
+  document.querySelectorAll('.chord-type-row .mode-pill')[idx].classList.add('active');
+  renderChordHeader();
+  renderLickRow();
+}
+
+function updateTempo(v) {
+  tempo = parseInt(v);
+  document.getElementById('tempo-val').textContent = v;
+}
+
+// ─── INIT ──────────────────────────────────────────────────────────────
+function init() {
+  renderRootPills();
+  renderCycle4Pills();
+  renderChordHeader();
+  renderLickRow();
+  
+  // Set up mode toggle buttons
+  const modeGroup = document.querySelector('.control-group');
+  if (modeGroup) {
+    const modeBtns = modeGroup.querySelectorAll('button');
+    if (modeBtns.length > 0) {
+      modeBtns[0].classList.add('active'); // chromatic starts active
+    }
+  }
+}
+init();
+</script>
+</body>
+</html>
