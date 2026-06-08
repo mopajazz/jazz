@@ -250,4 +250,127 @@
     </section>
 
     <section class="question-card">
-      <div class="question-kicker">Classroom fit
+      <div class="question-kicker">Classroom fit</div>
+      <h2>Would this be useful in a lesson, ensemble, theory class, or practice routine?</h2>
+      <textarea name="teaching_fit" placeholder="Where would it fit? What would you assign? What would you change before using it with students?"></textarea>
+      <div class="form-actions">
+        <button class="btn btn-secondary" type="button" data-prev>Back</button>
+        <span class="step-count">Question 7 of 9</span>
+        <button class="btn btn-primary" type="button" data-next>Next</button>
+      </div>
+    </section>
+
+    <section class="question-card">
+      <div class="question-kicker">Phase 2 priorities</div>
+      <h2>What should we build or improve next?</h2>
+      <div class="answer-grid two">
+        <label class="choice"><input type="checkbox" name="priorities[]" value="More devices"> More Coker devices</label>
+        <label class="choice"><input type="checkbox" name="priorities[]" value="Better audio"> Better audio and voicings</label>
+        <label class="choice"><input type="checkbox" name="priorities[]" value="Notation"> Staff notation or lead-sheet view</label>
+        <label class="choice"><input type="checkbox" name="priorities[]" value="Assignments"> Teacher assignment tools</label>
+        <label class="choice"><input type="checkbox" name="priorities[]" value="Progress tracking"> Student progress tracking</label>
+        <label class="choice"><input type="checkbox" name="priorities[]" value="Mobile polish"> Mobile practice polish</label>
+      </div>
+      <div class="form-actions">
+        <button class="btn btn-secondary" type="button" data-prev>Back</button>
+        <span class="step-count">Question 8 of 9</span>
+        <button class="btn btn-primary" type="button" data-next>Next</button>
+      </div>
+    </section>
+
+    <section class="question-card">
+      <div class="question-kicker">Follow up</div>
+      <h2>Where should we send follow-up questions?</h2>
+      <div class="answer-grid">
+        <input type="text" name="name" autocomplete="name" placeholder="Name">
+        <input type="email" name="email" autocomplete="email" placeholder="Email">
+        <textarea name="final_note" placeholder="Anything else we should know?"></textarea>
+      </div>
+      <div class="form-actions">
+        <button class="btn btn-secondary" type="button" data-prev>Back</button>
+        <span class="step-count">Question 9 of 9</span>
+        <button class="btn btn-primary" type="submit">Send responses</button>
+      </div>
+    </section>
+  </form>
+</main>
+
+<footer class="lesson-footer">
+  <p>Jazz Interactive · All content is provided for educational purposes only.</p>
+</footer>
+
+<script>
+const cards = [...document.querySelectorAll('.question-card')];
+let current = 0;
+
+function showCard(index) {
+  current = Math.max(0, Math.min(index, cards.length - 1));
+  cards.forEach((card, i) => card.classList.toggle('active', i === current));
+  cards[current].querySelector('input, textarea, button')?.focus({ preventScroll: true });
+  window.scrollTo({ top: 0, behavior: 'smooth' });
+}
+
+document.querySelectorAll('[data-next]').forEach(btn => {
+  btn.addEventListener('click', () => showCard(current + 1));
+});
+
+document.querySelectorAll('[data-prev]').forEach(btn => {
+  btn.addEventListener('click', () => showCard(current - 1));
+});
+
+document.getElementById('beta-form').addEventListener('submit', event => {
+  event.preventDefault();
+  const form = event.currentTarget;
+  const submitButton = form.querySelector('button[type="submit"]');
+  
+  if (submitButton) {
+    submitButton.disabled = true;
+    submitButton.textContent = "Sending...";
+  }
+
+  const formData = new FormData(form);
+
+  fetch("https://api.web3forms.com/submit", {
+    method: "POST",
+    body: formData
+  })
+  .then(async (response) => {
+    let json = await response.json();
+    if (response.status === 200) {
+      const finalCard = cards[cards.length - 1];
+      finalCard.innerHTML = `
+        <div style="text-align: center; padding: 2rem 0; display: grid; gap: 1rem;">
+          <div class="question-kicker">Success</div>
+          <h2 style="font-size: clamp(2.2rem, 6vw, 4.5rem); margin: 0;">Thank You!</h2>
+          <p style="margin: 0 auto; max-width: 50ch;">
+            Your responses have been successfully compiled. We appreciate your valuable insights in helping shape Phase 2 of Jazz Interactive.
+          </p>
+          <div style="margin-top: 1.5rem;">
+            <a href="./index.html" class="btn btn-primary" style="text-decoration: none; display: inline-block;">
+              Return to Homepage
+            </a>
+          </div>
+        </div>
+      `;
+      window.scrollTo({ top: 0, behavior: 'smooth' });
+    } else {
+      alert(json.message || "Something went wrong. Please check your submission settings and try again.");
+      if (submitButton) {
+        submitButton.disabled = false;
+        submitButton.textContent = "Send responses";
+      }
+    }
+  })
+  .catch(error => {
+    console.error(error);
+    alert("Network error. Please check your connection and try again.");
+    if (submitButton) {
+      submitButton.disabled = false;
+      submitButton.textContent = "Send responses";
+    }
+  });
+});
+</script>
+  <script src="./dark-mode.js"></script>
+</body>
+</html>
