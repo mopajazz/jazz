@@ -109,11 +109,15 @@ function ItalicTitle({ title, word, className }) {
 function TopNav({ onHome, dark, onToggleDark, compact }) {
   const [menuOpen, setMenuOpen] = useState(false);
   const items = [
-    { label: "Explore Devices", href: "#" },
+    { label: "Explore Devices", href: "index.html#modules" },
     { label: "Beginner Pathway", active: true, onClick: onHome },
-    { label: "Looping Changes", href: "#" },
-    { label: "About", href: "#" },
+    { label: "Looping Changes", href: "07-practice-tools.html" },
+    { label: "About", href: "index.html#about" },
   ];
+  const go = (it) => {
+    if (it.onClick) it.onClick();
+    else if (it.href) window.location.href = it.href;
+  };
   return (
     <header className="nav">
       <div className="nav-inner">
@@ -126,7 +130,7 @@ function TopNav({ onHome, dark, onToggleDark, compact }) {
             <button
               key={it.label}
               className={"nav-link" + (it.active ? " is-active" : "")}
-              onClick={it.onClick || (() => {})}
+              onClick={() => go(it)}
             >
               {it.label}
               {it.active && <span className="nav-link-dot" />}
@@ -146,7 +150,7 @@ function TopNav({ onHome, dark, onToggleDark, compact }) {
         <div className="nav-mobile">
           {items.map((it) => (
             <button key={it.label} className={"nav-mobile-link" + (it.active ? " is-active" : "")}
-              onClick={() => { setMenuOpen(false); (it.onClick || (() => {}))(); }}>
+              onClick={() => { setMenuOpen(false); go(it); }}>
               {it.label}
             </button>
           ))}
