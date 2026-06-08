@@ -34,70 +34,6 @@
     --radius: 4px;
   }
 
-  [data-theme="dark"] {
-    --ink: #f0ebe0;
-    --ink-2: #b8b0a0;
-    --ink-3: #7a7268;
-    --paper: #1a1814;
-    --paper-2: #242018;
-    --paper-3: #302c24;
-    --gold: #e8a83a;
-    --blue: #6a8fd8;
-  }
-
-  /* ═══ DARK MODE TOGGLE ═══ */
-  .theme-toggle {
-    display: flex;
-    align-items: center;
-    gap: 0.5rem;
-    margin-left: auto;
-  }
-  .theme-toggle-label {
-    font-size: 0.72rem;
-    letter-spacing: 0.1em;
-    text-transform: uppercase;
-    color: var(--ink-2);
-    font-weight: 500;
-    user-select: none;
-  }
-  .toggle-switch {
-    position: relative;
-    width: 40px;
-    height: 22px;
-    flex-shrink: 0;
-  }
-  .toggle-switch input {
-    opacity: 0;
-    width: 0;
-    height: 0;
-    position: absolute;
-  }
-  .toggle-track {
-    position: absolute;
-    inset: 0;
-    background: var(--paper-3);
-    border-radius: 22px;
-    cursor: pointer;
-    transition: background 0.2s;
-  }
-  .toggle-switch input:checked + .toggle-track { background: var(--gold); }
-  .toggle-track::after {
-    content: '';
-    position: absolute;
-    width: 16px;
-    height: 16px;
-    border-radius: 50%;
-    background: var(--paper);
-    top: 3px;
-    left: 3px;
-    transition: transform 0.2s;
-  }
-  .toggle-switch input:checked + .toggle-track::after { transform: translateX(18px); }
-  .toggle-switch input:focus-visible + .toggle-track {
-    outline: 3px solid var(--blue);
-    outline-offset: 2px;
-  }
-
   html { scroll-behavior: smooth; }
 
   body {
@@ -752,7 +688,7 @@
     position: sticky;
     top: 0;
     z-index: 100;
-    background: color-mix(in srgb, var(--paper) 92%, transparent);
+    background: rgba(245, 240, 232, 0.92);
     backdrop-filter: blur(14px);
   }
   main { width: min(100%, 72rem); }
@@ -829,13 +765,6 @@
     <div class="dot" aria-label="Element 3 not started"></div>
     <div class="dot" aria-label="Element 4 not started"></div>
     <div class="dot" aria-label="Element 5 not started"></div>
-  </div>
-  <div class="theme-toggle">
-    <span class="theme-toggle-label" aria-hidden="true">Dark</span>
-    <label class="toggle-switch">
-      <input type="checkbox" id="theme-toggle" aria-label="Toggle dark mode" role="switch">
-      <span class="toggle-track"></span>
-    </label>
   </div>
 </header>
 
@@ -945,7 +874,7 @@ All 12 notes in chromatic order: C, D♭, D, E♭, E, F, G♭, G, A♭, A, B♭,
 
   <!-- CONTEXT -->
   <div class="context-block">
-    <h2 class="section-label">In Practice</h2>
+    <h2 class="section-label">Coker's Context</h2>
     <div class="context-grid">
       <div class="context-card">
         <div class="context-card-title">Five Functions</div>
@@ -973,17 +902,6 @@ All 12 notes in chromatic order: C, D♭, D, E♭, E, F, G♭, G, A♭, A, B♭,
         <p>A change-running phrase doesn't have to start on the root. It can skip tones. It can move ascending or descending or both. By practicing this, you'll internalize the chord in your body and ear.</p>
       </div>
     </div>
-  </div>
-
-  <!-- PRACTICE CTA -->
-  <div style="margin-top: 2.5rem; padding: 1.5rem 2rem; background: var(--paper-2); border: 1px solid var(--paper-3); border-left: 3px solid var(--gold); border-radius: var(--radius); display: flex; align-items: center; justify-content: space-between; gap: 1rem; flex-wrap: wrap;">
-    <div>
-      <div style="font-size: 0.72rem; font-weight: 600; letter-spacing: 0.12em; text-transform: uppercase; color: var(--ink-2); margin-bottom: 0.25rem;">Ready to apply it?</div>
-      <div style="font-size: 1rem; color: var(--ink); line-height: 1.5;">Practice change-running over 2-5-1 progressions in all 12 keys.</div>
-    </div>
-    <a href="./07-practice-tools.html" style="display: inline-block; padding: 10px 20px; background: var(--ink); color: var(--paper); font-family: 'DM Mono', monospace; font-size: 1rem; font-weight: 500; letter-spacing: 0.04em; border-radius: var(--radius); text-decoration: none; white-space: nowrap; transition: background 0.2s;" onmouseover="this.style.background='var(--gold)';this.style.color='var(--ink)'" onmouseout="this.style.background='var(--ink)';this.style.color='var(--paper)'">
-      Go to Practice Tools →
-    </a>
   </div>
 
   <!-- NAV -->
@@ -1425,16 +1343,6 @@ function init() {
 }
 
 init();
-</script>
-<script>
-  const toggle = document.getElementById('theme-toggle');
-  const root = document.documentElement;
-  const saved = localStorage.getItem('ji-theme');
-  if (saved === 'dark') { root.setAttribute('data-theme', 'dark'); toggle.checked = true; }
-  toggle.addEventListener('change', () => {
-    if (toggle.checked) { root.setAttribute('data-theme', 'dark'); localStorage.setItem('ji-theme', 'dark'); }
-    else { root.removeAttribute('data-theme'); localStorage.setItem('ji-theme', 'light'); }
-  });
 </script>
 </body>
 </html>
