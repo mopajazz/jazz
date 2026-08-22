@@ -1,834 +1,554 @@
-<!DOCTYPE html><html lang="en"><head>
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="description" content="Jazz Interactive: Learn the language of jazz through interactive lessons based on Jerry Coker's Elements of the Jazz Language. Master the devices used by every great improviser.">
+<meta name="theme-color" content="#f5f0e8">
+<meta property="og:type" content="website">
+<meta property="og:title" content="Jazz Interactive - Learn the Language of Jazz">
+<meta property="og:description" content="Interactive jazz lessons inspired by Jerry Coker's Elements of the Jazz Language.">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="Jazz Interactive - Learn the Language of Jazz">
+<meta name="twitter:description" content="Interactive jazz lessons inspired by Jerry Coker's Elements of the Jazz Language.">
+<title>Jazz Interactive - Learn the Language of Jazz</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Spectral:ital,wght@0,400;0,500;0,600;0,700;1,500;1,600&family=DM+Sans:ital,opsz,wght@0,9..40,400;0,9..40,500;0,9..40,600;0,9..40,700&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+  * { box-sizing: border-box; margin: 0; padding: 0; }
 
+  :root {
+    --bg-primary: #f5f0e8;
+    --bg-secondary: #efe7d8;
+    --surface: #fbf8f2;
+    --text-primary: #221d16;
+    --text-secondary: #6b6356;
+    --text-tertiary: #8c8475;
+    --border-color: #ddd2bd;
+    --border-color-2: #d6cab2;
+    --accent-warm: #b1481e;
+    --accent-warm-soft: #f1ddd0;
+    --accent-cool: #2f6f62;
+    --accent-cool-soft: #d9e8e2;
+    --accent-blue: #1b4965;
+    --on-accent: #ffffff;
+    --shadow: 0 1px 2px rgba(40,30,15,.05), 0 8px 24px -12px rgba(60,45,20,.22);
+    --shadow-lg: 0 2px 8px rgba(40,30,15,.08), 0 30px 60px -24px rgba(60,45,20,.32);
+    --serif: "Spectral", Georgia, serif;
+    --sans: "DM Sans", system-ui, -apple-system, sans-serif;
+    --mono: "DM Mono", ui-monospace, "SF Mono", monospace;
+    --maxw: 1160px;
+    --focus-ring: 3px solid var(--accent-blue);
+  }
 
+  @media (prefers-color-scheme: dark) {
+    :root:not([data-theme="light"]) {
+      --bg-primary: #1a1714;
+      --bg-secondary: #2a241a;
+      --surface: #221d16;
+      --text-primary: #f5f0e8;
+      --text-secondary: #d0c8b8;
+      --text-tertiary: #a89f90;
+      --border-color: #3d3628;
+      --border-color-2: #4a4030;
+      --accent-warm: #d9764a;
+      --accent-warm-soft: #3a261b;
+      --accent-cool: #5fb3a0;
+      --accent-cool-soft: #1f322d;
+      --accent-blue: #5b94c9;
+      --on-accent: #1a120c;
+      --shadow: 0 1px 2px rgba(0,0,0,.35), 0 8px 24px -12px rgba(0,0,0,.55);
+      --shadow-lg: 0 2px 8px rgba(0,0,0,.45), 0 30px 60px -24px rgba(0,0,0,.75);
+    }
+  }
+  :root[data-theme="dark"] {
+    --bg-primary: #1a1714;
+    --bg-secondary: #2a241a;
+    --surface: #221d16;
+    --text-primary: #f5f0e8;
+    --text-secondary: #d0c8b8;
+    --text-tertiary: #a89f90;
+    --border-color: #3d3628;
+    --border-color-2: #4a4030;
+    --accent-warm: #d9764a;
+    --accent-warm-soft: #3a261b;
+    --accent-cool: #5fb3a0;
+    --accent-cool-soft: #1f322d;
+    --accent-blue: #5b94c9;
+    --on-accent: #1a120c;
+    --shadow: 0 1px 2px rgba(0,0,0,.35), 0 8px 24px -12px rgba(0,0,0,.55);
+    --shadow-lg: 0 2px 8px rgba(0,0,0,.45), 0 30px 60px -24px rgba(0,0,0,.75);
+  }
 
+  html { scroll-behavior: smooth; scroll-padding-top: 4.75rem; }
+  body {
+    font-family: var(--sans);
+    background: var(--bg-primary);
+    color: var(--text-primary);
+    line-height: 1.6;
+    -webkit-font-smoothing: antialiased;
+    text-rendering: optimizeLegibility;
+  }
+  h1, h2, h3 { text-wrap: balance; font-family: var(--serif); }
+  p { text-wrap: pretty; }
+  em { font-style: italic; color: var(--accent-warm); }
+  a { color: inherit; }
 
+  @media (prefers-reduced-motion: reduce) {
+    * { animation-duration: .01ms !important; animation-iteration-count: 1 !important; transition-duration: .01ms !important; }
+    html { scroll-behavior: auto; }
+  }
 
+  .skip-link {
+    position: absolute; top: -48px; left: 0; z-index: 1000;
+    background: var(--accent-blue); color: #fff;
+    padding: 10px 18px; text-decoration: none; font-weight: 600; font-size: .95rem;
+  }
+  .skip-link:focus { top: 0; }
 
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <meta name="description" content="Jazz Interactive: Learn the language of jazz through interactive lessons based on Jerry Coker's Elements of the Jazz Language. Master the 18 devices used by every great improviser.">
-  <meta name="theme-color" content="#f5f0e8">
-  <meta property="og:type" content="website">
-  <meta property="og:title" content="Jazz Interactive - Learn the Language of Jazz">
-  <meta property="og:description" content="Interactive jazz lessons inspired by Jerry Coker's Elements of the Jazz Language.">
-  <meta name="twitter:card" content="summary">
-  <meta name="twitter:title" content="Jazz Interactive - Learn the Language of Jazz">
-  <meta name="twitter:description" content="Interactive jazz lessons inspired by Jerry Coker's Elements of the Jazz Language.">
-  <title>Jazz Interactive - Learn the Language of Jazz</title>
-  <link rel="preconnect" href="https://fonts.googleapis.com">
-  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin="">
-  <link href="https://fonts.googleapis.com/css2?family=DM+Mono:ital,wght@0,300;0,400;0,500;1,300;1,400&amp;family=Playfair+Display:ital,wght@0,400;0,700;1,400;1,700&amp;display=swap" rel="stylesheet">
-  <style>
-    * { margin: 0; padding: 0; box-sizing: border-box; }
-    
-    :root {
-      --ink: #1a1814;
-      --ink-2: #4a4640;
-      --ink-3: #8a8480;
-      --paper: #f5f0e8;
-      --paper-2: #ede8dc;
-      --paper-3: #ddd8cc;
-      --gold: #c8922a;
-      --blue: #2a4a8a;
-      --red: #8a2a2a;
-      --green: #2a6a3a;
-      --focus-outline: 3px solid var(--blue);
-      --focus-offset: 2px;
-    }
+  *:focus-visible { outline: var(--focus-ring); outline-offset: 2px; }
 
-    /* Skip to main content link (visually hidden but available to screen readers) */
-    .skip-link {
-      position: absolute;
-      top: -40px;
-      left: 0;
-      background: var(--blue);
-      color: var(--paper);
-      padding: 8px 16px;
-      text-decoration: none;
-      z-index: 1000;
-      font-size: 1rem;
-      font-weight: 500;
-    }
-    .skip-link:focus { top: 0; }
+  .wrap { max-width: var(--maxw); margin: 0 auto; padding: 0 20px; }
 
-    html { scroll-behavior: smooth; }
-    body {
-      font-family: 'DM Mono', monospace;
-      background: var(--paper);
-      color: var(--ink);
-      line-height: 1.6;
-    }
+  /* ── Header ─────────────────────────────────────────── */
+  .site-header {
+    position: sticky; top: 0; z-index: 100;
+    background: color-mix(in srgb, var(--bg-primary) 88%, transparent);
+    backdrop-filter: blur(14px);
+    border-bottom: 1px solid var(--border-color);
+  }
+  .header-inner {
+    max-width: var(--maxw); margin: 0 auto; padding: 0 20px;
+    height: 64px; display: flex; align-items: center; gap: 24px;
+  }
+  .brand { display: flex; align-items: center; gap: 10px; text-decoration: none; color: var(--text-primary); flex-shrink: 0; }
+  .brand-mark {
+    width: 32px; height: 32px; border-radius: 8px; flex-shrink: 0;
+    background: var(--text-primary); color: var(--bg-primary);
+    display: grid; place-items: center; font-family: var(--serif); font-weight: 700; font-style: italic; font-size: 14px;
+  }
+  .brand-name { font-family: var(--serif); font-weight: 600; font-size: 1.05rem; letter-spacing: -.01em; white-space: nowrap; }
 
-    /* Focus visible styles for keyboard navigation */
-    *:focus-visible {
-      outline: var(--focus-outline);
-      outline-offset: var(--focus-offset);
-    }
+  .nav-links { display: flex; align-items: center; gap: 4px; margin-left: 8px; }
+  .nav-link {
+    padding: 8px 12px; border-radius: 8px; font-size: .92rem; font-weight: 500;
+    color: var(--text-secondary); text-decoration: none; transition: background .15s, color .15s;
+    white-space: nowrap;
+  }
+  .nav-link:hover { color: var(--text-primary); background: var(--bg-secondary); }
 
-    /* Reduce motion for accessibility */
-    @media (prefers-reduced-motion: reduce) {
-      * { animation-duration: 0.01ms !important; animation-iteration-count: 1 !important; transition-duration: 0.01ms !important; }
-      html { scroll-behavior: auto; }
-    }
+  .header-actions { display: flex; align-items: center; gap: 6px; margin-left: auto; }
+  .icon-btn {
+    width: 40px; height: 40px; border-radius: 9px; display: grid; place-items: center; flex-shrink: 0;
+    color: var(--text-secondary); background: transparent; border: 1px solid transparent; cursor: pointer;
+    transition: background .15s, color .15s, border-color .15s;
+  }
+  .icon-btn:hover { background: var(--bg-secondary); color: var(--text-primary); }
+  .icon-btn svg { width: 19px; height: 19px; }
+  .theme-icon-dark { display: none; }
+  [data-theme="dark"] .theme-icon-light { display: none; }
+  [data-theme="dark"] .theme-icon-dark { display: block; }
+  @media (prefers-color-scheme: dark) {
+    :root:not([data-theme="light"]) .theme-icon-light { display: none; }
+    :root:not([data-theme="light"]) .theme-icon-dark { display: block; }
+  }
 
-    /* ═══ HEADER ═══ */
-    header {
-      border-bottom: 1px solid var(--paper-3);
-      padding: 2rem;
-      position: sticky;
-      top: 0;
-      background: var(--paper);
-      z-index: 100;
-    }
+  .nav-burger { display: none; }
+  .nav-mobile {
+    display: none; flex-direction: column; gap: 2px;
+    padding: 8px 16px 16px; border-top: 1px solid var(--border-color);
+  }
+  .nav-mobile.is-open { display: flex; }
+  .nav-mobile-link {
+    padding: 12px 12px; border-radius: 9px; font-size: 1rem; font-weight: 500;
+    color: var(--text-secondary); text-decoration: none;
+  }
+  .nav-mobile-link:hover { background: var(--bg-secondary); color: var(--text-primary); }
 
-    .header-content {
-      max-width: 1200px;
-      margin: 0 auto;
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      gap: 2rem;
-    }
+  /* ── Buttons ────────────────────────────────────────── */
+  .btn {
+    display: inline-flex; align-items: center; justify-content: center; gap: 8px;
+    border-radius: 11px; font-weight: 600; font-size: .95rem; text-decoration: none;
+    padding: 13px 22px; min-height: 48px; border: 1px solid transparent;
+    transition: transform .12s, background .15s, box-shadow .15s, border-color .15s;
+  }
+  .btn:active { transform: translateY(1px); }
+  .btn-primary { background: var(--accent-warm); color: #fff; box-shadow: var(--shadow); }
+  .btn-primary:hover { background: color-mix(in srgb, var(--accent-warm) 88%, #000); }
+  [data-theme="dark"] .btn-primary { color: #1a120c; }
+  @media (prefers-color-scheme: dark) { :root:not([data-theme="light"]) .btn-primary { color: #1a120c; } }
+  .btn-ghost { background: transparent; color: var(--text-primary); border-color: var(--border-color-2); }
+  .btn-ghost:hover { background: var(--bg-secondary); }
 
-    .logo {
-      display: flex;
-      align-items: center;
-      gap: 0.75rem;
-      text-decoration: none;
-      color: var(--ink);
-    }
+  /* ── Hero ───────────────────────────────────────────── */
+  .hero { padding: 3.25rem 0 2.75rem; text-align: center; }
+  .eyebrow {
+    display: inline-flex; align-items: center; gap: 8px;
+    font-size: .78rem; font-weight: 600; letter-spacing: .08em; text-transform: uppercase;
+    color: var(--accent-warm);
+  }
+  .hero h1 {
+    font-size: clamp(2.1rem, 6.5vw, 3.4rem); font-weight: 700; line-height: 1.06;
+    letter-spacing: -.02em; margin: 1rem auto 1.25rem; max-width: 18ch;
+  }
+  .hero-intro {
+    font-size: 1.08rem; line-height: 1.65; color: var(--text-secondary);
+    max-width: 56ch; margin: 0 auto 1.75rem;
+  }
+  .hero-cta { display: flex; gap: 12px; justify-content: center; flex-wrap: wrap; }
 
-    .logo-text {
-      font-family: 'Playfair Display', serif;
-      font-size: 1.4rem;
-      font-weight: 700;
-      font-style: italic;
-    }
+  /* ── Journey ────────────────────────────────────────── */
+  .journey { padding: 1rem 0 3rem; }
+  .journey-head { text-align: center; margin-bottom: 1.75rem; }
+  .journey-head h2 { font-size: clamp(1.5rem, 3.5vw, 1.9rem); font-weight: 700; margin-bottom: .5rem; }
+  .journey-head p { color: var(--text-secondary); font-size: 1rem; }
+  .journey-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 16px; }
+  .journey-card {
+    display: flex; flex-direction: column; gap: 10px; text-align: left; text-decoration: none;
+    background: var(--surface); border: 1px solid var(--border-color); border-radius: 16px;
+    padding: 1.5rem 1.5rem 1.6rem; color: var(--text-primary);
+    transition: transform .15s, box-shadow .15s, border-color .15s;
+  }
+  .journey-card:hover { transform: translateY(-3px); box-shadow: var(--shadow-lg); border-color: var(--border-color-2); }
+  .journey-step {
+    display: inline-flex; align-items: center; justify-content: center; width: 34px; height: 34px;
+    border-radius: 9px; font-family: var(--mono); font-size: .85rem; font-weight: 600;
+  }
+  .journey-card.is-beginner .journey-step { background: var(--accent-cool-soft); color: var(--accent-cool); }
+  .journey-card.is-intermediate .journey-step { background: var(--accent-warm-soft); color: var(--accent-warm); }
+  .journey-card.is-practice .journey-step { background: var(--bg-secondary); color: var(--text-secondary); }
+  .journey-card h3 { font-size: 1.3rem; font-weight: 600; margin-top: .35rem; }
+  .journey-card p { color: var(--text-secondary); font-size: .93rem; line-height: 1.5; flex: 1; }
+  .journey-cta { font-size: .88rem; font-weight: 600; color: var(--accent-warm); display: inline-flex; align-items: center; gap: 6px; }
+  .journey-card.is-beginner .journey-cta { color: var(--accent-cool); }
 
-    .logo-dot {
-      width: 8px;
-      height: 8px;
-      border-radius: 50%;
-      background: var(--gold);
-      aria-hidden: "true";
-    }
+  /* ── Manifesto ──────────────────────────────────────── */
+  .manifesto {
+    max-width: 760px; margin: 3rem auto; padding: 0 20px;
+  }
+  .manifesto-inner {
+    border-left: 3px solid var(--accent-warm); padding-left: 1.75rem;
+  }
+  .manifesto h2 { font-size: 1.7rem; font-weight: 700; margin-bottom: 1.1rem; }
+  .manifesto p { color: var(--text-secondary); margin-bottom: 1.1rem; line-height: 1.75; font-size: 1rem; }
+  .manifesto strong { color: var(--text-primary); }
+  .quote-attr { font-style: italic; color: var(--text-tertiary); margin-top: 1.25rem; font-size: .95rem; }
 
-    .nav-link {
-      font-size: 1rem;
-      text-transform: uppercase;
-      letter-spacing: 0.08em;
-      color: var(--ink);
-      text-decoration: none;
-      border-bottom: 2px solid transparent;
-      padding-bottom: 2px;
-      transition: all 0.2s;
-      font-weight: 500;
-    }
+  /* ── Modules ────────────────────────────────────────── */
+  .modules { max-width: var(--maxw); margin: 4rem auto; padding: 0 20px; }
+  .section-heading { text-align: center; margin-bottom: 2.5rem; }
+  .section-heading h2 { font-size: clamp(1.6rem, 3.5vw, 2rem); font-weight: 700; margin-bottom: .5rem; }
+  .section-heading p { color: var(--text-secondary); font-size: 1rem; }
 
-    .nav-link:hover { 
-      color: var(--gold);
-      border-bottom-color: var(--gold);
-    }
+  .modules-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 18px; }
+  .module-card {
+    background: var(--surface); border: 1px solid var(--border-color); border-radius: 16px;
+    padding: 1.75rem; text-decoration: none; color: inherit;
+    display: flex; flex-direction: column; gap: .6rem;
+    transition: transform .15s, box-shadow .15s, border-color .15s;
+  }
+  .module-card:hover { transform: translateY(-3px); box-shadow: var(--shadow-lg); border-color: var(--border-color-2); }
+  .module-badge {
+    font-family: var(--mono); font-size: .78rem; font-weight: 500; letter-spacing: .04em;
+    color: var(--accent-warm); text-transform: uppercase;
+  }
+  .module-title { font-size: 1.35rem; font-weight: 600; line-height: 1.2; }
+  .module-desc { color: var(--text-secondary); font-size: .95rem; line-height: 1.55; flex: 1; }
+  .module-meta {
+    display: flex; gap: 1.25rem; padding-top: .9rem; margin-top: .3rem;
+    border-top: 1px solid var(--border-color); font-size: .82rem;
+  }
+  .meta-item { display: flex; flex-direction: column; gap: 2px; }
+  .meta-label { text-transform: uppercase; letter-spacing: .06em; font-weight: 600; color: var(--text-tertiary); font-size: .72rem; }
+  .meta-value { color: var(--text-secondary); }
 
-    .nav-link:focus-visible {
-      outline: var(--focus-outline);
-      outline-offset: var(--focus-offset);
-    }
+  /* ── Explainer ──────────────────────────────────────── */
+  .explainer { background: var(--bg-secondary); padding: 3.5rem 20px; margin: 4rem 0; }
+  .explainer-inner { max-width: 900px; margin: 0 auto; }
+  .explainer h2 { font-size: 1.7rem; font-weight: 700; margin-bottom: 1.25rem; }
+  .explainer > .explainer-inner > p { color: var(--text-secondary); margin-bottom: 1.25rem; line-height: 1.75; font-size: 1rem; }
+  .method-list { display: grid; grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); gap: 14px; margin: 1.75rem 0; }
+  .method-item {
+    background: var(--surface); border: 1px solid var(--border-color); border-radius: 12px;
+    padding: 1.25rem 1.4rem;
+  }
+  .method-item h3 { font-size: 1.1rem; font-weight: 600; margin-bottom: .4rem; }
+  .method-item p { color: var(--text-secondary); font-size: .92rem; line-height: 1.55; margin: 0; }
 
-    /* ═══ HERO ═══ */
-    section.hero {
-      max-width: 1200px;
-      margin: 0 auto;
-      padding: 6rem 2rem;
-      text-align: center;
-    }
+  /* ── Feedback CTA ───────────────────────────────────── */
+  .feedback {
+    max-width: 820px; margin: 4rem auto; padding: 2.75rem 2rem;
+    background: var(--text-primary); color: var(--bg-primary);
+    border-radius: 18px; text-align: center;
+  }
+  [data-theme="dark"] .feedback { background: var(--surface); border: 1px solid var(--border-color); }
+  @media (prefers-color-scheme: dark) { :root:not([data-theme="light"]) .feedback { background: var(--surface); border: 1px solid var(--border-color); } }
+  .feedback h2 { font-size: 1.6rem; font-weight: 700; margin-bottom: .9rem; }
+  .feedback p { opacity: .85; margin-bottom: 1.5rem; line-height: 1.7; max-width: 56ch; margin-inline: auto; }
+  .feedback .btn-primary { margin-bottom: 1.25rem; }
+  .feedback-note { font-size: .85rem; opacity: .7; }
 
-    .hero h1 {
-      font-family: 'Playfair Display', serif;
-      font-size: 3.2rem;
-      font-weight: 700;
-      line-height: 1.15;
-      letter-spacing: -0.02em;
-      margin-bottom: 1.5rem;
-      color: var(--ink);
-    }
+  /* ── Footer ─────────────────────────────────────────── */
+  footer { border-top: 1px solid var(--border-color); padding: 2rem 20px; text-align: center; }
+  footer p { color: var(--text-tertiary); font-size: .88rem; }
+  footer p + p { margin-top: .5rem; }
 
-    .hero h1 em {
-      color: var(--gold);
-      font-style: italic;
-    }
-
-    .hero .tagline {
-      font-size: 1.1rem;
-      color: var(--ink-2);
-      max-width: 700px;
-      margin: 0 auto 2rem;
-      line-height: 1.8;
-    }
-
-    .cta-button {
-      display: inline-block;
-      background: var(--ink);
-      color: var(--paper);
-      padding: 1rem 2.5rem;
-      text-decoration: none;
-      border-radius: 4px;
-      font-size: 1rem;
-      font-weight: 500;
-      letter-spacing: 0.05em;
-      transition: all 0.2s;
-      margin-top: 1rem;
-      border: 2px solid var(--ink);
-    }
-
-    .cta-button:hover {
-      background: var(--gold);
-      color: var(--ink);
-      border-color: var(--gold);
-    }
-
-    .cta-button:focus-visible {
-      outline: var(--focus-outline);
-      outline-offset: var(--focus-offset);
-      background: var(--gold);
-      color: var(--ink);
-    }
-
-    /* ═══ MANIFESTO ═══ */
-    section.manifesto {
-      max-width: 900px;
-      margin: 4rem auto;
-      padding: 4rem 2rem;
-      border-left: 3px solid var(--gold);
-      padding-left: 2rem;
-    }
-
-    .manifesto h2 {
-      font-family: 'Playfair Display', serif;
-      font-size: 2rem;
-      margin-bottom: 1.5rem;
-      font-weight: 700;
-    }
-
-    .manifesto p {
-      font-size: 1rem;
-      color: var(--ink-2);
-      margin-bottom: 1.25rem;
-      line-height: 1.8;
-    }
-
-    .manifesto strong {
-      color: var(--ink);
-    }
-
-    .quote-attr {
-      font-size: 1rem;
-      color: var(--ink-3);
-      font-style: italic;
-      margin-top: 1.5rem;
-    }
-
-    /* ═══ MODULE GRID ═══ */
-    section.modules {
-      max-width: 1200px;
-      margin: 5rem auto;
-      padding: 0 2rem;
-    }
-
-    .section-heading {
-      text-align: center;
-      margin-bottom: 3.5rem;
-    }
-
-    .section-heading h2 {
-      font-family: 'Playfair Display', serif;
-      font-size: 2.2rem;
-      font-weight: 700;
-      margin-bottom: 0.75rem;
-    }
-
-    .section-heading .subtitle {
-      font-size: 1rem;
-      color: var(--ink-2);
-    }
-
-    .modules-grid {
-      display: grid;
-      grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
-      gap: 2rem;
-      margin-bottom: 3rem;
-    }
-
-    .module-card {
-      background: white;
-      border: 2px solid var(--paper-3);
-      border-radius: 8px;
-      padding: 2rem;
-      text-decoration: none;
-      color: inherit;
-      transition: all 0.3s ease;
-      display: flex;
-      flex-direction: column;
-    }
-
-    .module-card:hover {
-      transform: translateY(-4px);
-      box-shadow: 0 8px 24px rgba(0,0,0,0.08);
-      border-color: var(--gold);
-    }
-
-    .module-card:focus-visible {
-      outline: var(--focus-outline);
-      outline-offset: var(--focus-offset);
-    }
-
-    .module-badge {
-      font-size: 1rem;
-      font-weight: 600;
-      letter-spacing: 0.12em;
-      text-transform: uppercase;
-      color: var(--gold);
-      margin-bottom: 1rem;
-    }
-
-    .module-title {
-      font-family: 'Playfair Display', serif;
-      font-size: 1.6rem;
-      font-weight: 700;
-      margin-bottom: 0.75rem;
-      line-height: 1.2;
-    }
-
-    .module-desc {
-      font-size: 1rem;
-      color: var(--ink-2);
-      margin-bottom: 1.5rem;
-      flex-grow: 1;
-      line-height: 1.65;
-    }
-
-    .module-meta {
-      font-size: 1rem;
-      color: var(--ink-3);
-      display: flex;
-      gap: 1.5rem;
-      padding-top: 1rem;
-      border-top: 1px solid var(--paper-3);
-    }
-
-    .meta-item {
-      display: flex;
-      flex-direction: column;
-      gap: 0.25rem;
-    }
-
-    .meta-label {
-      text-transform: uppercase;
-      letter-spacing: 0.08em;
-      font-weight: 600;
-      color: var(--ink);
-    }
-
-    .meta-value {
-      color: var(--ink-2);
-      font-weight: 400;
-    }
-
-    /* ═══ WHAT'S THIS ═══ */
-    section.explainer {
-      background: var(--paper-2);
-      padding: 4rem 2rem;
-      margin: 5rem 0;
-    }
-
-    .explainer-content {
-      max-width: 900px;
-      margin: 0 auto;
-    }
-
-    .explainer-content h2 {
-      font-family: 'Playfair Display', serif;
-      font-size: 2rem;
-      font-weight: 700;
-      margin-bottom: 2rem;
-    }
-
-    .explainer-content p {
-      font-size: 1rem;
-      color: var(--ink-2);
-      margin-bottom: 1.5rem;
-      line-height: 1.8;
-    }
-
-    .method-list {
-      display: grid;
-      grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
-      gap: 2rem;
-      margin: 2.5rem 0;
-    }
-
-    .method-item {
-      background: white;
-      padding: 1.5rem;
-      border-radius: 6px;
-      border-left: 3px solid var(--gold);
-    }
-
-    .method-item h3 {
-      font-family: 'Playfair Display', serif;
-      font-size: 1.3rem;
-      font-weight: 700;
-      margin-bottom: 0.75rem;
-      color: var(--ink);
-    }
-
-    .method-item p {
-      font-size: 1rem;
-      color: var(--ink-2);
-      margin: 0;
-      line-height: 1.65;
-    }
-
-    /* ═══ EDUCATOR SIGNUP ═══ */
-    section.cta-section {
-      max-width: 900px;
-      margin: 5rem auto;
-      padding: 4rem 2rem;
-      background: var(--ink);
-      color: var(--paper);
-      border-radius: 8px;
-      text-align: center;
-      display: flex;
-      flex-direction: column;
-      justify-content: center;
-      align-items: center;
-      gap: 1rem;
-    }
-
-    .cta-section h2 {
-      font-family: 'Playfair Display', serif;
-      font-size: 2rem;
-      font-weight: 700;
-      margin-bottom: 1rem;
-    }
-
-    .cta-section p {
-      font-size: 1rem;
-      color: var(--paper-2);
-      margin-bottom: 2rem;
-      line-height: 1.8;
-    }
-
-    .cta-button-light {
-      display: inline-block;
-      background: var(--gold);
-      color: var(--ink);
-      padding: 1rem 2.5rem;
-      text-decoration: none;
-      border-radius: 4px;
-      font-size: 1rem;
-      font-weight: 500;
-      letter-spacing: 0.05em;
-      transition: all 0.2s;
-      border: 2px solid var(--gold);
-    }
-
-    .cta-button-light:hover {
-      background: var(--paper);
-      color: var(--ink);
-      border-color: var(--paper);
-    }
-
-    .cta-button-light:focus-visible {
-      outline: 3px solid var(--paper);
-      outline-offset: var(--focus-offset);
-    }
-
-    /* ═══ FOOTER ═══ */
-    footer {
-      border-top: 1px solid var(--paper-3);
-      padding: 2rem;
-      color: var(--ink-3);
-      font-size: 1rem;
-      text-align: center;
-    }
-
-    .footer-bottom {
-      text-align: center;
-      padding: 0;
-      border-top: none;
-      color: var(--ink-3);
-      font-size: 0.95rem;
-      max-width: 500px;
-      margin: 0 auto;
-    }
-
-    /* ═══ RESPONSIVE ═══ */
-    @media (max-width: 768px) {
-      .hero h1 { font-size: 2.2rem; }
-      .header-content { flex-direction: column; align-items: flex-start; }
-      .modules-grid { grid-template-columns: 1fr; }
-      .method-list { grid-template-columns: 1fr; }
-      .manifesto { padding: 2rem; padding-left: 1.5rem; }
-    }
-
-    /* Polish pass */
-    html { scroll-padding-top: 5.5rem; }
-    body {
-      text-rendering: optimizeLegibility;
-      -webkit-font-smoothing: antialiased;
-      font-optical-sizing: auto;
-    }
-    h1, h2, h3 { text-wrap: balance; }
-    p { text-wrap: pretty; }
-    header {
-      background: rgba(245, 240, 232, 0.92);
-      backdrop-filter: blur(14px);
-    }
-    .header-content,
-    .hero,
-    .manifesto,
-    .modules,
-    .methods,
-    .cta-section,
-    footer {
-      width: min(100%, 78rem);
-      margin-left: auto;
-      margin-right: auto;
-    }
-    .tagline,
-    .subtitle,
-    .manifesto p,
-    .module-desc,
-    .cta-section p {
-      max-width: 65ch;
-    }
-    .nav-links {
-      display: flex;
-      gap: 2rem;
-      flex-wrap: wrap;
-    }
-    .nav-link,
-    .cta-button,
-    .cta-button-light,
-    .module-card,
-    .footer-section a {
-      transition: transform 0.18s ease, border-color 0.18s ease, color 0.18s ease, box-shadow 0.18s ease, background-color 0.18s ease;
-    }
-    .nav-link,
-    .cta-button,
-    .cta-button-light {
-      min-height: 44px;
-      display: inline-flex;
-      align-items: center;
-    }
-    .module-card {
-      min-height: 100%;
-    }
-    @media (hover: hover) {
-      .module-card:hover {
-        transform: translateY(-3px);
-        box-shadow: 0 16px 34px rgba(26, 24, 20, 0.08);
-      }
-      .cta-button:hover,
-      .cta-button-light:hover {
-        transform: translateY(-1px);
-      }
-    }
-    @media (max-width: 768px) {
-      header { padding: 1.25rem 1rem; }
-      .hero,
-      .manifesto,
-      .modules,
-      .methods,
-      .cta-section,
-      footer {
-        width: 100%;
-      }
-      .hero,
-      .modules,
-      .methods,
-      .cta-section,
-      footer {
-        padding-left: 1rem;
-        padding-right: 1rem;
-      }
-      .manifesto {
-        margin-left: 1rem;
-        margin-right: 1rem;
-        width: auto;
-      }
-      .nav-links {
-        gap: 1rem 1.25rem;
-      }
-      .hero h1 {
-        font-size: clamp(2.2rem, 9vw, 3.5rem);
-      }
-      .module-card {
-        min-height: unset;
-      }
-    }
-  </style>
-  <link rel="stylesheet" href="./ji-polish.css">
+  /* ── Responsive ─────────────────────────────────────── */
+  @media (max-width: 880px) {
+    .nav-links { display: none; }
+    .nav-burger { display: grid; }
+    .journey-grid { grid-template-columns: 1fr; }
+  }
+  @media (max-width: 560px) {
+    .header-inner { padding: 0 16px; gap: 12px; }
+    .brand-name { display: none; }
+    .wrap, .modules, footer { padding-left: 16px; padding-right: 16px; }
+    .manifesto, .explainer { padding-left: 16px; padding-right: 16px; }
+    .manifesto-inner { padding-left: 1.1rem; }
+    .hero { padding: 2.25rem 0 2rem; }
+    .hero-cta { flex-direction: column; }
+    .hero-cta .btn { width: 100%; }
+    .modules-grid { grid-template-columns: 1fr; }
+    .method-list { grid-template-columns: 1fr; }
+    .feedback { padding: 2.25rem 1.5rem; margin: 3rem auto; }
+  }
+</style>
 </head>
-<body style="">
+<body>
 
-<!-- Skip to main content link for keyboard navigation -->
-<a href="#modules" class="skip-link">Skip to main content</a>
+<a href="#main" class="skip-link">Skip to main content</a>
 
-<!-- HEADER -->
-<header>
-  <div class="header-content">
-    <a href="#" class="logo" aria-label="Jazz Interactive - home">
-      <span class="logo-text">Jazz Interactive</span>
-      <span class="logo-dot" aria-hidden="true"></span>
+<header class="site-header">
+  <div class="header-inner">
+    <a href="#top" class="brand" aria-label="Jazz Interactive - home">
+      <span class="brand-mark" aria-hidden="true">JI</span>
+      <span class="brand-name">Jazz Interactive</span>
     </a>
-    <nav aria-label="Main navigation">
-      <div class="nav-links">
-        <a href="#modules" class="nav-link">Modules</a>
-        <a href="./Beginner Pathway App.html" class="nav-link">Beginner Pathway</a>
-        <a href="./07-practice-tools.html" class="nav-link">Practice</a>
-        <a href="#about" class="nav-link">About</a>
-        <a href="#feedback" class="nav-link">Feedback</a>
-      </div>
+    <nav class="nav-links" aria-label="Main navigation">
+      <a class="nav-link" href="#top">Start</a>
+      <a class="nav-link" href="#modules">All Modules</a>
+      <a class="nav-link" href="./Beginner Pathway.html">Beginner</a>
+      <a class="nav-link" href="./07-practice-tools.html">Practice</a>
+      <a class="nav-link" href="#feedback">Feedback</a>
     </nav>
+    <div class="header-actions">
+      <button class="icon-btn" id="theme-toggle" type="button" aria-label="Toggle dark mode">
+        <svg class="theme-icon-light" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="4"></circle><path d="M12 2v2M12 20v2M4.93 4.93l1.41 1.41M17.66 17.66l1.41 1.41M2 12h2M20 12h2M6.34 17.66l-1.41 1.41M19.07 4.93l-1.41 1.41"></path></svg>
+        <svg class="theme-icon-dark" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"></path></svg>
+      </button>
+      <button class="icon-btn nav-burger" id="nav-burger" type="button" aria-label="Open menu" aria-expanded="false" aria-controls="nav-mobile">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="3" y1="6" x2="21" y2="6"></line><line x1="3" y1="12" x2="21" y2="12"></line><line x1="3" y1="18" x2="21" y2="18"></line></svg>
+      </button>
+    </div>
   </div>
+  <nav class="nav-mobile" id="nav-mobile" aria-label="Mobile navigation">
+    <a class="nav-mobile-link" href="#top">Start</a>
+    <a class="nav-mobile-link" href="#modules">All Modules</a>
+    <a class="nav-mobile-link" href="./Beginner Pathway.html">Beginner</a>
+    <a class="nav-mobile-link" href="./07-practice-tools.html">Practice</a>
+    <a class="nav-mobile-link" href="#feedback">Feedback</a>
+  </nav>
 </header>
 
-<!-- HERO -->
-<section class="hero" style="display: flex; gap: 2rem; align-items: center;">
-  <div style="flex: 1; display: flex; flex-direction: column; gap: 2rem;">
-    <h1 style="text-align: center">Learn the <em>Language</em> of Jazz</h1>
-    <p class="tagline">
-      Interactive lessons on Coker's 18 "devices" — the essential vocabulary every jazz musician needs.
-      Play. Listen. Understand. Then improvise.
-    </p>
-    <a href="#modules" class="cta-button">Explore the Modules</a>
-  </div>
-  
-  <div style="flex: 1;"></div>
-</section>
+<main id="main">
 
-<!-- MANIFESTO -->
-<section class="manifesto" id="about" style="text-align: left; margin: 66.4241px 555.758px 64px 393.94px;">
-  <h2 style="text-align: left;">Why this exists</h2>
-  <p style="text-align: left;">
-    In <em style="text-align: left;">Elements of the Jazz Language</em>, Jerry Coker identified 18 "devices" — patterns, phrasings, and techniques used by every great jazz improviser from Charlie Parker to John Coltrane. These aren't theory rules. They're the actual vocabulary of jazz speech.
-  </p>
-  <p style="text-align: left;">
-    Problem: Coker's book is textbook jazz education. Most students read the definitions, see transcribed solos, and... get stuck. Because understanding intellectually is different from hearing it, playing it, and internalizing it.
-  </p>
-  <p style="text-align: left;">
-    <strong style="text-align: left;">Jazz Interactive makes these devices playable.</strong> Each lesson is interactive — you hear the device in context, you can experiment with variations, you see how it connects to the harmony. You're not just reading about change-running or the 7-3 resolution. You're inside it.
-  </p>
-  <p class="quote-attr" style="text-align: left;">
-    "Jazz improvisation is not a mystery. It's a language. And like any language, it can be learned." — Jerry Coker
-  </p>
-</section>
-
-<!-- MODULES -->
-<section class="modules" id="modules">
-  <div class="section-heading">
-    <h2>Six Playable Devices</h2>
-    <p class="subtitle">
-</p>
-  </div>
-
-  <div class="modules-grid">
-    <!-- Element 01: Change-Running -->
-    <a href="./01_change-running.html" class="module-card">
-      <span class="module-badge">Element 01</span>
-      <h3 class="module-title">Change-Running</h3>
-      <p class="module-desc">
-        Spelling out chord tones as a melodic phrase. The foundation of improvisation — orienting your ear and outlining harmony in real time.
+  <section class="hero" id="top">
+    <div class="wrap">
+      <span class="eyebrow">Based on Jerry Coker's Elements of the Jazz Language</span>
+      <h1>Learn the <em>Language</em> of Jazz</h1>
+      <p class="hero-intro">
+        Interactive lessons on Coker's improvisational devices — the essential vocabulary every jazz musician needs.
+        Play. Listen. Understand. Then improvise.
       </p>
-      <div class="module-meta">
-        <div class="meta-item">
-          <span class="meta-label">Difficulty</span>
-          <span class="meta-value">Beginner</span>
-        </div>
-        <div class="meta-item">
-          <span class="meta-label">Time</span>
-          <span class="meta-value">12 min</span>
-        </div>
-      </div>
-    </a>
-
-    <!-- Element 02: Digital & Scalar Patterns -->
-    <a href="./02-digital-scalar-patterns.html" class="module-card">
-      <span class="module-badge">Element 02</span>
-      <h3 class="module-title">Digital &amp; Scalar Patterns</h3>
-      <p class="module-desc">
-        Short numbered cells (1-2-3-5) and continuous scalar runs. Coltrane built 35% of his improvisations on these patterns. Now you can too.
-      </p>
-      <div class="module-meta">
-        <div class="meta-item">
-          <span class="meta-label">Difficulty</span>
-          <span class="meta-value">Intermediate</span>
-        </div>
-        <div class="meta-item">
-          <span class="meta-label">Time</span>
-          <span class="meta-value">14 min</span>
-        </div>
-      </div>
-    </a>
-
-    <!-- Element 03: 7-3 Resolution -->
-    <a href="./03-seven-three-resolution.html" class="module-card">
-      <span class="module-badge">Element 03</span>
-      <h3 class="module-title">7-3 Resolution</h3>
-      <p class="module-desc">
-        The ♭7 of the ii chord pulling down a half step to the 3 of the V chord. This single voice-leading move is the engine of bebop harmony.
-      </p>
-      <div class="module-meta">
-        <div class="meta-item">
-          <span class="meta-label">Difficulty</span>
-          <span class="meta-value">Intermediate</span>
-        </div>
-        <div class="meta-item">
-          <span class="meta-label">Time</span>
-          <span class="meta-value">10 min</span>
-        </div>
-      </div>
-    </a>
-
-    <!-- Element 04: 3-♭9 -->
-    <a href="./04-three-flat-nine.html" class="module-card">
-      <span class="module-badge">Element 04</span>
-      <h3 class="module-title">3-♭9</h3>
-      <p class="module-desc">
-        The most essential melodic movement in jazz. How the 3rd of a dominant chord resolves to its flatted 9th — a half-step climb that creates tension and forward motion.
-      </p>
-      <div class="module-meta">
-        <div class="meta-item">
-          <span class="meta-label">Difficulty</span>
-          <span class="meta-value">Beginner</span>
-        </div>
-        <div class="meta-item">
-          <span class="meta-label">Time</span>
-          <span class="meta-value">8 min</span>
-        </div>
-      </div>
-    </a>
-
-    <!-- Element 05: Bebop Scale -->
-    <a href="./05-bebop-scale.html" class="module-card">
-      <span class="module-badge">Element 05</span>
-      <h3 class="module-title">Bebop Scale</h3>
-      <p class="module-desc">
-        The eight-note scale that keeps chord tones on the beat. Hear how one passing tone creates the forward motion and balance behind classic bebop lines.
-      </p>
-      <div class="module-meta">
-        <div class="meta-item">
-          <span class="meta-label">Difficulty</span>
-          <span class="meta-value">Intermediate</span>
-        </div>
-        <div class="meta-item">
-          <span class="meta-label">Status</span>
-          <span class="meta-value">Live</span>
-        </div>
-      </div>
-    </a>
-
-    <!-- Element 06: Bebop Lick -->
-    <a href="./06-bebop-lick.html" class="module-card">
-      <span class="module-badge">Element 06</span>
-      <h3 class="module-title">Bebop Lick</h3>
-      <p class="module-desc">
-        A signature rhythmic and melodic phrase that appears in solos from Parker to Coltrane. Master the shape and you'll hear it everywhere.
-      </p>
-      <div class="module-meta">
-        <div class="meta-item">
-          <span class="meta-label">Difficulty</span>
-          <span class="meta-value">Beginner</span>
-        </div>
-        <div class="meta-item">
-          <span class="meta-label">Time</span>
-          <span class="meta-value">10 min</span>
-        </div>
-      </div>
-    </a>
-
-    <!-- Practice Tools -->
-    <a href="./07-practice-tools.html" class="module-card">
-      <span class="module-badge">Practice / 01</span>
-      <h3 class="module-title">Looping Changes</h3>
-      <p class="module-desc">
-        Run any chord quality through the chromatic cycle or the cycle of fourths.
-        Tempo slider, count-in, click, bass, and a 12-key preview rail. Practice your vocabulary in every key.
-      </p>
-      <div class="module-meta">
-        <div class="meta-item">
-          <span class="meta-label">Difficulty</span>
-          <span class="meta-value">All levels</span>
-        </div>
-        <div class="meta-item">
-          <span class="meta-label">Status</span>
-          <span class="meta-value">Live</span>
-        </div>
-      </div>
-    </a>
-  </div>
-</section>
-
-<!-- EXPLAINER -->
-<section class="explainer">
-  <div class="explainer-content">
-    <h2>How this works</h2>
-    <p>
-      Each module follows a proven learning path: define the device, show how the masters use it, let you play with it interactively, and give you context from Coker's framework.
-    </p>
-
-    <div class="method-list">
-      <div class="method-item">
-        <h3>1. See</h3>
-        <p>Visual explanation and definition of the device. What's the shape? Why does it matter?</p>
-      </div>
-      <div class="method-item">
-        <h3>2. Hear</h3>
-        <p>Audio playback in context. Hear the device isolated, then in a harmonic progression. Your ear locks in.</p>
-      </div>
-      <div class="method-item">
-        <h3>3. Play</h3>
-        <p>Interactive controls. Change the root, the tempo, the voicing. Experiment freely. Internalize the feel.</p>
-      </div>
-      <div class="method-item">
-        <h3>4. Apply</h3>
-        <p>Real-world context from great solos. See exactly where Parker, Coltrane, or Hubbard used this device.</p>
+      <div class="hero-cta">
+        <a href="#journey" class="btn btn-primary">Choose your path</a>
+        <a href="#modules" class="btn btn-ghost">Browse all modules</a>
       </div>
     </div>
+  </section>
 
-    <p>
-      This is not a replacement for practicing scales or transcribing solos. It's a shortcut to understanding the vocabulary so you can practice and transcribe with real context.
-    </p>
-  </div>
-</section>
+  <section class="journey" id="journey">
+    <div class="wrap">
+      <div class="journey-head">
+        <h2>Choose your journey</h2>
+        <p>Three ways in, depending on where you're starting from.</p>
+      </div>
+      <div class="journey-grid">
+        <a class="journey-card is-beginner" href="./Beginner Pathway.html">
+          <span class="journey-step" aria-hidden="true">1</span>
+          <h3>Beginner</h3>
+          <p>New to jazz vocabulary? Start with swing feel, blues form, and the basics — no theory assumed.</p>
+          <span class="journey-cta">Start the Beginner Pathway →</span>
+        </a>
+        <a class="journey-card is-intermediate" href="#modules">
+          <span class="journey-step" aria-hidden="true">2</span>
+          <h3>Intermediate</h3>
+          <p>Know your chords and scales? Go straight to the six devices — change-running, bebop scale, and more.</p>
+          <span class="journey-cta">Browse the six devices →</span>
+        </a>
+        <a class="journey-card is-practice" href="./07-practice-tools.html">
+          <span class="journey-step" aria-hidden="true">3</span>
+          <h3>Practice</h3>
+          <p>Already know the devices? Loop changes through any key with tempo, count-in, and a bass line.</p>
+          <span class="journey-cta">Open practice tools →</span>
+        </a>
+      </div>
+    </div>
+  </section>
 
-<!-- FEEDBACK CTA -->
-<section class="cta-section" id="feedback">
-  <h2 style="">Help shape phase 2</h2>
-  <p>
-    We're currently testing these modules with jazz educators and advanced musicians. If you're interested in trying them out and sharing feedback, we'd love to hear from you.
-  </p>
-  <p style="text-align: center; line-height: 1.4;">
-    <a href="./beta-questionnaire.html" class="cta-button-light" aria-label="Open the Beta Tester questionnaire" style="text-align: center; line-height: 1.4;">
-      Become a Beta Tester
-    </a>
-  </p>
-  <p style="margin-top: 2rem; font-size: 1rem; color: var(--paper-2);">
-    Takes 20 minutes. No coding skills required. Just honest feedback on clarity, pedagogy, and teaching utility.
-  </p>
-</section>
+  <section class="manifesto" id="about">
+    <div class="manifesto-inner">
+      <h2>Why this exists</h2>
+      <p>
+        In <em>Elements of the Jazz Language</em>, Jerry Coker identified the devices — patterns, phrasings, and techniques used by every great jazz improviser from Charlie Parker to John Coltrane. These aren't theory rules. They're the actual vocabulary of jazz speech.
+      </p>
+      <p>
+        Problem: Coker's book is textbook jazz education. Most students read the definitions, see transcribed solos, and&nbsp;&mdash; get stuck. Because understanding intellectually is different from hearing it, playing it, and internalizing it.
+      </p>
+      <p>
+        <strong>Jazz Interactive makes these devices playable.</strong> Each lesson is interactive — you hear the device in context, you can experiment with variations, you see how it connects to the harmony. You're not just reading about change-running or the 7-3 resolution. You're inside it.
+      </p>
+      <p class="quote-attr">
+        "Jazz improvisation is not a mystery. It's a language. And like any language, it can be learned." — Jerry Coker
+      </p>
+    </div>
+  </section>
 
-<!-- FOOTER -->
+  <section class="modules" id="modules">
+    <div class="section-heading">
+      <h2>Six Playable Devices</h2>
+      <p>Each one assumes you already know your chords and scales.</p>
+    </div>
+    <div class="modules-grid">
+      <a href="./01_change-running.html" class="module-card">
+        <span class="module-badge">Element 01</span>
+        <h3 class="module-title">Change-Running</h3>
+        <p class="module-desc">Spelling out chord tones as a melodic phrase. The foundation of improvisation — orienting your ear and outlining harmony in real time.</p>
+        <div class="module-meta">
+          <div class="meta-item"><span class="meta-label">Difficulty</span><span class="meta-value">Beginner</span></div>
+          <div class="meta-item"><span class="meta-label">Time</span><span class="meta-value">12 min</span></div>
+        </div>
+      </a>
+      <a href="./02-digital-scalar-patterns.html" class="module-card">
+        <span class="module-badge">Element 02</span>
+        <h3 class="module-title">Digital &amp; Scalar Patterns</h3>
+        <p class="module-desc">Short numbered cells (1-2-3-5) and continuous scalar runs. Coltrane built 35% of his improvisations on these patterns. Now you can too.</p>
+        <div class="module-meta">
+          <div class="meta-item"><span class="meta-label">Difficulty</span><span class="meta-value">Intermediate</span></div>
+          <div class="meta-item"><span class="meta-label">Time</span><span class="meta-value">14 min</span></div>
+        </div>
+      </a>
+      <a href="./03-seven-three-resolution.html" class="module-card">
+        <span class="module-badge">Element 03</span>
+        <h3 class="module-title">7-3 Resolution</h3>
+        <p class="module-desc">The ♭7 of the ii chord pulling down a half step to the 3 of the V chord. This single voice-leading move is the engine of bebop harmony.</p>
+        <div class="module-meta">
+          <div class="meta-item"><span class="meta-label">Difficulty</span><span class="meta-value">Intermediate</span></div>
+          <div class="meta-item"><span class="meta-label">Time</span><span class="meta-value">10 min</span></div>
+        </div>
+      </a>
+      <a href="./04-three-flat-nine.html" class="module-card">
+        <span class="module-badge">Element 04</span>
+        <h3 class="module-title">3-♭9</h3>
+        <p class="module-desc">The most essential melodic movement in jazz. How the 3rd of a dominant chord resolves to its flatted 9th — a half-step climb that creates tension and forward motion.</p>
+        <div class="module-meta">
+          <div class="meta-item"><span class="meta-label">Difficulty</span><span class="meta-value">Beginner</span></div>
+          <div class="meta-item"><span class="meta-label">Time</span><span class="meta-value">8 min</span></div>
+        </div>
+      </a>
+      <a href="./05-bebop-scale.html" class="module-card">
+        <span class="module-badge">Element 05</span>
+        <h3 class="module-title">Bebop Scale</h3>
+        <p class="module-desc">The eight-note scale that keeps chord tones on the beat. Hear how one passing tone creates the forward motion and balance behind classic bebop lines.</p>
+        <div class="module-meta">
+          <div class="meta-item"><span class="meta-label">Difficulty</span><span class="meta-value">Intermediate</span></div>
+          <div class="meta-item"><span class="meta-label">Status</span><span class="meta-value">Live</span></div>
+        </div>
+      </a>
+      <a href="./06-bebop-lick.html" class="module-card">
+        <span class="module-badge">Element 06</span>
+        <h3 class="module-title">Bebop Lick</h3>
+        <p class="module-desc">A signature rhythmic and melodic phrase that appears in solos from Parker to Coltrane. Master the shape and you'll hear it everywhere.</p>
+        <div class="module-meta">
+          <div class="meta-item"><span class="meta-label">Difficulty</span><span class="meta-value">Beginner</span></div>
+          <div class="meta-item"><span class="meta-label">Time</span><span class="meta-value">10 min</span></div>
+        </div>
+      </a>
+    </div>
+  </section>
+
+  <section class="explainer">
+    <div class="explainer-inner">
+      <h2>How this works</h2>
+      <p>Each module follows a proven learning path: define the device, show how the masters use it, let you play with a deliberately constrained version of it, and give you context from Coker's framework.</p>
+      <div class="method-list">
+        <div class="method-item">
+          <h3>1. See</h3>
+          <p>Visual explanation and definition of the device. What's the shape? Why does it matter?</p>
+        </div>
+        <div class="method-item">
+          <h3>2. Hear</h3>
+          <p>Audio playback in context. Hear the device isolated, then in a harmonic progression. Your ear locks in.</p>
+        </div>
+        <div class="method-item">
+          <h3>3. Play</h3>
+          <p>A constrained sandbox that unlocks one new bit of harmonic complexity at a time. Internalize the feel before the training wheels come off.</p>
+        </div>
+        <div class="method-item">
+          <h3>4. Apply</h3>
+          <p>Real-world context from great solos. See exactly where Parker, Coltrane, or Hubbard used this device.</p>
+        </div>
+      </div>
+      <p>This is not a replacement for practicing scales or transcribing solos. It's a shortcut to understanding the vocabulary so you can practice and transcribe with real context.</p>
+    </div>
+  </section>
+
+  <section class="feedback" id="feedback">
+    <h2>Help shape phase 2</h2>
+    <p>We're currently testing these modules with jazz educators and advanced musicians. If you're interested in trying them out and sharing feedback, we'd love to hear from you.</p>
+    <a href="./beta-questionnaire.html" class="btn btn-primary" aria-label="Open the Beta Tester questionnaire">Become a Beta Tester</a>
+    <p class="feedback-note">Takes 20 minutes. No coding skills required. Just honest feedback on clarity, pedagogy, and teaching utility.</p>
+  </section>
+
+</main>
+
 <footer>
-  <div class="footer-bottom">
-    <p>Jazz Interactive · A pedagogical project inspired by Jerry Coker's Elements of the Jazz Language</p>
-    <p style="margin-top: 0.75rem; color: var(--paper-3); font-size: 0.9rem;">© 2026 · Beta Phase 1</p>
-  </div>
+  <p>Jazz Interactive · A pedagogical project inspired by Jerry Coker's Elements of the Jazz Language</p>
+  <p>© 2026 · Beta Phase 1</p>
 </footer>
 
+<script>
+  (function () {
+    var root = document.documentElement;
+    var toggle = document.getElementById('theme-toggle');
+    var stored = null;
+    try { stored = localStorage.getItem('ji-theme'); } catch (e) {}
+    if (stored === 'light' || stored === 'dark') {
+      root.setAttribute('data-theme', stored);
+    }
+    toggle.addEventListener('click', function () {
+      var current = root.getAttribute('data-theme');
+      var isDark = current === 'dark' || (!current && window.matchMedia('(prefers-color-scheme: dark)').matches);
+      var next = isDark ? 'light' : 'dark';
+      root.setAttribute('data-theme', next);
+      try { localStorage.setItem('ji-theme', next); } catch (e) {}
+    });
 
+    var burger = document.getElementById('nav-burger');
+    var mobileNav = document.getElementById('nav-mobile');
+    burger.addEventListener('click', function () {
+      var isOpen = mobileNav.classList.toggle('is-open');
+      burger.setAttribute('aria-expanded', String(isOpen));
+    });
+    mobileNav.querySelectorAll('a').forEach(function (a) {
+      a.addEventListener('click', function () {
+        mobileNav.classList.remove('is-open');
+        burger.setAttribute('aria-expanded', 'false');
+      });
+    });
+  })();
+</script>
 
-</body></html>
+</body>
+</html>
