@@ -15,7 +15,7 @@
 <title>Bebop Scale - Jazz Interactive</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=DM+Mono:ital,wght@0,300;0,400;0,500;1,300;1,400&family=Playfair+Display:ital,wght@0,400;0,700;1,400;1,700&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Spectral:ital,wght@0,400;0,500;0,600;0,700;1,500;1,600&family=DM+Sans:ital,opsz,wght@0,9..40,400;0,9..40,500;0,9..40,600;0,9..40,700&family=DM+Mono:ital,wght@0,300;0,400;0,500;1,300;1,400&display=swap" rel="stylesheet">
 <style>
 *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
 :root {
@@ -29,7 +29,7 @@ body { font-family: 'DM Mono', monospace; background: var(--paper); color: var(-
 
 /* HEADER */
 header { border-bottom: 1px solid var(--paper-3); padding: 1.5rem 2rem; display: flex; align-items: baseline; gap: 1.5rem; }
-.site-name { font-family: 'Playfair Display', serif; font-size: 1.1rem; font-style: italic; color: var(--ink-3); }
+.site-name { font-family: 'Spectral', serif; font-size: 1.1rem; font-style: italic; color: var(--ink-3); }
 .element-badge { font-size: 0.65rem; font-weight: 500; letter-spacing: 0.12em; text-transform: uppercase; color: var(--gold); border: 1px solid var(--gold); padding: 3px 8px; border-radius: var(--radius); }
 .progress-dots { display: flex; gap: 6px; align-items: center; margin-left: auto; }
 .dot { width: 6px; height: 6px; border-radius: 50%; background: var(--paper-3); }
@@ -40,7 +40,7 @@ main { flex: 1; max-width: 940px; margin: 0 auto; padding: 3rem 2rem 4rem; width
 
 /* TITLE */
 .title-block { margin-bottom: 2.5rem; border-left: 3px solid var(--gold); padding-left: 1.25rem; }
-h1 { font-family: 'Playfair Display', serif; font-size: 2.2rem; font-weight: 700; line-height: 1.1; letter-spacing: -0.02em; }
+h1 { font-family: 'Spectral', serif; font-size: 2.2rem; font-weight: 700; line-height: 1.1; letter-spacing: -0.02em; }
 h1 em { font-style: italic; color: var(--ink-2); }
 .definition { margin-top: 0.75rem; font-size: 0.78rem; color: var(--ink-3); line-height: 1.65; max-width: 580px; }
 .definition strong { color: var(--ink-2); font-weight: 500; }
@@ -53,7 +53,7 @@ h1 em { font-style: italic; color: var(--ink-2); }
   border-radius: var(--radius); padding: 1.25rem 1.5rem; margin-bottom: 2rem;
 }
 .metric-col { display: flex; flex-direction: column; align-items: center; gap: 4px; min-width: 80px; }
-.metric-num { font-family: 'Playfair Display', serif; font-size: 2rem; font-weight: 700; line-height: 1; }
+.metric-num { font-family: 'Spectral', serif; font-size: 2rem; font-weight: 700; line-height: 1; }
 .metric-num.gold { color: var(--gold); }
 .metric-num.purple { color: var(--passing); }
 .metric-sub { font-size: 0.62rem; color: var(--ink-3); text-align: center; line-height: 1.4; }
@@ -76,7 +76,7 @@ h1 em { font-style: italic; color: var(--ink-2); }
   display: flex; justify-content: space-between; align-items: baseline; margin-bottom: 1.5rem;
 }
 .scale-name-block {}
-.scale-chord-symbol { font-family: 'Playfair Display', serif; font-size: 2rem; font-weight: 700; line-height: 1; }
+.scale-chord-symbol { font-family: 'Spectral', serif; font-size: 2rem; font-weight: 700; line-height: 1; }
 .scale-chord-symbol sup { font-size: 0.55em; vertical-align: super; color: var(--ink-2); }
 .scale-type-label { font-size: 0.68rem; color: var(--ink-3); font-style: italic; margin-top: 2px; }
 .beat-grid-label { font-size: 0.65rem; color: var(--ink-3); text-align: right; line-height: 1.5; }
@@ -104,7 +104,7 @@ h1 em { font-style: italic; color: var(--ink-2); }
 .scale-step.playing:not(.is-passing) .ss-deg, .scale-step.playing:not(.is-passing) .ss-note { color: white; }
 .ss-beat { position: absolute; top: -10px; left: 50%; transform: translateX(-50%); font-size: 0.5rem; color: var(--ink-3); white-space: nowrap; background: var(--paper); padding: 0 3px; }
 .ss-deg { font-size: 0.58rem; color: var(--ink-3); font-weight: 500; letter-spacing: 0.04em; }
-.ss-note { font-family: 'Playfair Display', serif; font-size: 1.05rem; font-weight: 700; color: var(--ink); line-height: 1; }
+.ss-note { font-family: 'Spectral', serif; font-size: 1.05rem; font-weight: 700; color: var(--ink); line-height: 1; }
 .ss-type { font-size: 0.52rem; color: var(--ink-3); }
 .passing-badge {
   position: absolute; top: -9px; left: 50%; transform: translateX(-50%);
@@ -169,7 +169,7 @@ input[type=range]::-webkit-slider-thumb { -webkit-appearance: none; width: 12px;
 
 /* COLTRANE STAT */
 .stat-block { background: var(--paper-2); border: 1px solid var(--paper-3); border-left: 3px solid var(--passing); border-radius: var(--radius); padding: 1.25rem 1.5rem; margin-bottom: 2rem; display: flex; gap: 2rem; align-items: center; flex-wrap: wrap; }
-.stat-num { font-family: 'Playfair Display', serif; font-size: 2.4rem; font-weight: 700; line-height: 1; color: var(--passing); }
+.stat-num { font-family: 'Spectral', serif; font-size: 2.4rem; font-weight: 700; line-height: 1; color: var(--passing); }
 .stat-sub { font-size: 0.62rem; color: var(--ink-3); margin-top: 2px; }
 .stat-ctx { font-size: 0.75rem; color: var(--ink-2); line-height: 1.65; }
 .stat-ctx strong { color: var(--ink); }
@@ -213,7 +213,7 @@ input[type=range]::-webkit-slider-thumb { -webkit-appearance: none; width: 12px;
   outline-offset: 2px;
 }
 .nav-label { font-size: 0.6rem; color: var(--ink-3); letter-spacing: 0.1em; text-transform: uppercase; }
-.nav-name { font-family: 'Playfair Display', serif; font-size: 1rem; font-style: italic; color: var(--ink-2); }
+.nav-name { font-family: 'Spectral', serif; font-size: 1rem; font-style: italic; color: var(--ink-2); }
 .nav-arrow { font-size: 1.2rem; color: var(--gold); cursor: pointer; transition: transform 0.15s; text-decoration: none; align-self: center; }
 .nav-arrow:hover { transform: translateX(3px); }
 
