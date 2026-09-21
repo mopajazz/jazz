@@ -252,7 +252,21 @@ input[type=range]::-webkit-slider-thumb { -webkit-appearance: none; width: 12px;
   .metric-box { flex-direction: column; gap: 0.75rem; }
   .actions { flex-direction: column; }
   .tempo-control { margin-left: 0; }
-  .scale-steps, .beat-ruler { flex-wrap: nowrap; }
+  .scale-display { padding: 1.5rem 1.25rem; }
+  .scale-steps, .beat-ruler {
+    flex-wrap: nowrap;
+    scroll-snap-type: x proximity;
+    margin-left: -1.25rem;
+    margin-right: -1.25rem;
+    padding-left: 1.25rem;
+    padding-right: 1.25rem;
+    -webkit-mask-image: linear-gradient(to right, transparent 0, #000 1.25rem, #000 calc(100% - 28px), transparent 100%);
+            mask-image: linear-gradient(to right, transparent 0, #000 1.25rem, #000 calc(100% - 28px), transparent 100%);
+  }
+  .scale-step, .beat-cell {
+    min-width: 54px;
+    scroll-snap-align: start;
+  }
 }
 
 /* Polish pass */
