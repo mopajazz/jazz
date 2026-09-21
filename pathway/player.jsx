@@ -24,6 +24,7 @@ function Player({ module }) {
   const [recError, setRecError] = uS(null);
   const [takeUrl, setTakeUrl] = uS(null);
   const [playingTake, setPlayingTake] = uS(false);
+  const [section, setSection] = uS(0); // 0=Head, 1=Solo 1, 2=Solo 2 (capstone only)
 
   const mediaRecorderRef = uR(null);
   const mediaStreamRef = uR(null);
@@ -32,10 +33,12 @@ function Player({ module }) {
   const takeUrlRef = uR(null);
   uE(() => { takeUrlRef.current = takeUrl; }, [takeUrl]);
 
-  const totalBars = cfg.sections ? 12 : 4;
+  const totalBars = cfg.sections ? 36 : 4; // 3 choruses of the same 12-bar blues form
   const swing = variation !== "Straight 8ths";
   const ghost = variation === "Add Ghost Notes";
   const A = window.JazzAudio;
+  const loopStart = cfg.sections ? section * 12 : 0;
+  const loopEnd = cfg.sections ? loopStart + 12 : totalBars;
 
   // Start / stop the audio transport
   uE(() => {
@@ -43,6 +46,7 @@ function Player({ module }) {
     if (playing) {
       A.start({
         tempo, key, quality: "maj7", swing, ghost, countIn, bars: totalBars, sounds,
+        progression: cfg.sections ? "blues12" : null, loopStart, loopEnd,
         onBeat: (br, bt, isCount) => { setCounting(!!isCount); setBar(br || 1); setBeat(bt); },
       });
     } else {
@@ -55,12 +59,26 @@ function Player({ module }) {
 
   // Live-update the running transport when controls change
   uE(() => {
-    if (A && playing) A.update({ tempo, key, swing, ghost, sounds });
-  }, [tempo, key, swing, ghost, sounds, playing]);
+    if (A && playing) A.update({ tempo, key, swing, ghost, sounds, loopStart, loopEnd });
+  }, [tempo, key, swing, ghost, sounds, playing, loopStart, loopEnd]);
+
+  const jumpToSection = (i) => {
+    setSection(i);
+    setBar(1);
+    if (A && playing) A.seek(i * 12);
+  };
 
   const nearestPreset = TEMPO_PRESETS.reduce((a, b) => Math.abs(b.bpm - tempo) < Math.abs(a.bpm - tempo) ? b : a);
 
   const toggleSound = (k) => setSounds((s) => ({ ...s, [k]: !s[k] }));
+
+  // For the capstone's 12-bar blues, show the chord actually sounding this
+  // bar instead of a fixed symbol; every other module keeps the old maj7 display.
+  const barInChorus = cfg.sections ? ((bar - 1) % 12 + 12) % 12 : null;
+  const chordNow = cfg.sections && A ? A.chordForBar(key, barInChorus) : { root: key, quality: "maj7" };
+  const chordQLabel = chordNow.quality === "dom7" ? "7" : chordNow.quality;
+  const displayBar = cfg.sections ? barInChorus + 1 : bar;
+  const displayTotal = cfg.sections ? 12 : totalBars;
 
   const doRecord = async () => {
     if (recording) {
@@ -134,8 +152,8 @@ function Player({ module }) {
             <window.Icons.ArrowLeft size={20} />
           </button>
           <div className="np-center">
-            <div className="np-chord">{key}<span className="np-chord-q">maj7</span></div>
-            <div className="np-bar">{counting ? "Count-in\u2026" : "Bar " + bar + " of " + totalBars}</div>
+            <div className="np-chord">{chordNow.root}<span className="np-chord-q">{chordQLabel}</span></div>
+            <div className="np-bar">{counting ? "Count-in\u2026" : "Bar " + displayBar + " of " + displayTotal}</div>
             <div className="np-beats">
               {[1, 2, 3, 4].map((n) => (
                 <span key={n} className={"np-beat" + (playing && beat === n ? " is-on" : "") + (counting ? " is-count" : "")} />
@@ -151,7 +169,7 @@ function Player({ module }) {
             {playing ? <window.Icons.Pause size={20} /> : <window.Icons.Play size={20} />}
             <span>{playing ? "Stop" : "Play"}</span>
           </button>
-          <button className="transport-btn ghost wide" onClick={() => { setPlaying(false); setBar(1); setBeat(0); }}>
+          <button className="transport-btn ghost wide" onClick={() => { setPlaying(false); setBar(1); setBeat(0); setSection(0); }}>
             <window.Icons.Reset size={18} /><span>Reset</span>
           </button>
         </div>
@@ -159,9 +177,12 @@ function Player({ module }) {
           <div className="loop-row">
             <span className="loop-label">Loop section</span>
             <div className="loop-segs">
-              <span className="loop-seg is-active">Head</span>
-              <span className="loop-seg">Solo 1</span>
-              <span className="loop-seg">Solo 2</span>
+              {["Head", "Solo 1", "Solo 2"].map((label, i) => (
+                <button key={label} className={"loop-seg" + (section === i ? " is-active" : "")}
+                  onClick={() => jumpToSection(i)} aria-pressed={section === i}>
+                  {label}
+                </button>
+              ))}
             </div>
           </div>
         )}

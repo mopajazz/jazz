@@ -7,6 +7,22 @@
   const midi = (name, oct) => (oct + 1) * 12 + (SEMI[norm(name)] ?? 0);
   const mtof = (m) => 440 * Math.pow(2, (m - 69) / 12);
 
+  // Canonical spellings for transposing a root by a semitone offset (used by
+  // the 12-bar blues progression below — I/IV/V relative to the tonic).
+  const NOTE_ORDER = ["C", "Db", "D", "Eb", "E", "F", "F#", "G", "Ab", "A", "Bb", "B"];
+  const transposeNote = (name, semis) => {
+    const i = (((SEMI[norm(name)] ?? 0) + semis) % 12 + 12) % 12;
+    return NOTE_ORDER[i];
+  };
+  // Standard 12-bar blues form — matches diagrams.jsx's BluesFormDiagram and
+  // the capstone module's own "Bars 1-4 / 5-6 / 9-10" copy in data.js.
+  const BLUES12_ROMAN = ["I", "I", "I", "I", "IV", "IV", "I", "I", "V", "IV", "I", "V"];
+  const ROMAN_OFFSET = { I: 0, IV: 5, V: 7 };
+  const chordForBar = (key, barIndex) => {
+    const roman = BLUES12_ROMAN[((barIndex % 12) + 12) % 12];
+    return { root: transposeNote(key, ROMAN_OFFSET[roman]), quality: "dom7", roman };
+  };
+
   // scale interval sets (from root)
   const SCALES = {
     blues: [0, 3, 5, 6, 7, 10, 12],
@@ -120,7 +136,7 @@
     start(opts) {
       this.resume();
       this.stop();
-      this.opts = Object.assign({ tempo: 100, key: "C", quality: "maj7", swing: true, ghost: false, countIn: false, bars: 4, sounds: { click: true, chord: true, bass: true }, onBeat: null }, opts);
+      this.opts = Object.assign({ tempo: 100, key: "C", quality: "maj7", swing: true, ghost: false, countIn: false, bars: 4, loopStart: 0, loopEnd: null, progression: null, sounds: { click: true, chord: true, bass: true }, onBeat: null }, opts);
       this.playing = true;
       this.bar = 0; this.beat = 0; this.eighth = 0;
       this.inCount = this.opts.countIn ? 4 : 0; // count-in quarters remaining
@@ -132,6 +148,11 @@
       this.playing = false;
       if (this.timer) { clearTimeout(this.timer); this.timer = null; }
     },
+    // Jump the transport to a specific bar (0-based) without restarting it —
+    // used by the capstone module's Head/Solo 1/Solo 2 section buttons.
+    seek(bar) { this.bar = bar; this.beat = 0; this.eighth = 0; },
+    // Exposed for UI display — e.g. showing the current bar's chord symbol.
+    chordForBar,
 
     _beatDur() { return 60 / (this.opts.tempo || 100); },
     _swingFrac() { return this.opts.swing ? 0.62 : 0.5; },
@@ -152,7 +173,11 @@
           if (this.eighth === 0) { this.nextTime += this._swingFrac() * bd; this.eighth = 1; }
           else {
             this.nextTime += (1 - this._swingFrac()) * bd; this.eighth = 0; this.beat += 1;
-            if (this.beat > 3) { this.beat = 0; this.bar += 1; if (this.bar >= this.opts.bars) this.bar = 0; }
+            if (this.beat > 3) {
+              this.beat = 0; this.bar += 1;
+              const loopEnd = this.opts.loopEnd != null ? this.opts.loopEnd : this.opts.bars;
+              if (this.bar >= loopEnd) this.bar = this.opts.loopStart || 0;
+            }
           }
         }
       }
@@ -178,16 +203,23 @@
       const beat = this.beat, bar = this.bar;
       // ride on every eighth (swing feel lives here)
       this.ride(time, downbeat ? 0.14 : 0.09);
+      // Resolve this bar's chord: a fixed key/quality by default, or a
+      // 12-bar I-IV-V blues progression when opts.progression is set.
+      let chordRoot = o.key, chordQuality = o.quality;
+      if (o.progression === "blues12") {
+        const c = chordForBar(o.key, bar);
+        chordRoot = c.root; chordQuality = c.quality;
+      }
       if (downbeat) {
         if (s.click) this.click(time, beat === 0, 0.4);
-        if (s.bass) this.bass(time, o.key, this._beatDur() * 0.9, 0.5);
+        if (s.bass) this.bass(time, chordRoot, this._beatDur() * 0.9, 0.5);
         // comp: Charleston — chord on beat 0, and on the 'and of 2'
-        if (s.chord && beat === 0) this.chord(time, o.key, o.quality, this._beatDur() * 2.2, 0.15);
+        if (s.chord && beat === 0) this.chord(time, chordRoot, chordQuality, this._beatDur() * 2.2, 0.15);
         this._uiBeat(time, bar + 1, beat + 1, false);
       } else {
         // upbeat
-        if (s.chord && beat === 1) this.chord(time, o.key, o.quality, this._beatDur() * 1.6, 0.12);
-        if (o.ghost) this.note(time, o.key, [0, 3, 5][bar % 3], 4, 0.12, 0.05); // soft ghost
+        if (s.chord && beat === 1) this.chord(time, chordRoot, chordQuality, this._beatDur() * 1.6, 0.12);
+        if (o.ghost) this.note(time, chordRoot, [0, 3, 5][bar % 3], 4, 0.12, 0.05); // soft ghost
       }
     },
 
