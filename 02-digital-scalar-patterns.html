@@ -2,6 +2,7 @@
 <html lang="en">
 <head>
 <meta charset="UTF-8">
+<script>(function(){try{var s=localStorage.getItem('ji-theme');var d=s?s==='dark':matchMedia('(prefers-color-scheme: dark)').matches;if(d)document.documentElement.classList.add('dark');}catch(e){}})();</script>
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <meta name="description" content="Explore digital patterns and scalar runs through interactive jazz ear training, root changes, and playable pattern previews.">
 <meta name="theme-color" content="#f5f0e8">
@@ -14,7 +15,7 @@
 <title>Digital and Scalar Patterns - Jazz Interactive</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=DM+Mono:ital,wght@0,300;0,400;0,500;1,300;1,400&family=Playfair+Display:ital,wght@0,400;0,700;1,400;1,700&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Spectral:ital,wght@0,400;0,500;0,600;0,700;1,500;1,600&family=DM+Sans:ital,opsz,wght@0,9..40,400;0,9..40,500;0,9..40,600;0,9..40,700&family=DM+Mono:ital,wght@0,300;0,400;0,500;1,300;1,400&display=swap" rel="stylesheet">
 <style>
   *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
 
@@ -51,7 +52,7 @@
     gap: 1.5rem;
   }
   .site-name {
-    font-family: 'Playfair Display', serif;
+    font-family: 'Spectral', serif;
     font-size: 1.1rem;
     font-style: italic;
     color: var(--ink-3);
@@ -92,7 +93,7 @@
     padding-left: 1.25rem;
   }
   h1 {
-    font-family: 'Playfair Display', serif;
+    font-family: 'Spectral', serif;
     font-size: 2.2rem;
     font-weight: 700;
     line-height: 1.1;
@@ -167,7 +168,7 @@
   .pattern-card.selected { border-color: var(--gold); background: rgba(200,146,42,0.06); }
   .pattern-card.playing { border-color: var(--blue); background: rgba(42,74,138,0.06); }
   .pattern-formula {
-    font-family: 'Playfair Display', serif;
+    font-family: 'Spectral', serif;
     font-size: 1.1rem;
     font-weight: 700;
     color: var(--ink);
@@ -273,7 +274,7 @@
     margin-bottom: 1rem;
   }
   .chord-name-big {
-    font-family: 'Playfair Display', serif;
+    font-family: 'Spectral', serif;
     font-size: 1.8rem;
     font-weight: 700;
   }
@@ -307,7 +308,7 @@
   .tone-bubble.lit .tb-note { color: white; }
   .tone-bubble.dim { opacity: 0.35; }
   .tb-deg { font-size: 0.58rem; color: var(--ink-3); letter-spacing: 0.05em; }
-  .tb-note { font-family: 'Playfair Display', serif; font-size: 1rem; font-weight: 700; color: var(--ink); }
+  .tb-note { font-family: 'Spectral', serif; font-size: 1rem; font-weight: 700; color: var(--ink); }
 
   /* — PATTERN PREVIEW — */
   .pattern-preview {
@@ -324,7 +325,7 @@
     margin-bottom: 1rem;
   }
   .preview-formula {
-    font-family: 'Playfair Display', serif;
+    font-family: 'Spectral', serif;
     font-size: 1.2rem;
     font-weight: 700;
     color: var(--ink);
@@ -358,7 +359,7 @@
   .step-cell.played { border-color: var(--blue); background: rgba(42,74,138,0.07); }
   .step-sep { color: var(--ink-3); font-size: 0.7rem; }
   .step-deg { font-size: 0.58rem; color: var(--ink-3); }
-  .step-note { font-family: 'Playfair Display', serif; font-size: 0.95rem; font-weight: 700; color: var(--ink); }
+  .step-note { font-family: 'Spectral', serif; font-size: 0.95rem; font-weight: 700; color: var(--ink); }
   .repeat-arrow {
     font-size: 0.7rem;
     color: var(--ink-3);
@@ -465,7 +466,7 @@
     flex-wrap: wrap;
   }
   .stat-number {
-    font-family: 'Playfair Display', serif;
+    font-family: 'Spectral', serif;
     font-size: 3rem;
     font-weight: 700;
     color: var(--gold);
@@ -544,7 +545,7 @@
     outline-offset: 2px;
   }
   .nav-label { font-size: 0.6rem; color: var(--ink-3); letter-spacing: 0.1em; text-transform: uppercase; }
-  .nav-name { font-family: 'Playfair Display', serif; font-size: 1rem; font-style: italic; color: var(--ink-2); }
+  .nav-name { font-family: 'Spectral', serif; font-size: 1rem; font-style: italic; color: var(--ink-2); }
   .nav-arrow { font-size: 1.2rem; color: var(--gold); cursor: pointer; transition: transform 0.15s; text-decoration: none; align-self: center; }
   .nav-arrow:hover { transform: translateX(3px); }
 
@@ -672,6 +673,7 @@
   }
 </style>
 <link rel="stylesheet" href="./ji-polish.css">
+<script src="./ji-theme.js" defer></script>
 </head>
 <body>
 
@@ -693,6 +695,10 @@
     <div class="dot"></div><div class="dot"></div>
     <div class="dot"></div>
   </div>
+  <button type="button" id="ji-theme-toggle" class="theme-toggle" aria-label="Toggle dark mode">
+    <svg class="icon-sun" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="4"></circle><path d="M12 2v2M12 20v2M4.93 4.93l1.41 1.41M17.66 17.66l1.41 1.41M2 12h2M20 12h2M6.34 17.66l-1.41 1.41M19.07 4.93l-1.41 1.41"></path></svg>
+    <svg class="icon-moon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"></path></svg>
+  </button>
 </header>
 
 <main id="main">

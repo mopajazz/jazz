@@ -2,6 +2,7 @@
 <html lang="en">
 <head>
 <meta charset="UTF-8">
+<script>(function(){try{var s=localStorage.getItem('ji-theme');var d=s?s==='dark':matchMedia('(prefers-color-scheme: dark)').matches;if(d)document.documentElement.classList.add('dark');}catch(e){}})();</script>
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <meta name="description" content="Interactive lesson on Change-Running: spelling out chord tones as a melodic phrase. Build your own phrases, hear how masters use it, and master the foundation of jazz improvisation.">
 <meta name="theme-color" content="#f5f0e8">
@@ -14,7 +15,7 @@
 <title>Change-Running - Jazz Interactive</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=DM+Mono:ital,wght@0,300;0,400;0,500;1,300;1,400&family=Playfair+Display:ital,wght@0,400;0,700;1,400;1,700&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Spectral:ital,wght@0,400;0,500;0,600;0,700;1,500;1,600&family=DM+Sans:ital,opsz,wght@0,9..40,400;0,9..40,500;0,9..40,600;0,9..40,700&family=DM+Mono:ital,wght@0,300;0,400;0,500;1,300;1,400&display=swap" rel="stylesheet">
 <style>
   *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
 
@@ -82,7 +83,7 @@
     gap: 1.5rem;
   }
   .site-name {
-    font-family: 'Playfair Display', serif;
+    font-family: 'Spectral', serif;
     font-size: 1.1rem;
     font-style: italic;
     color: var(--ink);
@@ -117,7 +118,7 @@
     padding-left: 1.25rem;
   }
   h1 {
-    font-family: 'Playfair Display', serif;
+    font-family: 'Spectral', serif;
     font-size: 2.4rem;
     font-weight: 700;
     line-height: 1.1;
@@ -261,7 +262,7 @@
   }
   .chord-name-block {}
   .chord-symbol {
-    font-family: 'Playfair Display', serif;
+    font-family: 'Spectral', serif;
     font-size: 3rem;
     font-weight: 700;
     color: var(--ink);
@@ -353,7 +354,7 @@
     text-transform: uppercase;
   }
   .tone-note {
-    font-family: 'Playfair Display', serif;
+    font-family: 'Spectral', serif;
     font-size: 1.3rem;
     font-weight: 700;
     color: var(--ink);
@@ -410,7 +411,7 @@
     outline-offset: 1px;
   }
   .phrase-note .pn-degree { color: var(--ink-2); font-size: 0.9rem; }
-  .phrase-note .pn-name { font-family: 'Playfair Display', serif; font-weight: 700; font-size: 1rem; }
+  .phrase-note .pn-name { font-family: 'Spectral', serif; font-weight: 700; font-size: 1rem; }
   .phrase-note.pn-playing {
     border-color: var(--gold);
     background: rgba(200,146,42,0.1);
@@ -617,7 +618,7 @@
     font-weight: 500;
   }
   .nav-name {
-    font-family: 'Playfair Display', serif;
+    font-family: 'Spectral', serif;
     font-size: 1.1rem;
     font-style: italic;
     color: var(--ink);
@@ -751,6 +752,7 @@
   }
 </style>
 <link rel="stylesheet" href="./ji-polish.css">
+<script src="./ji-theme.js" defer></script>
 </head>
 <body>
 
@@ -766,6 +768,10 @@
     <div class="dot" aria-label="Element 4 not started"></div>
     <div class="dot" aria-label="Element 5 not started"></div>
   </div>
+  <button type="button" id="ji-theme-toggle" class="theme-toggle" aria-label="Toggle dark mode">
+    <svg class="icon-sun" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="4"></circle><path d="M12 2v2M12 20v2M4.93 4.93l1.41 1.41M17.66 17.66l1.41 1.41M2 12h2M20 12h2M6.34 17.66l-1.41 1.41M19.07 4.93l-1.41 1.41"></path></svg>
+    <svg class="icon-moon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"></path></svg>
+  </button>
 </header>
 
 <main id="main">

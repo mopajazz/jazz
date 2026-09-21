@@ -2,6 +2,7 @@
 <html lang="en">
 <head>
 <meta charset="UTF-8">
+<script>(function(){try{var s=localStorage.getItem('ji-theme');var d=s?s==='dark':matchMedia('(prefers-color-scheme: dark)').matches;if(d)document.documentElement.classList.add('dark');}catch(e){}})();</script>
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <meta name="description" content="Practice the 3 to flat-9 bebop gesture with interactive root changes, context playback, and guided interval focus.">
 <meta name="theme-color" content="#f5f0e8">
@@ -14,7 +15,7 @@
 <title>3-flat-9 - Jazz Interactive</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=DM+Mono:ital,wght@0,300;0,400;0,500;1,300;1,400&family=Playfair+Display:ital,wght@0,400;0,700;1,400;1,700&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Spectral:ital,wght@0,400;0,500;0,600;0,700;1,500;1,600&family=DM+Sans:ital,opsz,wght@0,9..40,400;0,9..40,500;0,9..40,600;0,9..40,700&family=DM+Mono:ital,wght@0,300;0,400;0,500;1,300;1,400&display=swap" rel="stylesheet">
 <style>
 *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
 
@@ -37,7 +38,7 @@
 body { font-family: 'DM Mono', monospace; background: var(--paper); color: var(--ink); min-height: 100vh; display: flex; flex-direction: column; }
 
 header { border-bottom: 1px solid var(--paper-3); padding: 1.5rem 2rem; display: flex; align-items: baseline; gap: 1.5rem; }
-.site-name { font-family: 'Playfair Display', serif; font-size: 1.1rem; font-style: italic; color: var(--ink-3); }
+.site-name { font-family: 'Spectral', serif; font-size: 1.1rem; font-style: italic; color: var(--ink-3); }
 .element-badge { font-size: 0.65rem; font-weight: 500; letter-spacing: 0.12em; text-transform: uppercase; color: var(--gold); border: 1px solid var(--gold); padding: 3px 8px; border-radius: var(--radius); }
 .progress-dots { display: flex; gap: 6px; align-items: center; margin-left: auto; }
 .dot { width: 6px; height: 6px; border-radius: 50%; background: var(--paper-3); }
@@ -47,7 +48,7 @@ header { border-bottom: 1px solid var(--paper-3); padding: 1.5rem 2rem; display:
 main { flex: 1; max-width: 900px; margin: 0 auto; padding: 3rem 2rem 4rem; width: 100%; }
 
 .title-block { margin-bottom: 2.5rem; border-left: 3px solid var(--gold); padding-left: 1.25rem; }
-h1 { font-family: 'Playfair Display', serif; font-size: 2.2rem; font-weight: 700; line-height: 1.1; letter-spacing: -0.02em; }
+h1 { font-family: 'Spectral', serif; font-size: 2.2rem; font-weight: 700; line-height: 1.1; letter-spacing: -0.02em; }
 h1 em { font-style: italic; color: var(--ink-2); }
 .definition { margin-top: 0.75rem; font-size: 0.78rem; color: var(--ink-3); line-height: 1.65; max-width: 580px; }
 .definition strong { color: var(--ink-2); font-weight: 500; }
@@ -74,7 +75,7 @@ h1 em { font-style: italic; color: var(--ink-2); }
   min-width: 56px;
 }
 .conn-badge {
-  font-family: 'Playfair Display', serif;
+  font-family: 'Spectral', serif;
   font-size: 1.1rem;
   font-weight: 700;
   width: 36px; height: 36px;
@@ -122,7 +123,7 @@ h1 em { font-style: italic; color: var(--ink-2); }
   margin-bottom: 1.25rem;
 }
 .chord-symbol-xl {
-  font-family: 'Playfair Display', serif;
+  font-family: 'Spectral', serif;
   font-size: 2.5rem;
   font-weight: 700;
   line-height: 1;
@@ -160,7 +161,7 @@ h1 em { font-style: italic; color: var(--ink-2); }
 .tone-cell.lit-flat9 .tc-deg, .tone-cell.lit-flat9 .tc-note { color: white; }
 .tone-cell.dim { opacity: 0.3; }
 .tc-deg { font-size: 0.58rem; color: var(--ink-3); letter-spacing: 0.05em; font-weight: 500; }
-.tc-note { font-family: 'Playfair Display', serif; font-size: 1.1rem; font-weight: 700; color: var(--ink); line-height: 1; }
+.tc-note { font-family: 'Spectral', serif; font-size: 1.1rem; font-weight: 700; color: var(--ink); line-height: 1; }
 .tc-role {
   position: absolute;
   top: -8px;
@@ -248,7 +249,7 @@ input[type=range]::-webkit-slider-thumb { -webkit-appearance: none; width: 12px;
 .chain-node.chain-flat9 { border-color: var(--flat9-color); background: rgba(42,74,138,0.05); }
 .chain-node.playing { transform: translateY(-3px); box-shadow: 0 5px 12px rgba(200,146,42,0.2); }
 .cn-label { font-size: 0.58rem; color: var(--ink-3); }
-.cn-note { font-family: 'Playfair Display', serif; font-size: 1rem; font-weight: 700; color: var(--ink); }
+.cn-note { font-family: 'Spectral', serif; font-size: 1rem; font-weight: 700; color: var(--ink); }
 .cn-element { font-size: 0.55rem; color: var(--ink-3); font-style: italic; }
 .chain-sep { font-size: 0.75rem; color: var(--ink-3); align-self: center; padding: 0 2px; }
 .chain-bracket {
@@ -298,7 +299,7 @@ input[type=range]::-webkit-slider-thumb { -webkit-appearance: none; width: 12px;
   outline-offset: 2px;
 }
 .nav-label { font-size: 0.6rem; color: var(--ink-3); letter-spacing: 0.1em; text-transform: uppercase; }
-.nav-name { font-family: 'Playfair Display', serif; font-size: 1rem; font-style: italic; color: var(--ink-2); }
+.nav-name { font-family: 'Spectral', serif; font-size: 1rem; font-style: italic; color: var(--ink-2); }
 .nav-arrow { font-size: 1.2rem; color: var(--gold); cursor: pointer; transition: transform 0.15s; text-decoration: none; align-self: center; }
 .nav-arrow:hover { transform: translateX(3px); }
 
@@ -417,6 +418,7 @@ main { width: min(100%, 74rem); }
 }
 </style>
 <link rel="stylesheet" href="./ji-polish.css">
+<script src="./ji-theme.js" defer></script>
 </head>
 <body>
 
@@ -435,6 +437,10 @@ main { width: min(100%, 74rem); }
     <div class="dot"></div><div class="dot"></div><div class="dot"></div>
     <div class="dot"></div>
   </div>
+  <button type="button" id="ji-theme-toggle" class="theme-toggle" aria-label="Toggle dark mode">
+    <svg class="icon-sun" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="4"></circle><path d="M12 2v2M12 20v2M4.93 4.93l1.41 1.41M17.66 17.66l1.41 1.41M2 12h2M20 12h2M6.34 17.66l-1.41 1.41M19.07 4.93l-1.41 1.41"></path></svg>
+    <svg class="icon-moon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"></path></svg>
+  </button>
 </header>
 
 <main id="main">
