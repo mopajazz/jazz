@@ -218,9 +218,6 @@ function Player({ module }) {
             {cfg.keys.map((k) => (
               <button key={k} className={"key-btn" + (key === k ? " is-active" : "")} onClick={() => setKey(k)}>{k}</button>
             ))}
-            <span className="key-rail-locked" title="More keys unlock as you progress">
-              <window.Icons.Lock size={13} /> +9 keys
-            </span>
           </div>
         </div>
 
