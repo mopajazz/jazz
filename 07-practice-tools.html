@@ -2,6 +2,7 @@
 <html lang="en">
 <head>
 <meta charset="UTF-8">
+<script>(function(){try{var s=localStorage.getItem('ji-theme');var d=s?s==='dark':matchMedia('(prefers-color-scheme: dark)').matches;if(d)document.documentElement.classList.add('dark');}catch(e){}})();</script>
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <meta name="description" content="Jazz Interactive practice tools: loop chord changes through the chromatic cycle or the cycle of fourths, with a tempo slider, count-in, swing, and pattern preview. Practice your vocabulary in every key.">
 <meta name="theme-color" content="#f4efe3">
@@ -10,6 +11,7 @@
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=DM+Mono:ital,wght@0,300;0,400;0,500;1,300;1,400&family=Playfair+Display:ital,wght@0,400;0,700;1,400;1,700&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="./ji-polish.css">
+<script src="./ji-theme.js" defer></script>
 <style>
   *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
 
@@ -779,6 +781,28 @@
     .btn { box-shadow: none !important; }
     *:focus-visible { outline: 3px solid Highlight !important; box-shadow: none !important; }
   }
+
+  /* Dark mode: this page has its own component set (not shared with the
+     other lesson pages), so its off-white tile backgrounds need their own
+     html.dark overrides rather than relying on ji-polish.css's shared list. */
+  html.dark .chord-now,
+  html.dark .context {
+    background: rgba(36, 32, 23, 0.88) !important;
+    border-color: rgba(244, 239, 227, 0.18) !important;
+  }
+  html.dark .beat-cell,
+  html.dark .btn.secondary,
+  html.dark .pill,
+  html.dark .tempo-preset,
+  html.dark .cycle-cell,
+  html.dark .kbd,
+  html.dark .toggle {
+    background: rgba(36, 32, 23, 0.72) !important;
+    border-color: rgba(244, 239, 227, 0.2) !important;
+  }
+  html.dark .btn.secondary:hover {
+    background: rgba(36, 32, 23, 0.92) !important;
+  }
 </style>
 </head>
 <body>
@@ -795,6 +819,10 @@
       <li style="display:inline;" aria-current="page">Practice Tools</li>
     </ol>
   </nav>
+  <button type="button" id="ji-theme-toggle" class="theme-toggle" aria-label="Toggle dark mode">
+    <svg class="icon-sun" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="4"></circle><path d="M12 2v2M12 20v2M4.93 4.93l1.41 1.41M17.66 17.66l1.41 1.41M2 12h2M20 12h2M6.34 17.66l-1.41 1.41M19.07 4.93l-1.41 1.41"></path></svg>
+    <svg class="icon-moon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"></path></svg>
+  </button>
 </header>
 
 <!-- Polite, single live region for chord & tempo announcements (avoids per-beat chatter) -->
