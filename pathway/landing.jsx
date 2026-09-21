@@ -36,7 +36,7 @@ function Landing({ modules, completed, onOpen, onStart }) {
           </div>
         </div>
         <div className="hero-aside">
-          <QuickStartCard />
+          <QuickStartCard firstModule={modules[0]} onOpen={onOpen} />
         </div>
       </section>
 
@@ -125,24 +125,18 @@ function Landing({ modules, completed, onOpen, onStart }) {
   );
 }
 
-function QuickStartCard() {
+function QuickStartCard({ firstModule, onOpen }) {
   return (
-    <div className="qstart">
+    <button className="qstart" onClick={() => onOpen(firstModule)}>
       <div className="qstart-thumb">
         <span className="qstart-play"><window.Icons.Play size={22} /></span>
-        <span className="qstart-time">2:30</span>
-        <div className="qstart-waves" aria-hidden="true">
-          {Array.from({ length: 22 }).map((_, i) => (
-            <span key={i} style={{ height: (20 + Math.abs(Math.sin(i * 0.9)) * 60) + "%" }} />
-          ))}
-        </div>
       </div>
       <div className="qstart-body">
-        <span className="qstart-eyebrow"><window.Icons.Video size={14} />Quick-start</span>
-        <span className="qstart-title">Welcome — start here</span>
-        <span className="qstart-note">A 2-minute hello and a walk through your first module.</span>
+        <span className="qstart-eyebrow"><window.Icons.Sparkle size={14} />Start here</span>
+        <span className="qstart-title">{firstModule.title}</span>
+        <span className="qstart-note">{firstModule.goal}</span>
       </div>
-    </div>
+    </button>
   );
 }
 
