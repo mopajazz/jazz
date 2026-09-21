@@ -204,9 +204,12 @@ em { font-style: italic; }
 
 /* Quick-start card */
 .qstart {
+  display: block; width: 100%; text-align: left;
   background: var(--paper); border: 1px solid var(--line); border-radius: var(--r-lg);
   overflow: hidden; box-shadow: var(--shadow-lg);
+  transition: transform .15s, box-shadow .15s, border-color .15s;
 }
+.qstart:hover { transform: translateY(-2px); border-color: var(--line-2); }
 .qstart-thumb {
   position: relative; height: 168px;
   background: linear-gradient(135deg, #2a2018, #3d2c1e 60%, var(--accent));
@@ -219,13 +222,6 @@ em { font-style: italic; }
   display: grid; place-items: center; box-shadow: 0 8px 24px rgba(0,0,0,.3);
   padding-left: 3px;
 }
-.qstart-time {
-  position: absolute; bottom: 12px; right: 12px; z-index: 2;
-  background: rgba(0,0,0,.5); color: #fff; font-family: var(--mono);
-  font-size: 12px; padding: 3px 8px; border-radius: 6px;
-}
-.qstart-waves { position: absolute; inset: 0; display: flex; align-items: center; gap: 3px; padding: 0 18px; opacity: .35; }
-.qstart-waves span { flex: 1; background: #fff; border-radius: 2px; }
 .qstart-body { padding: 18px 20px 20px; display: flex; flex-direction: column; gap: 4px; }
 .qstart-eyebrow { display: inline-flex; align-items: center; gap: 6px; font-size: 11.5px; font-weight: 600; letter-spacing: .07em; text-transform: uppercase; color: var(--accent); }
 .qstart-title { font-family: var(--serif); font-size: 19px; font-weight: 600; margin-top: 2px; }
