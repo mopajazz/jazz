@@ -21,8 +21,16 @@ function Player({ module }) {
   const [countIn, setCountIn] = uS(true);
   const [sounds, setSounds] = uS({ click: true, chord: true, bass: true });
   const [recording, setRecording] = uS(false);
-  const [hasTake, setHasTake] = uS(false);
+  const [recError, setRecError] = uS(null);
+  const [takeUrl, setTakeUrl] = uS(null);
   const [playingTake, setPlayingTake] = uS(false);
+
+  const mediaRecorderRef = uR(null);
+  const mediaStreamRef = uR(null);
+  const chunksRef = uR([]);
+  const takeAudioRef = uR(null);
+  const takeUrlRef = uR(null);
+  uE(() => { takeUrlRef.current = takeUrl; }, [takeUrl]);
 
   const totalBars = cfg.sections ? 12 : 4;
   const swing = variation !== "Straight 8ths";
@@ -54,20 +62,64 @@ function Player({ module }) {
 
   const toggleSound = (k) => setSounds((s) => ({ ...s, [k]: !s[k] }));
 
-  const doRecord = () => {
-    if (recording) { setRecording(false); setHasTake(true); }
-    else { setRecording(true); setHasTake(false); if (!playing) setPlaying(true); }
+  const doRecord = async () => {
+    if (recording) {
+      const mr = mediaRecorderRef.current;
+      if (mr && mr.state !== "inactive") mr.stop();
+      return;
+    }
+    setRecError(null);
+    try {
+      const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
+      mediaStreamRef.current = stream;
+      const mr = new MediaRecorder(stream);
+      mediaRecorderRef.current = mr;
+      chunksRef.current = [];
+      mr.ondataavailable = (e) => { if (e.data && e.data.size > 0) chunksRef.current.push(e.data); };
+      mr.onstop = () => {
+        const blob = new Blob(chunksRef.current, { type: mr.mimeType || "audio/webm" });
+        if (takeUrlRef.current) URL.revokeObjectURL(takeUrlRef.current);
+        setTakeUrl(URL.createObjectURL(blob));
+        stream.getTracks().forEach((t) => t.stop());
+        mediaStreamRef.current = null;
+        setRecording(false);
+      };
+      if (takeUrlRef.current) { URL.revokeObjectURL(takeUrlRef.current); setTakeUrl(null); }
+      mr.start();
+      setRecording(true);
+      if (!playing) setPlaying(true);
+    } catch (err) {
+      setRecError(
+        err && err.name === "NotAllowedError"
+          ? "Microphone access was denied. Allow microphone access in your browser to record."
+          : "Couldn't access the microphone on this device."
+      );
+    }
   };
 
-  // Play back the recorded take (a synth phrase) against silence
+  // Play back the actual recorded take
   uE(() => {
-    if (!A) return;
+    const el = takeAudioRef.current;
+    if (!el) return;
     if (playingTake) {
       if (playing) setPlaying(false);
-      A.playPhrase(key, () => setPlayingTake(false));
+      el.currentTime = 0;
+      el.play().catch(() => setPlayingTake(false));
+    } else {
+      el.pause();
     }
     // eslint-disable-next-line
   }, [playingTake]);
+
+  // Release the mic and any object URL if the module changes or this unmounts
+  uE(() => {
+    return () => {
+      const mr = mediaRecorderRef.current;
+      if (mr && mr.state !== "inactive") mr.stop();
+      if (mediaStreamRef.current) mediaStreamRef.current.getTracks().forEach((t) => t.stop());
+      if (takeUrlRef.current) URL.revokeObjectURL(takeUrlRef.current);
+    };
+  }, []);
 
   return (
     <div className="player">
@@ -183,11 +235,13 @@ function Player({ module }) {
           <div className="record-main">
             <button className={"rec-btn" + (recording ? " is-recording" : "")} onClick={doRecord}>
               <window.Icons.Mic size={18} />
-              <span>{recording ? "Stop & save take" : hasTake ? "Record again" : "Record yourself"}</span>
+              <span>{recording ? "Stop & save take" : takeUrl ? "Record again" : "Record yourself"}</span>
             </button>
-            <span className="record-note">{recording ? "Recording… play along with the track." : "Capture a take and play it back against the groove."}</span>
+            <span className="record-note">
+              {recError ? recError : recording ? "Recording… play along with the track." : "Capture a take and play it back against the groove."}
+            </span>
           </div>
-          {hasTake && !recording && (
+          {takeUrl && !recording && (
             <div className="take">
               <button className={"take-play" + (playingTake ? " is-playing" : "")} onClick={() => setPlayingTake(p => !p)}>
                 {playingTake ? <window.Icons.Pause size={16} /> : <window.Icons.Play size={16} />}
@@ -198,6 +252,7 @@ function Player({ module }) {
                 ))}
               </div>
               <span className="take-label">Your take</span>
+              <audio ref={takeAudioRef} src={takeUrl} onEnded={() => setPlayingTake(false)} style={{ display: "none" }} />
             </div>
           )}
         </div>

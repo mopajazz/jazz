@@ -148,7 +148,7 @@ window.PATHWAY = {
       goal: "Outline the harmony in real time by spelling chords as melody.",
       summary:
         "Spell the chord, make a melody. Landing on {{chord tones}} is how you sound 'inside' the changes — the foundation everything else is built on.",
-      linksTo: { label: "Full Change-Running device", note: "This is the beginner-friendly on-ramp to the live module." },
+      linksTo: { label: "Full Change-Running device", note: "This is the beginner-friendly on-ramp to the live module.", href: "01_change-running.html" },
       see: {
         intro:
           "Change-running means arpeggiating — spelling out the notes of a chord as a melodic phrase. It orients your ear, outlines the harmony, and connects one chord to the next.",

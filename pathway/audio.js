@@ -283,17 +283,6 @@
       this._clipTimer = setTimeout(() => { this.stopClips(); if (spec.onEnd) spec.onEnd(); }, dur * 1000);
       return { stop: () => this.stopClips() };
     },
-
-    // a short melodic "take" for record-yourself playback
-    playPhrase(key, onEnd) {
-      this.resume(); this.stop(); this.stopClips();
-      const bd = 0.5, t0 = this.ctx.currentTime + 0.05;
-      const degs = [0, 2, 3, 4, 3, 2, 0, null, 2, 3, 4];
-      degs.forEach((d, i) => { if (d != null) this.note(t0 + i * bd, SCALES.blues[d], 4, bd * 0.8, 0.2); });
-      const dur = degs.length * bd + 0.3;
-      this._clipTimer = setTimeout(() => { if (onEnd) onEnd(); }, dur * 1000);
-      return { stop: () => { this.stopClips(); } };
-    },
   };
 
   window.JazzAudio = A;
