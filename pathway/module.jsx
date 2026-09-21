@@ -60,7 +60,7 @@ function ModuleScreen({ module, modules, completed, onToggleComplete, onOpen, on
         <div className="mod-content">
           {tab === "see" && <SeeTab module={module} />}
           {tab === "hear" && <HearTab module={module} />}
-          {tab === "play" && <window.Player module={module} />}
+          {tab === "play" && <window.Player key={module.slug} module={module} />}
           {tab === "apply" && <ApplyTab module={module} />}
 
           {/* Tab nav */}
@@ -214,7 +214,7 @@ function ApplyTab({ module }) {
         <p><window.GlossText>{a.prompt}</window.GlossText></p>
       </div>
       {module.linksTo && (
-        <a className="links-card" href="#">
+        <a className="links-card" href={module.linksTo.href}>
           <div>
             <span className="links-card-label">{module.linksTo.label}</span>
             <span className="links-card-note">{module.linksTo.note}</span>
