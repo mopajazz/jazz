@@ -1348,19 +1348,50 @@ function playPianoNote(midi, t, end, vel) {
   floor.start(t); floor.stop(end + 0.9);
 }
 
-// Same notes as always: root position, roots from middle C up to the B above
-function chordNotes(chord) {
-  return QUALITIES[chord.q].tones.map(semi => 60 + chord.rootIdx + semi);
+/* ── Voicings ──
+   maj7, m7 and 7 get three-note rootless voicings: 3-7-9 or 7-9-3 (the bass
+   has the root). m7♭5 and °7 keep their four chord tones, in whichever
+   inversion fits. Each chord takes the shape and octave that moves least
+   from the previous chord, kept between D3 and C5. */
+const VOICING_LOW = 50, VOICING_HIGH = 72; // D3, C5
+let lastVoicing = null;
+
+function voicingShapes(chord) {
+  const t = QUALITIES[chord.q].tones;
+  if (chord.q === 'maj7' || chord.q === 'm7' || chord.q === 'dom7') {
+    const third = t[1], seventh = t[3], ninth = 14;
+    return [[third, seventh, ninth], [seventh, ninth, third + 12]];
+  }
+  return t.map((_, i) => t.slice(i).concat(t.slice(0, i).map(x => x + 12)));
+}
+
+// how far one voicing moves to reach another: each note's distance to the
+// nearest note of the other chord, counted both ways
+function voiceMove(a, b) {
+  const near = (x, set) => Math.min(...set.map(y => Math.abs(x - y)));
+  return a.reduce((n, x) => n + near(x, b), 0) + b.reduce((n, y) => n + near(y, a), 0);
+}
+
+function voiceChord(chord, prev) {
+  let best = null, bestScore = Infinity;
+  voicingShapes(chord).forEach(shape => {
+    for (let oct = 24; oct <= 72; oct += 12) {
+      const notes = shape.map(x => oct + chord.rootIdx + x);
+      if (notes[0] < VOICING_LOW || notes[notes.length - 1] > VOICING_HIGH) continue;
+      const mean = notes.reduce((a, b) => a + b, 0) / notes.length;
+      const score = prev ? voiceMove(prev, notes) + Math.abs(mean - 60) * 0.01 : Math.abs(mean - 60);
+      if (score < bestScore) { best = notes; bestScore = score; }
+    }
+  });
+  return best;
 }
 
 function playChord(chord, t, durSec) {
   if (!state.sound.chord) return;
   getCtx();
   const end = t + Math.max(durSec, 0.4);
-  chordNotes(chord).forEach((m, i) => {
-    const vel = (i === 0 ? 1 : 0.8) * (0.93 + Math.random() * 0.1); // root a little stronger
-    playPianoNote(m, t, end, vel);
-  });
+  lastVoicing = voiceChord(chord, lastVoicing);
+  lastVoicing.forEach(m => playPianoNote(m, t, end, 0.85 * (0.93 + Math.random() * 0.1)));
 }
 
 /* ── Bass ──
@@ -1466,8 +1497,8 @@ function playBass(chord, t, durSec) {
 const renderQueue = [];
 let rendering = false;
 
-function queueChord(chord) {
-  chordNotes(chord).forEach(m => renderQueue.push(() => pianoBuffer(m)));
+function queueChord(chord, prev) {
+  voiceChord(chord, prev).forEach(m => renderQueue.push(() => pianoBuffer(m)));
   renderQueue.push(() => bassBuffer(bassNote(chord)));
   if (!rendering) drainRenderQueue();
 }
@@ -1495,9 +1526,11 @@ function startTransport() {
   const seq = activeSequence();
   if (seq.length) {
     const first = seq[state.step % seq.length];
-    chordNotes(first).forEach(m => pianoBuffer(m));
+    lastVoicing = null;
+    const firstVoicing = voiceChord(first, null);
+    firstVoicing.forEach(m => pianoBuffer(m));
     bassBuffer(bassNote(first));
-    queueChord(seq[(state.step + 1) % seq.length]);
+    queueChord(seq[(state.step + 1) % seq.length], firstVoicing);
   }
   nextNoteTime = audioCtx.currentTime + 0.06;
   schedulerLoop();
@@ -1534,7 +1567,7 @@ function scheduleBeat(time) {
   if (state.bar === 0 && state.beat === 0) {
     const chordDur = beatDur() * 4 * state.bars;
     playChord(chord, time, chordDur);
-    queueChord(seq[(state.step + 1) % seq.length]);
+    queueChord(seq[(state.step + 1) % seq.length], lastVoicing);
   }
   // bass on beat 1 of every bar
   if (state.beat === 0) {
