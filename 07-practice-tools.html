@@ -1038,7 +1038,6 @@
    STATE
    ════════════════════════════════════════════════════════ */
 const ROOT_NAMES = ['C','D♭','D','E♭','E','F','G♭','G','A♭','A','B♭','B'];
-const ROOT_FREQS = { 'C':261.63,'D♭':277.18,'D':293.66,'E♭':311.13,'E':329.63,'F':349.23,'G♭':369.99,'G':392.00,'A♭':415.30,'A':440.00,'B♭':466.16,'B':493.88 };
 
 // CYCLES — sequence of indices into ROOT_NAMES (length 12)
 const CYCLES = {
@@ -1143,23 +1142,88 @@ function chordTonesText(chord) {
 /* ════════════════════════════════════════════════════════
    AUDIO
    ════════════════════════════════════════════════════════ */
-let audioCtx = null, masterBus = null;
+let audioCtx = null, masterBus = null, pianoBus = null, bassBus = null;
+let pianoRun = null, bassRun = null; // one pair per play-through, so Stop really stops
+let pianoBufs = {}, bassBufs = {}, pianoFloorWave = null, pianoFloorScale = 1;
 
 function getCtx() {
-  if (!audioCtx) {
-    audioCtx = new (window.AudioContext || window.webkitAudioContext)();
-    const comp = audioCtx.createDynamicsCompressor();
-    comp.threshold.value = -20; comp.knee.value = 12; comp.ratio.value = 4;
-    comp.attack.value = 0.003; comp.release.value = 0.18;
-    const g = audioCtx.createGain();
-    g.gain.value = 0.7;
-    comp.connect(g); g.connect(audioCtx.destination);
-    masterBus = comp;
-  }
+  if (!audioCtx) initAudioGraph(new (window.AudioContext || window.webkitAudioContext)());
   return audioCtx;
 }
 
-function semFreq(base, semis) { return base * Math.pow(2, semis/12); }
+// Piano and bass each get their own bus, plus a send into a small room.
+// The click skips the room so the time stays crisp.
+function initAudioGraph(ctx) {
+  audioCtx = ctx;
+  pianoBufs = {}; bassBufs = {};
+  makePianoFloor(ctx);
+  const comp = ctx.createDynamicsCompressor();
+  comp.threshold.value = -20; comp.knee.value = 12; comp.ratio.value = 4;
+  comp.attack.value = 0.003; comp.release.value = 0.18;
+  const out = ctx.createGain();
+  out.gain.value = 0.7;
+  comp.connect(out); out.connect(ctx.destination);
+  masterBus = comp;
+
+  const room = ctx.createConvolver();
+  room.buffer = makeRoomIR(ctx);
+  room.connect(comp);
+
+  pianoBus = ctx.createGain();
+  pianoBus.connect(comp);
+  const pianoSend = ctx.createGain();
+  pianoSend.gain.value = 0.25;
+  pianoBus.connect(pianoSend); pianoSend.connect(room);
+
+  // Upright body: a bump around 100Hz, and a finger's rounded top end
+  const body = ctx.createBiquadFilter();
+  body.type = 'peaking'; body.frequency.value = 100; body.Q.value = 1.2; body.gain.value = 3;
+  const tone = ctx.createBiquadFilter();
+  tone.type = 'lowpass'; tone.frequency.value = 1800; tone.Q.value = 0.5;
+  body.connect(tone); tone.connect(comp);
+  const bassSend = ctx.createGain();
+  bassSend.gain.value = 0.08;
+  tone.connect(bassSend); bassSend.connect(room);
+  bassBus = body;
+
+  newRun();
+}
+
+function newRun() {
+  pianoRun = audioCtx.createGain(); pianoRun.connect(pianoBus);
+  bassRun = audioCtx.createGain(); bassRun.connect(bassBus);
+}
+
+// Fade out whatever this play-through left ringing, then start a fresh pair.
+function releaseRun() {
+  if (!audioCtx) return;
+  [pianoRun, bassRun].forEach(g => {
+    g.gain.setTargetAtTime(0, audioCtx.currentTime, 0.08);
+    setTimeout(() => g.disconnect(), 1500);
+  });
+  newRun();
+}
+
+// Room reverb from a generated impulse: decaying noise that gets darker as
+// it dies, about 1.2s long. No audio files involved.
+function makeRoomIR(ctx) {
+  const rate = ctx.sampleRate;
+  const len = Math.floor(rate * 1.2), pre = Math.floor(rate * 0.012);
+  const ir = ctx.createBuffer(2, len, rate);
+  for (let ch = 0; ch < 2; ch++) {
+    const d = ir.getChannelData(ch);
+    let lp = 0;
+    for (let i = pre; i < len; i++) {
+      const t = (i - pre) / rate;
+      const k = Math.min(0.9, 0.2 + t * 0.9);
+      lp += (1 - k) * ((Math.random() * 2 - 1) - lp);
+      d[i] = lp * Math.exp(-t * 5.5);
+    }
+  }
+  return ir;
+}
+
+function midiFreq(m) { return 440 * Math.pow(2, (m - 69) / 12); }
 
 function playClick(t, accent=false) {
   if (!state.sound.click) return;
@@ -1175,47 +1239,242 @@ function playClick(t, accent=false) {
   osc.start(t); osc.stop(t + 0.08);
 }
 
+/* ── Piano ──
+   Each note is six partials. A real string is a little stiff, so its upper
+   partials run slightly sharp, and they die faster than the fundamental, so
+   the note darkens as it rings: a quick drop after the hammer, then a longer
+   tail. Partials 1–2 get a quieter twin about a cent off, like the unison
+   strings on one key. All of that is rendered once per pitch into a buffer,
+   which is cheap to play back even on an old phone. Underneath it, one plain
+   oscillator holds a quiet floor, so the harmony stays audible even at
+   8 bars per chord. */
+// [amplitude, prompt decay (s), tail decay (s), tail floor]
+const PIANO_PARTIALS = [
+  [1.00, 0.30, 1.6, 0.22],
+  [0.55, 0.22, 1.2, 0.10],
+  [0.30, 0.15, 0.9, 0.03],
+  [0.18, 0.10, 0.6, 0],
+  [0.10, 0.07, 0.4, 0],
+  [0.05, 0.05, 0.3, 0],
+];
+const PIANO_STIFFNESS = 0.0004;
+const PIANO_LEVEL = 0.067;
+const PIANO_BUF_SEC = 3.5;
+
+// The steady floor: partials 1–3 at their floor levels, as one waveform.
+function makePianoFloor(ctx) {
+  const real = new Float32Array(4), imag = new Float32Array(4);
+  PIANO_PARTIALS.slice(0, 3).forEach(([amp, , , floor], i) => { imag[i + 1] = amp * floor; });
+  pianoFloorWave = ctx.createPeriodicWave(real, imag);
+  // the browser scales the wave to a peak of 1; find the true peak to undo that
+  let pk = 0;
+  for (let s = 0; s < 2048; s++) {
+    const ph = 2 * Math.PI * s / 2048;
+    pk = Math.max(pk, Math.abs(imag[1] * Math.sin(ph) + imag[2] * Math.sin(2 * ph) + imag[3] * Math.sin(3 * ph)));
+  }
+  pianoFloorScale = pk;
+}
+
+// The ringing part of one note (everything above the floor), rendered once.
+function pianoBuffer(midi) {
+  if (pianoBufs[midi]) return pianoBufs[midi];
+  const freq = midiFreq(midi);
+  const rate = audioCtx.sampleRate;
+  const len = Math.floor(rate * PIANO_BUF_SEC);
+  const buf = audioCtx.createBuffer(1, len, rate);
+  const out = buf.getChannelData(0);
+  const atk = Math.floor(rate * 0.003);
+
+  PIANO_PARTIALS.forEach(([amp, prompt, tail, floor], i) => {
+    const n = i + 1;
+    const f = n * freq * Math.sqrt(1 + PIANO_STIFFNESS * n * n);
+    if (f > rate * 0.45) return;
+    const voices = [[f, amp]];
+    if (n <= 2) {
+      const cents = (0.4 + Math.random() * 0.8) * (Math.random() < 0.5 ? -1 : 1);
+      voices.push([f * Math.pow(2, cents / 1200), amp * 0.35]);
+    }
+    const t2 = atk + Math.floor(rate * prompt * 3);
+    const kPrompt = Math.exp(-1 / (rate * prompt)), kTail = Math.exp(-1 / (rate * tail));
+    voices.forEach(([vf, va]) => {
+      const w = 2 * Math.PI * vf / rate, c2 = 2 * Math.cos(w);
+      let prev = -Math.sin(w), cur = 0, env = 0; // sine by recurrence
+      for (let s = 0; s < len; s++) {
+        if (s < atk) env = s / atk;
+        else if (s < t2) env = 0.4 + (env - 0.4) * kPrompt;
+        else env = floor + (env - floor) * kTail;
+        out[s] += va * (env - floor * (s < atk ? s / atk : 1)) * cur;
+        const next = c2 * cur - prev; prev = cur; cur = next;
+      }
+    });
+  });
+
+  // hammer: a very short knock of band-passed noise
+  const w0 = 2 * Math.PI * Math.min(freq * 5, 6000) / rate, alpha = Math.sin(w0) / 1.4;
+  const b0 = alpha / (1 + alpha), a1 = -2 * Math.cos(w0) / (1 + alpha), a2 = (1 - alpha) / (1 + alpha);
+  let x1 = 0, x2 = 0, y1 = 0, y2 = 0;
+  const hAtk = rate * 0.001;
+  for (let s = 0, m = Math.floor(rate * 0.05); s < m; s++) {
+    const x = Math.random() * 2 - 1;
+    const y = b0 * (x - x2) - a1 * y1 - a2 * y2;
+    x2 = x1; x1 = x; y2 = y1; y1 = y;
+    out[s] += 0.6 * y * (s < hAtk ? s / hAtk : Math.exp(-(s - hAtk) / (rate * 0.008)));
+  }
+
+  // what's left of the tail hands off smoothly to the floor; the buffer is
+  // stored relative to the floor oscillator's level (see playPianoNote)
+  const fade = Math.floor(rate * 0.4);
+  for (let s = 0; s < fade; s++) out[len - 1 - s] *= s / fade;
+  for (let s = 0; s < len; s++) out[s] /= pianoFloorScale;
+  return (pianoBufs[midi] = buf);
+}
+
+function playPianoNote(midi, t, end, vel) {
+  const ctx = audioCtx;
+  const note = ctx.createGain();
+  note.gain.setValueAtTime(PIANO_LEVEL * vel * pianoFloorScale, t);
+  note.gain.setTargetAtTime(0, end, 0.12); // dampers down
+  note.connect(pianoRun);
+
+  const src = ctx.createBufferSource();
+  src.buffer = pianoBuffer(midi);
+  src.connect(note);
+  src.start(t); src.stop(end + 0.9);
+
+  const floor = ctx.createOscillator();
+  floor.setPeriodicWave(pianoFloorWave);
+  floor.frequency.value = midiFreq(midi);
+  floor.connect(note);
+  floor.start(t); floor.stop(end + 0.9);
+}
+
+// Same notes as always: root position, roots from middle C up to the B above
+function chordNotes(chord) {
+  return QUALITIES[chord.q].tones.map(semi => 60 + chord.rootIdx + semi);
+}
+
 function playChord(chord, t, durSec) {
   if (!state.sound.chord) return;
-  const ctx = getCtx();
-  const q = QUALITIES[chord.q];
-  const baseFreq = ROOT_FREQS[ROOT_NAMES[chord.rootIdx]];
-  // shell + extension voicing, mid register
-  q.tones.forEach((semi, i) => {
-    const f = semFreq(baseFreq, semi);
-    const osc = ctx.createOscillator();
-    const g = ctx.createGain();
-    osc.type = i === 0 ? 'triangle' : 'sine';
-    osc.frequency.value = f;
-    osc.connect(g); g.connect(masterBus);
-    const attack = 0.02, rel = 0.6;
-    const peak = i === 0 ? 0.10 : 0.07;
-    g.gain.setValueAtTime(0, t);
-    g.gain.linearRampToValueAtTime(peak, t + attack);
-    g.gain.setValueAtTime(peak * 0.8, t + Math.min(durSec * 0.4, 0.6));
-    g.gain.exponentialRampToValueAtTime(0.0005, t + Math.max(durSec, 0.4) + rel);
-    osc.start(t);
-    osc.stop(t + Math.max(durSec, 0.4) + rel + 0.05);
+  getCtx();
+  const end = t + Math.max(durSec, 0.4);
+  chordNotes(chord).forEach((m, i) => {
+    const vel = (i === 0 ? 1 : 0.8) * (0.93 + Math.random() * 0.1); // root a little stronger
+    playPianoNote(m, t, end, vel);
   });
+}
+
+/* ── Bass ──
+   Karplus–Strong plucked string: a pluck shape travels around a loop the
+   length of one period, losing a little energy each trip, more of it in the
+   highs. The loop is tuned with an allpass so pitch is exact. Rendered once
+   per pitch and cached; each bar just plays the buffer. */
+const BASS_BUF_SEC = 4;
+const BASS_T60 = 3.5;      // seconds for the fundamental to die away
+const BASS_TOP_T60 = 0.45; // seconds for the overtones around 1kHz
+const BASS_LEVEL = 0.56;
+
+function bassBuffer(midi) {
+  if (bassBufs[midi]) return bassBufs[midi];
+  const freq = midiFreq(midi);
+  const rate = audioCtx.sampleRate;
+  const period = rate / freq;
+  const ring = (T) => Math.pow(10, -3 / (T * freq)); // loop gain per trip for a T60 of T
+  const lpGain = (p, w) => (1 - p) / Math.sqrt((1 - p) * (1 - p) + 2 * p * (1 - Math.cos(w)));
+
+  // loop lowpass: choose the pole that gives ~1kHz its ring time
+  const w1 = 2 * Math.PI * 1000 / rate;
+  let lo = 0, hi = 0.999, p = 0.5;
+  for (let k = 0; k < 40; k++) {
+    p = (lo + hi) / 2;
+    if (lpGain(p, w1) > ring(BASS_TOP_T60)) lo = p; else hi = p;
+  }
+  const w0 = 2 * Math.PI * freq / rate;
+  const lpDelay = Math.atan2(p * Math.sin(w0), 1 - p * Math.cos(w0)) / w0;
+  const N = Math.floor(period - lpDelay) - 1;
+  const d = period - lpDelay - N; // the leftover 1–2 samples go to the allpass
+  const C = (1 - d) / (1 + d);
+  const rho = Math.min(0.9999, ring(BASS_T60) / lpGain(p, w0));
+
+  // the pluck: a finger pulls the string about a fifth of the way from the bridge
+  const line = new Float32Array(N);
+  const pos = 0.22;
+  let mean = 0;
+  for (let i = 0; i < N; i++) {
+    const x = i / N;
+    line[i] = (x < pos ? x / pos : (1 - x) / (1 - pos)) + (Math.random() * 2 - 1) * 0.1;
+    mean += line[i];
+  }
+  mean /= N;
+  for (let i = 0; i < N; i++) line[i] -= mean;
+
+  const len = Math.floor(rate * BASS_BUF_SEC);
+  const buf = audioCtx.createBuffer(1, len, rate);
+  const out = buf.getChannelData(0);
+  let idx = 0, lp = 0, apIn = 0, apOut = 0;
+  for (let n = 0; n < len; n++) {
+    const x = line[idx];
+    out[n] = x;
+    lp = (1 - p) * x + p * lp;
+    apOut = C * lp + apIn - C * apOut;
+    apIn = lp;
+    line[idx] = rho * apOut;
+    idx = idx + 1 === N ? 0 : idx + 1;
+  }
+
+  // finger meeting string: a short, low knock
+  let th = 0;
+  for (let n = 0, m = Math.floor(rate * 0.04); n < m; n++) {
+    th += 0.05 * ((Math.random() * 2 - 1) - th);
+    out[n] += th * 1.5 * Math.exp(-n / (rate * 0.008));
+  }
+  const fadeIn = Math.floor(rate * 0.002), fadeOut = Math.floor(rate * 0.03);
+  for (let n = 0; n < fadeIn; n++) out[n] *= n / fadeIn;
+  for (let n = 0; n < fadeOut; n++) out[len - 1 - n] *= n / fadeOut;
+  let peak = 0;
+  for (let n = 0; n < len; n++) peak = Math.max(peak, Math.abs(out[n]));
+  for (let n = 0; n < len; n++) out[n] /= peak;
+  return (bassBufs[midi] = buf);
+}
+
+// E2 up to D♯3: low enough to be a bass, high enough that a phone speaker
+// still carries it (a lower octave all but vanishes on small speakers)
+function bassNote(chord) {
+  const m = 48 + chord.rootIdx;
+  return m > 51 ? m - 12 : m;
 }
 
 function playBass(chord, t, durSec) {
   if (!state.sound.bass) return;
   const ctx = getCtx();
-  const baseFreq = ROOT_FREQS[ROOT_NAMES[chord.rootIdx]] / 2; // octave down
-  const filter = ctx.createBiquadFilter();
-  filter.type = 'lowpass'; filter.frequency.value = 220;
-  const osc = ctx.createOscillator();
+  const src = ctx.createBufferSource();
+  src.buffer = bassBuffer(bassNote(chord));
+  // plucked firmly, a string starts a hair sharp and settles
+  src.playbackRate.setValueAtTime(1.004, t);
+  src.playbackRate.linearRampToValueAtTime(1, t + 0.08);
   const g = ctx.createGain();
-  osc.type = 'sine';
-  osc.frequency.value = baseFreq;
-  osc.connect(filter); filter.connect(g); g.connect(masterBus);
-  g.gain.setValueAtTime(0, t);
-  g.gain.linearRampToValueAtTime(0.32, t + 0.03);
-  g.gain.setValueAtTime(0.30, t + Math.min(durSec * 0.55, 0.45));
-  g.gain.exponentialRampToValueAtTime(0.0005, t + Math.max(durSec, 0.3));
-  osc.start(t);
-  osc.stop(t + Math.max(durSec, 0.3) + 0.05);
+  const end = t + Math.max(durSec, 0.3);
+  g.gain.setValueAtTime(BASS_LEVEL * (0.94 + Math.random() * 0.08), t);
+  g.gain.setTargetAtTime(0, end, 0.04); // the next note damps this one
+  src.connect(g); g.connect(bassRun);
+  src.start(t);
+  src.stop(end + 0.3);
+}
+
+// Buffers render on first use. To keep that work off the beat, the first
+// chord renders before playback starts, and each next chord is queued one
+// chord ahead and rendered a pitch at a time.
+const renderQueue = [];
+let rendering = false;
+
+function queueChord(chord) {
+  chordNotes(chord).forEach(m => renderQueue.push(() => pianoBuffer(m)));
+  renderQueue.push(() => bassBuffer(bassNote(chord)));
+  if (!rendering) drainRenderQueue();
+}
+
+function drainRenderQueue() {
+  rendering = renderQueue.length > 0;
+  if (rendering) { renderQueue.shift()(); setTimeout(drainRenderQueue, 30); }
 }
 
 /* ════════════════════════════════════════════════════════
@@ -1233,6 +1492,13 @@ function startTransport() {
   state.playing = true;
   state.beat = 0; state.bar = 0;
   if (state.sound.countin) state.countingIn = 4;
+  const seq = activeSequence();
+  if (seq.length) {
+    const first = seq[state.step % seq.length];
+    chordNotes(first).forEach(m => pianoBuffer(m));
+    bassBuffer(bassNote(first));
+    queueChord(seq[(state.step + 1) % seq.length]);
+  }
   nextNoteTime = audioCtx.currentTime + 0.06;
   schedulerLoop();
   updatePlayBtn();
@@ -1243,6 +1509,7 @@ function stopTransport() {
   state.playing = false;
   state.countingIn = 0;
   if (schedulerId) { clearTimeout(schedulerId); schedulerId = null; }
+  releaseRun();
   document.querySelectorAll('.beat-cell.on').forEach(b => b.classList.remove('on'));
   document.getElementById('bar-fill').style.width = '0%';
   document.getElementById('chord-now-card').classList.remove('beat-1');
@@ -1267,6 +1534,7 @@ function scheduleBeat(time) {
   if (state.bar === 0 && state.beat === 0) {
     const chordDur = beatDur() * 4 * state.bars;
     playChord(chord, time, chordDur);
+    queueChord(seq[(state.step + 1) % seq.length]);
   }
   // bass on beat 1 of every bar
   if (state.beat === 0) {
