@@ -474,6 +474,7 @@
 </style>
 <link rel="stylesheet" href="./ji-polish.css">
 <script src="./ji-theme.js" defer></script>
+<script src="./ji-notes.js"></script>
 </head>
 <body>
 
@@ -515,7 +516,7 @@
         <button class="cycle-pill active" id="chromatic-cycle-btn" onclick="selectCycle('chromatic')" aria-label="Select chromatic cycle" aria-pressed="true">Chromatic</button>
         <button class="cycle-pill" id="fourths-cycle-btn" onclick="selectCycle('fourths')" aria-label="Select cycle of fourths" aria-pressed="false">4ths</button>
       </div>
-  <div class="cycle-description" id="cycle-desc">All 12 notes in chromatic order: C, D♭, D, E♭, E, F, G♭, G, A♭, A, B♭, B</div>
+  <div class="cycle-description" id="cycle-desc">All 12 notes in chromatic order: C, D♭, D, E♭, E, F, F♯, G, A♭, A, B♭, B</div>
     </div>
   </div>
 
@@ -666,27 +667,19 @@
 
 <script>
 // ─── DATA ──────────────────────────────────────────────────────────────
-const ROOTS = ['C','D♭','D','E♭','E','F','G♭','G','A♭','A','B♭','B'];
-const SEMIS = {
-  'C':0, 'C#':1, 'D♭':1, 'D':2, 'D#':3, 'E♭':3, 'E':4, 'F':5,
-  'F#':6, 'G♭':6, 'G':7, 'G#':8, 'A♭':8, 'A':9, 'A#':10, 'B♭':10, 'B':11
-};
-const NOTE_NAMES = ['C','D♭','D','E♭','E','F','F#','G','A♭','A','B♭','B'];
-function displayRootSpelling(noteName, originalRoot) {
-  return originalRoot === 'G♭' && noteName === 'F#' ? 'G♭' : noteName;
-}
+const ROOTS = JINotes.KEYS; // named as their key signatures name them
 
 // ─── CHORD CYCLES ──────────────────────────────────────────────────────────
 const CHROMATIC = {
   id: 'chromatic',
-  roots: ['C', 'D♭', 'D', 'E♭', 'E', 'F', 'G♭', 'G', 'A♭', 'A', 'B♭', 'B'],
-  description: 'All 12 notes in chromatic order: C, D♭, D, E♭, E, F, G♭, G, A♭, A, B♭, B'
+  roots: JINotes.KEYS,
+  description: 'All 12 notes in chromatic order: C, D♭, D, E♭, E, F, F♯, G, A♭, A, B♭, B'
 };
 
 const FOURTHS = {
   id: 'fourths',
-  roots: ['C', 'F', 'B♭', 'E♭', 'A♭', 'D♭', 'G♭', 'B', 'E', 'A', 'D', 'G'],
-  description: 'Harmonic progression: C, F, B♭, E♭, A♭, D♭, G♭, B, E, A, D, G'
+  roots: JINotes.FOURTHS,
+  description: 'Harmonic progression: C, F, B♭, E♭, A♭, D♭, F♯, B, E, A, D, G'
 };
 
 let selectedCycle = CHROMATIC;
@@ -706,9 +699,6 @@ function selectCycle(cycleId) {
 }
 
 function midiToHz(midi) { return 440 * Math.pow(2, (midi - 69) / 12); }
-function noteNameFromSemis(rootSemi, offset) {
-  return NOTE_NAMES[(rootSemi + offset + 120) % 12];
-}
 
 // ─── THE LICK FORMS ─────────────────────────────────────────────────────
 // Form A (dominant 7): 1, 7, ♭7, 9, 6, 5
@@ -716,11 +706,11 @@ function noteNameFromSemis(rootSemi, offset) {
 
 const LICK_FORMS = {
   dom7: [
-    // Form A — dominant 7: 8-7-♭7-9-6-5 = G-F#-F-A-E-D
-    // G(12) down to F#(11) down to F(10) UP to A(14) down to E(9) down to D(7)
+    // Form A — dominant 7: 8-7-♭7-9-6-5 = G-F♯-F-A-E-D
+    // G(12) down to F♯(11) down to F(10) UP to A(14) down to E(9) down to D(7)
     [
       { semi: 12, fn: '8',  kind: 'chord'  }, // G, octave/root
-      { semi: 11, fn: '7',  kind: 'bebop'  }, // F#, natural 7 (bebop passing tone)
+      { semi: 11, fn: '7',  kind: 'bebop'  }, // F♯, natural 7 (bebop passing tone)
       { semi: 10, fn: '♭7', kind: 'chord'  }, // F, flat 7
       { semi: 14, fn: '9',  kind: 'chrom'  }, // A, major 9 (major 3rd leap UP)
       { semi: 9,  fn: '6',  kind: 'chord'  }, // E, major 6
@@ -743,6 +733,8 @@ const LICK_FORMS = {
 // ─── STATE ─────────────────────────────────────────────────────────────
 let selectedRoot = 'G';
 let chordType = 'min7';      // 'min7' | 'dom7'
+// Minor 7 chords take the minor key's root name: C♯–7, not D♭–7
+const rootLabel = (r) => JINotes.rootName(r, chordType === 'min7');
 let progressionMode = 'chromatic'; // 'chromatic' | 'cycle4'
 let cycle4StartIdx = 0;      // index into the cycle of fourths
 let tempo = 100;
@@ -751,7 +743,7 @@ let audioCtx = null;
 let masterBus = null;
 
 // Cycle of fourths: descending by 4ths (ascending by 5ths)
-const CYCLE_OF_FOURTHS = ['C','F','B♭','E♭','A♭','D♭','G♭','B','E','A','D','G'];
+const CYCLE_OF_FOURTHS = JINotes.FOURTHS;
 
 // ─── AUDIO ENGINE ──────────────────────────────────────────────────────
 function getAudioCtx() {
@@ -781,7 +773,7 @@ const VOICING_SHAPES = {
 function buildVoicing(rootName, quality, type='A') {
   const shapes = VOICING_SHAPES[quality] || VOICING_SHAPES['dom7'];
   const semis = shapes[type] || shapes['A'];
-  const root = SEMIS[rootName] ?? 0;
+  const root = JINotes.pc(rootName) ?? 0;
   let rootMidi = 53 - semis[0];
   rootMidi += (root - ((rootMidi % 12 + 12) % 12) + 12) % 12;
   const low = rootMidi + semis[0];
@@ -854,7 +846,7 @@ function getCurrentLick() {
 }
 
 function getLickFreqs() {
-  const rootSemi = SEMIS[selectedRoot];
+  const rootSemi = JINotes.pc(selectedRoot);
   const lick = getCurrentLick();
   const rootMidi = 60 + rootSemi;
   let r = rootMidi;
@@ -865,7 +857,7 @@ function getLickFreqs() {
 // ─── RENDERING ─────────────────────────────────────────────────────────
 function renderRootPills() {
   document.getElementById('root-pills').innerHTML = selectedCycle.roots.map(r =>
-    `<button class="pill ${r === selectedRoot ? 'active' : ''}" onclick="selectRoot('${r}')">${r}</button>`
+    `<button class="pill ${r === selectedRoot ? 'active' : ''}" onclick="selectRoot('${r}')">${rootLabel(r)}</button>`
   ).join('');
 }
 
@@ -873,13 +865,13 @@ function renderCycle4Pills() {
   const el = document.getElementById('cycle4-pills');
   if (el) {
     el.innerHTML = CYCLE_OF_FOURTHS.map((r, idx) =>
-      `<button class="pill ${idx === cycle4StartIdx ? 'active' : ''}" onclick="selectCycle4Start(${idx})">${r}</button>`
+      `<button class="pill ${idx === cycle4StartIdx ? 'active' : ''}" onclick="selectCycle4Start(${idx})">${rootLabel(r)}</button>`
     ).join('');
   }
 }
 
 function renderChordHeader() {
-  const sym = selectedRoot.replace('♭','<span style="font-size:0.65em">♭</span>').replace('#','<span style="font-size:0.65em">♯</span>');
+  const sym = rootLabel(selectedRoot).replace('♭','<span style="font-size:0.65em">♭</span>').replace('♯','<span style="font-size:0.65em">♯</span>');
   const suffix = chordType === 'min7' ? `<sup>–7</sup>` : `<sup>7</sup>`;
   const formLabel = chordType === 'min7' ? 'Form B — 4-3-♭3-5-2-1' : 'Form A — 8-7-♭7-9-6-5';
   const typeLabel = chordType === 'min7' ? 'Minor seventh' : 'Dominant seventh';
@@ -889,15 +881,14 @@ function renderChordHeader() {
 }
 
 function renderLickRow() {
-  const rootSemi = SEMIS[selectedRoot];
+  const rootSemi = JINotes.pc(selectedRoot);
   if (rootSemi === undefined) {
     console.warn('renderLickRow: selectedRoot is invalid:', selectedRoot);
     return;
   }
   const lick = getCurrentLick();
   const html = lick.map((n, i) => {
-    const noteIdx = (rootSemi + n.semi + 120) % 12;
-    const name = displayRootSpelling(NOTE_NAMES[noteIdx], selectedRoot);
+    const name = JINotes.degree(rootLabel(selectedRoot), n.fn); // spelled by degree: the 7 of G is F♯
     const kindCls = n.kind === 'chord' ? 'chord-tone'
                   : n.kind === 'bebop' ? 'bebop-note'
                   : 'chromatic';
@@ -977,7 +968,7 @@ async function playWithChord() {
   let totalDur = noteDur * (freqs.length - 1) + noteDur * 2;
   
   // Start chord and bass (note: these won't respond to tempo changes mid-playback)
-  const rootFreq = midiToHz(60 + SEMIS[selectedRoot] - (SEMIS[selectedRoot] >= 6 ? 12 : 0));
+  const rootFreq = midiToHz(60 + JINotes.pc(selectedRoot) - (JINotes.pc(selectedRoot) >= 6 ? 12 : 0));
   playJazzChord(selectedRoot, chordType, ctx.currentTime, totalDur, ctx, 'A');
   playBass(rootFreq, ctx.currentTime, totalDur, ctx);
 
@@ -1054,7 +1045,7 @@ async function playLickWithChordQuick() {
       const startTime = ctx.currentTime;
       
       playJazzChord(selectedRoot, chordType, startTime, totalDur, ctx, 'A');
-      const rootSemi = SEMIS[selectedRoot];
+      const rootSemi = JINotes.pc(selectedRoot);
       const rootMidi = 60 + rootSemi - (rootSemi >= 6 ? 12 : 0);
       const bassFreq = midiToHz(rootMidi);
       playBass(bassFreq, startTime, totalDur, ctx);
@@ -1155,6 +1146,8 @@ function updateProgressionButton() {
 
 function setChordType(t) {
   chordType = t;
+  renderRootPills();
+  renderCycle4Pills();
   document.querySelectorAll('.chord-type-row .mode-pill').forEach(el => el.classList.remove('active'));
   const idx = t === 'min7' ? 0 : 1;
   document.querySelectorAll('.chord-type-row .mode-pill')[idx].classList.add('active');

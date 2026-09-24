@@ -419,6 +419,7 @@ main { width: min(100%, 74rem); }
 </style>
 <link rel="stylesheet" href="./ji-polish.css">
 <script src="./ji-theme.js" defer></script>
+<script src="./ji-notes.js"></script>
 </head>
 <body>
 
@@ -461,7 +462,7 @@ main { width: min(100%, 74rem); }
         <button class="cycle-pill active" id="chromatic-cycle-btn" onclick="selectCycle('chromatic')" aria-label="Select chromatic cycle" aria-pressed="true">Chromatic</button>
         <button class="cycle-pill" id="fourths-cycle-btn" onclick="selectCycle('fourths')" aria-label="Select cycle of fourths" aria-pressed="false">4ths</button>
       </div>
-      <div class="cycle-description" id="cycle-desc">All 12 notes in chromatic order: C, D♭, D, E♭, E, F, G♭, G, A♭, A, B♭, B</div>
+      <div class="cycle-description" id="cycle-desc">All 12 notes in chromatic order: C, D♭, D, E♭, E, F, F♯, G, A♭, A, B♭, B</div>
     </div>
   </div>
 
@@ -613,12 +614,11 @@ const VOICING_SHAPES = {
   'dom7': { A:[4,7,10,14], B:[10,14,16,21] },
   'min7': { A:[3,7,10,14], B:[10,14,15,19] },
 };
-const VPC = {'C':0,'D♭':1,'D':2,'E♭':3,'E':4,'F':5,'F#':6,'G':7,'A♭':8,'A':9,'B♭':10,'B':11};
 function midiToHz(midi) { return 440 * Math.pow(2, (midi - 69) / 12); }
 function buildVoicing(rootName, quality, type='A') {
   const shapes = VOICING_SHAPES[quality] || VOICING_SHAPES['dom7'];
   const semis = shapes[type] || shapes['A'];
-  const root = VPC[normalizeRoot(rootName)] ?? 0;
+  const root = JINotes.pc(rootName);
   let rootMidi = 53 - semis[0];
   rootMidi += (root - ((rootMidi % 12 + 12) % 12) + 12) % 12;
   const low = rootMidi + semis[0];
@@ -688,31 +688,19 @@ function playBass(freq, startTime, dur, ctx) {
 function sleep(ms) { return new Promise(r => setTimeout(r, ms)); }
 
 // ─── MUSIC DATA ──────────────────────────────────────────────────────────
-const ROOTS = ['C','D♭','D','E♭','E','F','G♭','G','A♭','A','B♭','B'];
-const NOTE_NAMES = ['C','D♭','D','E♭','E','F','F#','G','A♭','A','B♭','B'];
-const ROOT_FREQS = {
-  'C':261.63,'D♭':277.18,'D':293.66,'E♭':311.13,'E':329.63,
-  'F':349.23,'F#':369.99,'G':392.00,'A♭':415.30,'A':440.00,'B♭':466.16,'B':493.88
-};
-const ENHARMONIC_EQUIVS = { 'G♭': 'F#' };
-function normalizeRoot(rootName) {
-  return ENHARMONIC_EQUIVS[rootName] || rootName;
-}
-function displayRootSpelling(noteName, originalRoot) {
-  return normalizeRoot(originalRoot) === noteName ? originalRoot : noteName;
-}
+const ROOTS = JINotes.KEYS; // named as their key signatures name them
 
 // ─── CHORD CYCLES ──────────────────────────────────────────────────────────
 const CHROMATIC = {
   id: 'chromatic',
-  roots: ['C', 'D♭', 'D', 'E♭', 'E', 'F', 'G♭', 'G', 'A♭', 'A', 'B♭', 'B'],
-  description: 'All 12 notes in chromatic order: C, D♭, D, E♭, E, F, G♭, G, A♭, A, B♭, B'
+  roots: JINotes.KEYS,
+  description: 'All 12 notes in chromatic order: C, D♭, D, E♭, E, F, F♯, G, A♭, A, B♭, B'
 };
 
 const FOURTHS = {
   id: 'fourths',
-  roots: ['C', 'F', 'B♭', 'E♭', 'A♭', 'D♭', 'G♭', 'B', 'E', 'A', 'D', 'G'],
-  description: 'Harmonic progression: C, F, B♭, E♭, A♭, D♭, G♭, B, E, A, D, G'
+  roots: JINotes.FOURTHS,
+  description: 'Harmonic progression: C, F, B♭, E♭, A♭, D♭, F♯, B, E, A, D, G'
 };
 
 let selectedCycle = CHROMATIC;
@@ -732,9 +720,6 @@ function selectCycle(cycleId) {
 }
 
 function semisToFreq(base, semis) { return base * Math.pow(2, semis / 12); }
-function noteAt(root, semis) {
-  return displayRootSpelling(NOTE_NAMES[(NOTE_NAMES.indexOf(normalizeRoot(root)) + semis + 120) % 12], root);
-}
 
 // Dominant 7th: 1, 3, 5, ♭7, ♭9 (for display — ♭9 is the target)
 // intervals: root=0, maj3=4, p5=7, b7=10, b9=13 (one octave + minor second)
@@ -747,24 +732,22 @@ const DOM7_INTERVALS = [
 ];
 
 function getChordData(rootName) {
-  const base = ROOT_FREQS[normalizeRoot(rootName)];
+  const base = JINotes.freq(rootName);
   return DOM7_INTERVALS.map(t => ({
     ...t,
-    note: noteAt(rootName, t.semis % 12),
+    note: JINotes.degree(rootName, t.deg), // spelled by degree: the ♭9 of A is B♭
     freq: semisToFreq(base, t.semis),
     freqLow: semisToFreq(base, t.semis - 12), // octave lower for descending
   }));
 }
 
-// For context play: ii-7 = root 2 semis above V root (but we think of V root,
-// so ii is a perfect 5th below V, i.e. V-root minus 7 semis)
+// For context play, spelled within the key the V7 resolves to (F♯7 → C♯m7,
+// F♯7, B). The ii root is a 5th above V: G7 → Dm7.
 function getIIRoot(vRoot) {
-  const vIdx = NOTE_NAMES.indexOf(normalizeRoot(vRoot));
-  return NOTE_NAMES[(vIdx - 7 + 12) % 12];
+  return JINotes.spell(vRoot, 7, 4);
 }
 function getIRoot(vRoot) {
-  const vIdx = NOTE_NAMES.indexOf(normalizeRoot(vRoot));
-  return NOTE_NAMES[(vIdx + 5) % 12]; // V → I is a 4th above (= 5th below)
+  return JINotes.spell(vRoot, 5, 3); // V → I is a 4th above (= 5th below)
 }
 
 // ─── STATE ────────────────────────────────────────────────────────────────
@@ -781,7 +764,7 @@ function renderRootPills() {
 }
 
 function renderChordDisplay() {
-  const r = selectedRoot.replace('♭','<span style="font-size:0.65em">♭</span>').replace('#','<span style="font-size:0.65em">#</span>');
+  const r = selectedRoot.replace('♭','<span style="font-size:0.65em">♭</span>').replace('♯','<span style="font-size:0.65em">♯</span>');
   document.getElementById('chord-symbol').innerHTML = `${r}<sup>7</sup>`;
 
   const tones = getChordData(selectedRoot);
@@ -810,9 +793,9 @@ function renderChain() {
   const thirdTone = vTones.find(t => t.deg === '3');
   const flat9Tone = vTones.find(t => t.deg === '♭9');
   const iiRoot = getIIRoot(selectedRoot);
-  const iiBase = ROOT_FREQS[normalizeRoot(iiRoot)];
+  const iiBase = JINotes.freq(iiRoot);
   // ii chord ♭7 = 10 semis above ii root
-  const iiSevenNote = noteAt(iiRoot, 10);
+  const iiSevenNote = JINotes.degree(iiRoot, "♭7");
   const vRootNote = selectedRoot;
 
   document.getElementById('chain-steps').innerHTML = `
@@ -877,7 +860,7 @@ async function playGesture() {
   const beat = 60 / tempo;
 
   // Bass drone + jazz voicing underneath
-  playBass(ROOT_FREQS[normalizeRoot(selectedRoot)], ctx.currentTime, beat * 4, ctx);
+  playBass(JINotes.freq(selectedRoot), ctx.currentTime, beat * 4, ctx);
   playJazzChord(selectedRoot, 'dom7', ctx.currentTime, beat * 3.5, ctx, 'B');
 
   const thirdFreq = tones[thirdIdx].freq;
@@ -933,8 +916,8 @@ async function playWithContext() {
 
   const iiRoot = getIIRoot(selectedRoot);
   const iRoot = getIRoot(selectedRoot);
-  const iiBaseFreq = ROOT_FREQS[normalizeRoot(iiRoot)];
-  const iBaseFreq = ROOT_FREQS[normalizeRoot(iRoot)];
+  const iiBaseFreq = JINotes.freq(iiRoot);
+  const iBaseFreq = JINotes.freq(iRoot);
 
   // ii–7 chord (2 beats)
   playBass(iiBaseFreq, ctx.currentTime, beat * 2, ctx);
@@ -945,7 +928,7 @@ async function playWithContext() {
   await sleep(beat * 2000);
 
   // V7 — the 7-3 arrives, then continues to ♭9
-  playBass(ROOT_FREQS[normalizeRoot(selectedRoot)], ctx.currentTime, beat * 2, ctx);
+  playBass(JINotes.freq(selectedRoot), ctx.currentTime, beat * 2, ctx);
   playJazzChord(selectedRoot, 'dom7', ctx.currentTime, beat * 1.8, ctx, 'B');
 
   dimAllBut(thirdIdx, flat9Idx);
@@ -987,8 +970,8 @@ async function playCombined() {
 
 async function cycleKeys() {
   if (isPlaying) return;
-  // Cycle through dominant 7th cycle of 5ths: G, C, F, Bb, Eb, Ab, Db, Gb, B, E, A, D
-  const cycle = ['G','C','F','B♭','E♭','A♭','D♭','G♭','B','E','A','D'];
+  // Cycle through dominant 7th cycle of 5ths: G, C, F, B♭, E♭, A♭, D♭, F♯, B, E, A, D
+  const cycle = ['G','C','F','B♭','E♭','A♭','D♭','F♯','B','E','A','D'];
   for (const root of cycle) {
     selectRoot(root);
     await playGestureQuick();
@@ -1003,7 +986,7 @@ async function playGestureQuick() {
   const thirdFreq = tones.find(t=>t.deg==='3').freq;
   const flat9Freq = tones.find(t=>t.deg==='♭9').freq;
 
-  playBass(ROOT_FREQS[normalizeRoot(selectedRoot)], ctx.currentTime, beat * 2.5, ctx);
+  playBass(JINotes.freq(selectedRoot), ctx.currentTime, beat * 2.5, ctx);
   playTone(thirdFreq, ctx.currentTime, beat * 0.8, ctx, 0.5);
   await sleep(beat * 1000);
   playTone(flat9Freq, ctx.currentTime, beat * 0.8, ctx, 0.5);

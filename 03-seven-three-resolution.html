@@ -537,6 +537,7 @@
 </style>
 <link rel="stylesheet" href="./ji-polish.css">
 <script src="./ji-theme.js" defer></script>
+<script src="./ji-notes.js"></script>
 </head>
 <body>
 
@@ -578,7 +579,7 @@
         <button class="cycle-pill active" id="chromatic-cycle-btn" onclick="selectCycle('chromatic')" aria-label="Select chromatic cycle" aria-pressed="true">Chromatic</button>
         <button class="cycle-pill" id="fourths-cycle-btn" onclick="selectCycle('fourths')" aria-label="Select cycle of fourths" aria-pressed="false">4ths</button>
       </div>
-      <div class="cycle-description" id="cycle-desc">All 12 notes in chromatic order: C, D♭, D, E♭, E, F, G♭, G, A♭, A, B♭, B</div>
+      <div class="cycle-description" id="cycle-desc">All 12 notes in chromatic order: C, D♭, D, E♭, E, F, F♯, G, A♭, A, B♭, B</div>
     </div>
   </div>
 
@@ -781,28 +782,19 @@
 
 <script>
 // ─── DATA ──────────────────────────────────────────────────────────────
-const ROOTS = ['C','D♭','D','E♭','E','F','G♭','G','A♭','A','B♭','B'];
-const NOTE_NAMES = ['C','D♭','D','E♭','E','F','F#','G','A♭','A','B♭','B'];
-const ROOT_FREQS = {
-  'C':261.63,'D♭':277.18,'D':293.66,'E♭':311.13,'E':329.63,
-  'F':349.23,'F#':369.99,'G':392.00,'A♭':415.30,'A':440.00,'B♭':466.16,'B':493.88
-};
-const ENHARMONIC_EQUIVS = { 'G♭': 'F#' };
-function normalizeRoot(rootName) {
-  return ENHARMONIC_EQUIVS[rootName] || rootName;
-}
+const ROOTS = JINotes.KEYS; // named as their key signatures name them
 
 // ─── CHORD CYCLES ──────────────────────────────────────────────────────────
 const CHROMATIC = {
   id: 'chromatic',
-  roots: ['C', 'D♭', 'D', 'E♭', 'E', 'F', 'G♭', 'G', 'A♭', 'A', 'B♭', 'B'],
-  description: 'All 12 notes in chromatic order: C, D♭, D, E♭, E, F, G♭, G, A♭, A, B♭, B'
+  roots: JINotes.KEYS,
+  description: 'All 12 notes in chromatic order: C, D♭, D, E♭, E, F, F♯, G, A♭, A, B♭, B'
 };
 
 const FOURTHS = {
   id: 'fourths',
-  roots: ['C', 'F', 'B♭', 'E♭', 'A♭', 'D♭', 'G♭', 'B', 'E', 'A', 'D', 'G'],
-  description: 'Harmonic progression: C, F, B♭, E♭, A♭, D♭, G♭, B, E, A, D, G'
+  roots: JINotes.FOURTHS,
+  description: 'Harmonic progression: C, F, B♭, E♭, A♭, D♭, F♯, B, E, A, D, G'
 };
 
 let selectedCycle = CHROMATIC;
@@ -825,38 +817,23 @@ function selectCycle(cycleId) {
 // ii-7 root = 2 semitones above I
 // V7 root = 7 semitones above I (perfect 5th)
 function getChordData(keyRoot) {
-  const keyIdx = NOTE_NAMES.indexOf(normalizeRoot(keyRoot));
-
-  // I maj7
-  const iRoot = keyIdx;
-  const iThird = (keyIdx + 4) % 12;
-  const iFifth = (keyIdx + 7) % 12;
-  const iSeventh = (keyIdx + 11) % 12;
-
-  // ii-7 (root = 2 semitones above I)
-  const iiIdx = (keyIdx + 2) % 12;
-  const iiRoot = iiIdx;
-  const iiThird = (iiIdx + 3) % 12;    // minor third
-  const iiFifth = (iiIdx + 7) % 12;
-  const iiSeven = (iiIdx + 10) % 12;   // ♭7
-
-  // V7 (root = 7 semitones above I)
-  const vIdx = (keyIdx + 7) % 12;
-  const vRoot = vIdx;
-  const vThird = (vIdx + 4) % 12;      // major third
-  const vFifth = (vIdx + 7) % 12;
-  const vSeven = (vIdx + 10) % 12;     // ♭7
+  // Every note spelled by letter within the key: key of B → C♯m7, F♯7, Bmaj7
+  const note = (root, semis, steps) => JINotes.spell(root, semis, steps);
+  const tone = (name) => ({ name, freq: JINotes.freq(name) });
+  const iiRoot = note(keyRoot, 2, 1);
+  const vRoot = note(keyRoot, 7, 4);
+  const ii = [tone(iiRoot), tone(note(iiRoot, 3, 2)), tone(note(iiRoot, 7, 4)), tone(note(iiRoot, 10, 6))];
+  const v  = [tone(vRoot),  tone(note(vRoot, 4, 2)),  tone(note(vRoot, 7, 4)),  tone(note(vRoot, 10, 6))];
+  const i  = [tone(keyRoot), tone(note(keyRoot, 4, 2)), tone(note(keyRoot, 7, 4)), tone(note(keyRoot, 11, 6))];
 
   return {
     key: keyRoot,
-    ii: { root: NOTE_NAMES[iiRoot], third: NOTE_NAMES[iiThird], fifth: NOTE_NAMES[iiFifth], seven: NOTE_NAMES[iiSeven],
-          rootFreq: ROOT_FREQS[NOTE_NAMES[iiRoot]], thirdFreq: ROOT_FREQS[NOTE_NAMES[iiThird]],
-          fifthFreq: ROOT_FREQS[NOTE_NAMES[iiFifth]], sevenFreq: ROOT_FREQS[NOTE_NAMES[iiSeven]] },
-    v:  { root: NOTE_NAMES[vRoot],  third: NOTE_NAMES[vThird],  fifth: NOTE_NAMES[vFifth],  seven: NOTE_NAMES[vSeven],
-          rootFreq: ROOT_FREQS[NOTE_NAMES[vRoot]],  thirdFreq: ROOT_FREQS[NOTE_NAMES[vThird]],
-          fifthFreq: ROOT_FREQS[NOTE_NAMES[vFifth]], sevenFreq: ROOT_FREQS[NOTE_NAMES[vSeven]] },
-    i: { root: keyRoot, third: NOTE_NAMES[iThird], fifth: NOTE_NAMES[iFifth], seven: NOTE_NAMES[iSeventh],
-         rootFreq: ROOT_FREQS[normalizeRoot(keyRoot)], thirdFreq: ROOT_FREQS[NOTE_NAMES[iThird]] }
+    ii: { root: ii[0].name, third: ii[1].name, fifth: ii[2].name, seven: ii[3].name,
+          rootFreq: ii[0].freq, thirdFreq: ii[1].freq, fifthFreq: ii[2].freq, sevenFreq: ii[3].freq },
+    v:  { root: v[0].name, third: v[1].name, fifth: v[2].name, seven: v[3].name,
+          rootFreq: v[0].freq, thirdFreq: v[1].freq, fifthFreq: v[2].freq, sevenFreq: v[3].freq },
+    i:  { root: i[0].name, third: i[1].name, fifth: i[2].name, seven: i[3].name,
+          rootFreq: i[0].freq, thirdFreq: i[1].freq }
   };
 }
 
@@ -905,12 +882,11 @@ const VOICING_SHAPES = {
   'dom7': { A:[4,7,10,14], B:[10,14,16,21] },
   'min7': { A:[3,7,10,14], B:[10,14,15,19] },
 };
-const VPC = {'C':0,'D♭':1,'D':2,'E♭':3,'E':4,'F':5,'F#':6,'G':7,'A♭':8,'A':9,'B♭':10,'B':11};
 function midiToHz(midi) { return 440 * Math.pow(2, (midi - 69) / 12); }
 function buildVoicing(rootName, quality, type='A') {
   const shapes = VOICING_SHAPES[quality] || VOICING_SHAPES['dom7'];
   const semis = shapes[type] || shapes['A'];
-  const root = VPC[normalizeRoot(rootName)] ?? 0;
+  const root = JINotes.pc(rootName);
   let rootMidi = 53 - semis[0];
   rootMidi += (root - ((rootMidi % 12 + 12) % 12) + 12) % 12;
   const low = rootMidi + semis[0];
@@ -991,8 +967,8 @@ function renderChordDisplay() {
   const d = getChordData(selectedKey);
 
   // Format chord symbols
-  const iiRoot = d.ii.root.replace('♭','<span style="font-size:0.65em">♭</span>').replace('#','<span style="font-size:0.65em">#</span>');
-  const vRoot = d.v.root.replace('♭','<span style="font-size:0.65em">♭</span>').replace('#','<span style="font-size:0.65em">#</span>');
+  const iiRoot = d.ii.root.replace('♭','<span style="font-size:0.65em">♭</span>').replace('♯','<span style="font-size:0.65em">♯</span>');
+  const vRoot = d.v.root.replace('♭','<span style="font-size:0.65em">♭</span>').replace('♯','<span style="font-size:0.65em">♯</span>');
 
   document.getElementById('ii-symbol').innerHTML = `${iiRoot}<sup>–7</sup>`;
   document.getElementById('v-symbol').innerHTML = `${vRoot}<sup>7</sup>`;
@@ -1012,9 +988,9 @@ function renderChordDisplay() {
 
 function renderChain() {
   const d = getChordData(selectedKey);
-  const iRoot = d.i.root.replace('♭','<span style="font-size:0.65em">♭</span>').replace('#','<span style="font-size:0.65em">#</span>');
-  const iiRoot = d.ii.root.replace('♭','<span style="font-size:0.65em">♭</span>').replace('#','<span style="font-size:0.65em">#</span>');
-  const vRoot = d.v.root.replace('♭','<span style="font-size:0.65em">♭</span>').replace('#','<span style="font-size:0.65em">#</span>');
+  const iRoot = d.i.root.replace('♭','<span style="font-size:0.65em">♭</span>').replace('♯','<span style="font-size:0.65em">♯</span>');
+  const iiRoot = d.ii.root.replace('♭','<span style="font-size:0.65em">♭</span>').replace('♯','<span style="font-size:0.65em">♯</span>');
+  const vRoot = d.v.root.replace('♭','<span style="font-size:0.65em">♭</span>').replace('♯','<span style="font-size:0.65em">♯</span>');
 
   document.getElementById('chain-row').innerHTML = `
     <div class="chain-chord" id="chain-ii">

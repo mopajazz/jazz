@@ -12,6 +12,7 @@
 <link href="https://fonts.googleapis.com/css2?family=Spectral:ital,wght@0,400;0,500;0,600;0,700;1,500;1,600&family=DM+Sans:ital,opsz,wght@0,9..40,400;0,9..40,500;0,9..40,600;0,9..40,700&family=DM+Mono:ital,wght@0,300;0,400;0,500;1,300;1,400&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="./ji-polish.css">
 <script src="./ji-theme.js" defer></script>
+<script src="./ji-notes.js"></script>
 <style>
   *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
 
@@ -1037,15 +1038,15 @@
 /* ════════════════════════════════════════════════════════
    STATE
    ════════════════════════════════════════════════════════ */
-const ROOT_NAMES = ['C','D♭','D','E♭','E','F','G♭','G','A♭','A','B♭','B'];
+const ROOT_NAMES = JINotes.KEYS; // named as their key signatures name them
 
 // CYCLES — sequence of indices into ROOT_NAMES (length 12)
 const CYCLES = {
   'chromatic':       [0,1,2,3,4,5,6,7,8,9,10,11],
   'chromatic-down':  [0,11,10,9,8,7,6,5,4,3,2,1],
-  // Cycle of fourths (down-a-fifth / up-a-fourth): C F B♭ E♭ A♭ D♭ G♭ B E A D G
+  // Cycle of fourths (down-a-fifth / up-a-fourth): C F B♭ E♭ A♭ D♭ F♯ B E A D G
   'fourths':         [0,5,10,3,8,1,6,11,4,9,2,7],
-  // Cycle of fifths: C G D A E B G♭ D♭ A♭ E♭ B♭ F
+  // Cycle of fifths: C G D A E B F♯ D♭ A♭ E♭ B♭ F
   'fifths':          [0,7,2,9,4,11,6,1,8,3,10,5],
 };
 const CYCLE_LABELS = {
@@ -1067,9 +1068,9 @@ const QUALITIES = {
 // ii–V–I template: 3 chords, each with semitone offset from "key root"
 // In key of C: Dm7 (offset +2), G7 (+7), Cmaj7 (0)
 const II_V_I = [
-  { offset:2,  q:'m7'   },
-  { offset:7,  q:'dom7' },
-  { offset:0,  q:'maj7' },
+  { offset:2,  steps:1, q:'m7'   },
+  { offset:7,  steps:4, q:'dom7' },
+  { offset:0,  steps:0, q:'maj7' },
 ];
 
 let state = {
@@ -1099,6 +1100,8 @@ function activeSequence() {
       II_V_I.forEach(c => {
         seq.push({
           rootIdx: (rootIdx + c.offset) % 12,
+          // ii and V are spelled inside the key: key of B → C♯m7, F♯7
+          rootName: JINotes.spell(ROOT_NAMES[rootIdx], c.offset, c.steps),
           q: c.q,
           keyRoot: rootIdx,
           isResolution: c.q === 'maj7',
@@ -1108,23 +1111,29 @@ function activeSequence() {
     return seq;
   }
   return cycleIdx.map(rootIdx => ({
-    rootIdx, q: state.quality, keyRoot: rootIdx,
+    rootIdx, rootName: cycleRootName(rootIdx), q: state.quality, keyRoot: rootIdx,
   }));
+}
+
+// A chord on its own takes its key's name; minor-3rd chords take the minor
+// key's (C♯m7, not D♭m7). In ii–V–I mode the strip shows the major keys.
+const MINOR_THIRD = { m7: true, m7b5: true, dim7: true };
+function cycleRootName(rootIdx) {
+  return JINotes.rootName(rootIdx, MINOR_THIRD[state.quality] === true);
 }
 
 function chordSymbolHTML(chord) {
   const q = QUALITIES[chord.q];
-  const root = ROOT_NAMES[chord.rootIdx];
+  const root = chord.rootName;
   return root + (q.suffix ? '<em>' + q.suffix + '</em>' : '');
 }
 function chordSymbolText(chord) {
-  return ROOT_NAMES[chord.rootIdx] + QUALITIES[chord.q].suffix;
+  return chord.rootName + QUALITIES[chord.q].suffix;
 }
 // Screen-reader friendly chord name (no symbols)
 const Q_SR = { 'maj7':'major seven', 'dom7':'dominant seven', 'm7':'minor seven', 'm7b5':'minor seven flat five', 'dim7':'diminished seven' };
-const ROOT_SR = { 'C':'C','D♭':'D flat','D':'D','E♭':'E flat','E':'E','F':'F','G♭':'G flat','G':'G','A♭':'A flat','A':'A','B♭':'B flat','B':'B' };
 function chordSymbolSR(chord) {
-  return ROOT_SR[ROOT_NAMES[chord.rootIdx]] + ' ' + Q_SR[chord.q];
+  return JINotes.sr(chord.rootName) + ' ' + Q_SR[chord.q];
 }
 function announce(msg) {
   const el = document.getElementById('sr-announce');
@@ -1134,9 +1143,8 @@ function announce(msg) {
   setTimeout(() => { el.textContent = msg; }, 30);
 }
 function chordTonesText(chord) {
-  const q = QUALITIES[chord.q];
-  const rootIdx = chord.rootIdx;
-  return q.tones.map(s => ROOT_NAMES[(rootIdx + s) % 12]).join(' — ');
+  // spelled by degree, so the letter always matches: A7 → A — C♯ — E — G
+  return QUALITIES[chord.q].toneNames.map(d => JINotes.degree(chord.rootName, d)).join(' — ');
 }
 
 /* ════════════════════════════════════════════════════════
@@ -1691,10 +1699,10 @@ function renderCycleGrid() {
     cell.type = 'button';
     cell.className = 'cycle-cell';
     const status = (i < currentKeyIdx) ? 'played' : (i === currentKeyIdx ? 'current' : 'upcoming');
-    cell.setAttribute('aria-label', 'Position ' + (i+1) + ' of 12, ' + ROOT_SR[ROOT_NAMES[rootIdx]] + (status === 'current' ? ', current' : (status === 'played' ? ', played' : '')) + '. Jump to this key.');
+    cell.setAttribute('aria-label', 'Position ' + (i+1) + ' of 12, ' + JINotes.sr(cycleRootName(rootIdx)) + (status === 'current' ? ', current' : (status === 'played' ? ', played' : '')) + '. Jump to this key.');
     if (i < currentKeyIdx) cell.classList.add('played');
     if (i === currentKeyIdx) { cell.classList.add('current'); cell.setAttribute('aria-current','true'); }
-    cell.innerHTML = '<span class="num" aria-hidden="true">' + String(i+1).padStart(2,'0') + '</span><span aria-hidden="true">' + ROOT_NAMES[rootIdx] + '</span>';
+    cell.innerHTML = '<span class="num" aria-hidden="true">' + String(i+1).padStart(2,'0') + '</span><span aria-hidden="true">' + cycleRootName(rootIdx) + '</span>';
     cell.addEventListener('click', () => jumpToKey(i));
     grid.appendChild(cell);
   });

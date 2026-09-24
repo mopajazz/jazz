@@ -753,6 +753,7 @@
 </style>
 <link rel="stylesheet" href="./ji-polish.css">
 <script src="./ji-theme.js" defer></script>
+<script src="./ji-notes.js"></script>
 </head>
 <body>
 
@@ -798,7 +799,7 @@
         </button>
       </div>
       <div class="cycle-description" id="cycle-desc">
-All 12 notes in chromatic order: C, D♭, D, E♭, E, F, G♭, G, A♭, A, B♭, B
+All 12 notes in chromatic order: C, D♭, D, E♭, E, F, F♯, G, A♭, A, B♭, B
       </div>
     </div>
   </div>
@@ -922,34 +923,20 @@ All 12 notes in chromatic order: C, D♭, D, E♭, E, F, G♭, G, A♭, A, B♭,
 
 <script>
 // ─── CONSTANTS ─────────────────────────────────────────────────────────
-const ROOTS = ['C', 'D♭', 'D', 'E♭', 'E', 'F', 'G♭', 'G', 'A♭', 'A', 'B♭', 'B'];
-const NOTE_NAMES = ['C', 'D♭', 'D', 'E♭', 'E', 'F', 'F#', 'G', 'A♭', 'A', 'B♭', 'B'];
-const ROOT_FREQS = {
-  'C': 261.63, 'D♭': 277.18, 'D': 293.66, 'E♭': 311.13, 'E': 329.63,
-  'F': 349.23, 'F#': 369.99, 'G': 392.00, 'A♭': 415.30, 'A': 440.00,
-  'B♭': 466.16, 'B': 493.88
-};
-const ENHARMONIC_EQUIVS = { 'G♭': 'F#' };
-function normalizeRoot(rootName) {
-  return ENHARMONIC_EQUIVS[rootName] || rootName;
-}
-function displayRootSpelling(noteName, originalRoot) {
-  return normalizeRoot(originalRoot) === noteName ? originalRoot : noteName;
-}
-
+const ROOTS = JINotes.KEYS; // named as their key signatures name them
 // ─── CHORD CYCLES ────────────────────────────────────────────────────────
 const CHROMATIC = {
   id: 'chromatic',
   name: 'Chromatic',
-  roots: ['C', 'D♭', 'D', 'E♭', 'E', 'F', 'G♭', 'G', 'A♭', 'A', 'B♭', 'B'],
-  description: 'All 12 notes in chromatic order: C, D♭, D, E♭, E, F, G♭, G, A♭, A, B♭, B'
+  roots: JINotes.KEYS,
+  description: 'All 12 notes in chromatic order: C, D♭, D, E♭, E, F, F♯, G, A♭, A, B♭, B'
 };
 
 const FOURTHS = {
   id: 'fourths',
   name: 'Cycle of Fourths',
-  roots: ['C', 'F', 'B♭', 'E♭', 'A♭', 'D♭', 'G♭', 'B', 'E', 'A', 'D', 'G'],
-  description: 'Harmonic progression: C, F, B♭, E♭, A♭, D♭, G♭, B, E, A, D, G'
+  roots: JINotes.FOURTHS,
+  description: 'Harmonic progression: C, F, B♭, E♭, A♭, D♭, F♯, B, E, A, D, G'
 };
 
 const QUALITIES = [
@@ -1059,15 +1046,18 @@ function selectCycle(cycleId) {
   }
 }
 
+// Chords with a minor 3rd take the minor key's root name: C♯m7, not D♭m7
+function rootLabel(r) {
+  return JINotes.rootName(r, selectedQuality.degrees.includes('♭3'));
+}
+
 // ─── BUILD CHORD TONES ─────────────────────────────────────────────────────
 function getChordTones() {
-  const normalizedRoot = normalizeRoot(selectedRoot);
-  const baseFreq = ROOT_FREQS[normalizedRoot];
-  const rootIdx = NOTE_NAMES.indexOf(normalizedRoot);
+  const baseFreq = JINotes.freq(selectedRoot);
   return selectedQuality.intervals.map((semis, i) => {
     const freq = semitonesToFreq(baseFreq, semis);
-    const noteIdx = (rootIdx + semis) % 12;
-    const note = displayRootSpelling(NOTE_NAMES[(noteIdx + 12) % 12], selectedRoot);
+    // spelled by degree, so the letter always matches: the 3 of A is C♯
+    const note = JINotes.degree(rootLabel(selectedRoot), selectedQuality.degrees[i]);
     return {
       note,
       degree: selectedQuality.degrees[i],
@@ -1081,7 +1071,7 @@ function getChordTones() {
 function renderRootPills() {
   const container = document.getElementById('root-pills');
   container.innerHTML = selectedCycle.roots.map(r =>
-    `<button class="pill${r === selectedRoot ? ' active' : ''}" onclick="selectRoot('${r}')" aria-label="Select root note ${r}" ${r === selectedRoot ? 'aria-pressed="true"' : ''}>${r}</button>`
+    `<button class="pill${r === selectedRoot ? ' active' : ''}" onclick="selectRoot('${r}')" aria-label="Select root note ${rootLabel(r)}" ${r === selectedRoot ? 'aria-pressed="true"' : ''}>${rootLabel(r)}</button>`
   ).join('');
 }
 
@@ -1095,9 +1085,9 @@ function renderQualityPills() {
 function renderChordDisplay() {
   const sym = document.getElementById('chord-symbol');
   const qual = document.getElementById('chord-quality-label');
-  const display = selectedRoot.replace('♭','<span style="font-size:0.7em">♭</span>').replace('#','<span style="font-size:0.7em">#</span>');
+  const display = rootLabel(selectedRoot).replace('♭','<span style="font-size:0.7em">♭</span>').replace('♯','<span style="font-size:0.7em">♯</span>');
   sym.innerHTML = `${display}<sup>${selectedQuality.symbol}</sup>`;
-  sym.setAttribute('aria-label', selectedRoot + ' ' + selectedQuality.name);
+  sym.setAttribute('aria-label', JINotes.sr(rootLabel(selectedRoot)) + ' ' + selectedQuality.name);
   qual.textContent = selectedQuality.name;
 }
 
@@ -1180,6 +1170,7 @@ function selectQuality(id) {
   selectedQuality = QUALITIES.find(q => q.id === id);
   phrase = [];
   renderQualityPills();
+  renderRootPills();
   renderChordDisplay();
   renderTones();
   renderPhrase();
@@ -1239,7 +1230,7 @@ async function playPhrase() {
   const ctx = getAudioCtx();
   const beatDuration = 60 / tempo;
   const noteDuration = beatDuration * 0.85;
-  const baseFreq = ROOT_FREQS[normalizeRoot(selectedRoot)];
+  const baseFreq = JINotes.freq(selectedRoot);
 
   playBassNote(baseFreq, ctx.currentTime, phrase.length * beatDuration + 0.3, ctx);
   animateWaveform(phrase.length * beatDuration * 1000);

@@ -674,6 +674,7 @@
 </style>
 <link rel="stylesheet" href="./ji-polish.css">
 <script src="./ji-theme.js" defer></script>
+<script src="./ji-notes.js"></script>
 </head>
 <body>
 
@@ -724,7 +725,7 @@
         </button>
       </div>
       <div class="cycle-description" id="cycle-desc">
-All 12 notes in chromatic order: C, D♭, D, E♭, E, F, G♭, G, A♭, A, B♭, B
+All 12 notes in chromatic order: C, D♭, D, E♭, E, F, F♯, G, A♭, A, B♭, B
       </div>
     </div>
   </div>
@@ -946,19 +947,7 @@ All 12 notes in chromatic order: C, D♭, D, E♭, E, F, G♭, G, A♭, A, B♭,
 
 <script>
 // ─── CONSTANTS ─────────────────────────────────────────────────────────
-const ROOTS = ['C','D♭','D','E♭','E','F','G♭','G','A♭','A','B♭','B'];
-const ROOT_FREQS = {
-  'C':261.63,'D♭':277.18,'D':293.66,'E♭':311.13,'E':329.63,
-  'F':349.23,'F#':369.99,'G':392.00,'A♭':415.30,'A':440.00,'B♭':466.16,'B':493.88
-};
-const NOTE_NAMES = ['C','D♭','D','E♭','E','F','F#','G','A♭','A','B♭','B'];
-const ENHARMONIC_EQUIVS = { 'G♭': 'F#' };
-function normalizeRoot(rootName) {
-  return ENHARMONIC_EQUIVS[rootName] || rootName;
-}
-function displayRootSpelling(noteName, originalRoot) {
-  return normalizeRoot(originalRoot) === noteName ? originalRoot : noteName;
-}
+const ROOTS = JINotes.KEYS; // named as their key signatures name them
 
 const QUALITIES = [
   { id:'maj',  label:'maj',  symbol:'maj7', scaleLabel:'Ionian (major)',         intervals:[0,2,4,5,7,9,11],  chordIntervals:[0,4,7,11] },
@@ -971,15 +960,15 @@ const QUALITIES = [
 const CHROMATIC = {
   id: 'chromatic',
   name: 'Chromatic',
-  roots: ['C', 'D♭', 'D', 'E♭', 'E', 'F', 'G♭', 'G', 'A♭', 'A', 'B♭', 'B'],
-  description: 'All 12 notes in chromatic order: C, D♭, D, E♭, E, F, G♭, G, A♭, A, B♭, B'
+  roots: JINotes.KEYS,
+  description: 'All 12 notes in chromatic order: C, D♭, D, E♭, E, F, F♯, G, A♭, A, B♭, B'
 };
 
 const FOURTHS = {
   id: 'fourths',
   name: 'Cycle of Fourths',
-  roots: ['C', 'F', 'B♭', 'E♭', 'A♭', 'D♭', 'G♭', 'B', 'E', 'A', 'D', 'G'],
-  description: 'Harmonic progression: C, F, B♭, E♭, A♭, D♭, G♭, B, E, A, D, G'
+  roots: JINotes.FOURTHS,
+  description: 'Harmonic progression: C, F, B♭, E♭, A♭, D♭, F♯, B, E, A, D, G'
 };
 
 // ─── STATE ─────────────────────────────────────────────────────────────────
@@ -1050,12 +1039,11 @@ const VOICING_SHAPES = {
   'min7': { A:[3,7,10,14], B:[10,14,15,19] },
   'hdim': { A:[3,6,10,13], B:[10,13,15,18] },
 };
-const VPC = {'C':0,'D♭':1,'D':2,'E♭':3,'E':4,'F':5,'F#':6,'G':7,'A♭':8,'A':9,'B♭':10,'B':11};
 function midiToHz(midi) { return 440 * Math.pow(2, (midi - 69) / 12); }
 function buildVoicing(rootName, quality, type='A') {
   const shapes = VOICING_SHAPES[quality] || VOICING_SHAPES['dom7'];
   const semis = shapes[type] || shapes['A'];
-  const root = VPC[normalizeRoot(rootName)] ?? 0;
+  const root = JINotes.pc(rootName);
   let rootMidi = 53 - semis[0];
   rootMidi += (root - ((rootMidi % 12 + 12) % 12) + 12) % 12;
   const low = rootMidi + semis[0];
@@ -1144,26 +1132,43 @@ function playBass(freq, startTime, dur, ctx) {
 }
 
 // ─── SCALE UTILS ───────────────────────────────────────────────────────
+// Letters used by scales that aren't one note per letter; seven-note scales
+// take one letter per step.
+const SCALE_LETTER_STEPS = {
+  '0,2,4,7,9':        [0,1,2,4,5],        // major pentatonic: 1 2 3 5 6
+  '0,3,5,7,10':       [0,2,3,4,6],        // minor pentatonic: 1 ♭3 4 5 ♭7
+  '0,2,4,5,7,8,9,11': [0,1,2,3,4,5,5,6],  // bebop major: added ♭6
+  '0,2,4,6,8,10':     [0,1,2,3,4,6],      // whole tone: 1 2 3 ♯4 ♯5 ♭7
+  '0,1,3,4,6,7,9,10': [0,1,1,2,3,4,5,6],  // half-whole: 1 ♭9 ♯9 3 ♯11 5 13 ♭7
+};
+// Minor-3rd chords and scales take the minor key's root name: C♯ Dorian, not D♭
+const isMinorSet = (iv) => iv.includes(3) && !iv.includes(4);
+const dpLabel = (r) => JINotes.rootName(r, isMinorSet(dpQuality.intervals));
+const spLabel = (r) => JINotes.rootName(r, isMinorSet(spScale.intervals));
+
 function getScaleTones(rootName, intervals) {
-  const rootIdx = NOTE_NAMES.indexOf(normalizeRoot(rootName));
-  return intervals.map((semi, i) => {
-    const noteIdx = (rootIdx + semi) % 12;
-    return { note: displayRootSpelling(NOTE_NAMES[noteIdx], rootName), semi, degree: i + 1 };
-  });
+  const letters = SCALE_LETTER_STEPS[intervals.join(',')] || intervals.map((_, i) => i);
+  return intervals.map((semi, i) => ({ note: JINotes.spell(rootName, semi, letters[i]), semi, degree: i + 1 }));
 }
 
-function degreeLabel(deg) {
-  const map = { 1:'1', 2:'2', 3:'3', 4:'4', 5:'5', 6:'6', 7:'7', 8:'8', 9:'9', '-1':'♭7' };
-  return map[deg] || String(deg);
+// Pattern steps above 7 continue into the next octave: 8 is the root, 9 the 2nd
+function scaleToneForStep(scale, deg) {
+  const idx = deg > 0 ? deg - 1 : scale.length - 1;
+  return scale[idx % scale.length];
+}
+
+function degreeLabel(deg, quality) {
+  // the step below the root is the chord's own 7th: 7 on maj7, ♭7 otherwise
+  if (deg === -1) return quality && quality.intervals[6] === 11 ? '7' : '♭7';
+  return String(deg);
 }
 
 // Convert a pattern step (1-based degree) to a semitone offset in the quality's scale
 function stepToSemi(step, quality) {
   const scale = quality.intervals;
-  if (step === -1) return scale[6] - 12; // ♭7 below root
+  if (step === -1) return scale[6] - 12; // the 7th below the root
   const idx = step - 1;
-  if (idx < 0 || idx >= scale.length) return scale[Math.min(idx, scale.length-1)];
-  return scale[idx];
+  return scale[idx % scale.length] + 12 * Math.floor(idx / scale.length);
 }
 
 // ─── RENDER DIGITAL ────────────────────────────────────────────────────
@@ -1180,7 +1185,7 @@ function renderPatternGrid() {
 
 function renderDpRootPills() {
   document.getElementById('dp-root-pills').innerHTML =
-    selectedCycle.roots.map(r => `<button class="pill ${r===dpRoot?'active':''}" onclick="selectDpRoot('${r}')">${r}</button>`).join('');
+    selectedCycle.roots.map(r => `<button class="pill ${r===dpRoot?'active':''}" onclick="selectDpRoot('${r}')">${dpLabel(r)}</button>`).join('');
 }
 
 function getAvailableRoots() {
@@ -1193,13 +1198,13 @@ function renderDpQualityPills() {
 }
 
 function renderDpChordName() {
-  const r = dpRoot.replace('♭','<span style="font-size:0.65em">♭</span>').replace('#','<span style="font-size:0.65em">#</span>');
+  const r = dpLabel(dpRoot).replace('♭','<span style="font-size:0.65em">♭</span>').replace('♯','<span style="font-size:0.65em">♯</span>');
   document.getElementById('dp-chord-name').innerHTML = `${r}<sup style="font-size:0.55em">${dpQuality.symbol}</sup>`;
   document.getElementById('dp-scale-name').textContent = dpQuality.scaleLabel;
 }
 
 function renderDpTones() {
-  const tones = getScaleTones(dpRoot, dpQuality.intervals);
+  const tones = getScaleTones(dpLabel(dpRoot), dpQuality.intervals);
   const patternDegrees = dpPattern.steps.filter(s => s > 0);
   const container = document.getElementById('dp-tones');
   container.innerHTML = tones.map((t, i) => {
@@ -1213,7 +1218,7 @@ function renderDpTones() {
 }
 
 function renderPreviewSteps() {
-  const scale = getScaleTones(dpRoot, dpQuality.intervals);
+  const scale = getScaleTones(dpLabel(dpRoot), dpQuality.intervals);
   const formula = document.getElementById('preview-formula');
   formula.textContent = dpPattern.formula;
   document.getElementById('preview-desc').textContent = dpPattern.desc;
@@ -1222,12 +1227,11 @@ function renderPreviewSteps() {
   const steps = dpMode === 'retrograde' ? [...dpPattern.steps].reverse() : dpPattern.steps;
 
   container.innerHTML = steps.map((deg, i) => {
-    const scaleIdx = deg > 0 ? deg - 1 : dpQuality.intervals.length - 1;
-    const tone = scale[Math.min(scaleIdx, scale.length - 1)];
+    const tone = scaleToneForStep(scale, deg);
     return `
       ${i > 0 ? '<span class="step-sep">→</span>' : ''}
       <div class="step-cell" id="step-${i}">
-        <span class="step-deg">${degreeLabel(deg)}</span>
+        <span class="step-deg">${degreeLabel(deg, dpQuality)}</span>
         <span class="step-note">${tone ? tone.note : '?'}</span>
       </div>
     `;
@@ -1273,12 +1277,12 @@ function renderScaleTypesGrid() {
 
 function renderSpRootPills() {
   document.getElementById('sp-root-pills').innerHTML =
-    getAvailableRoots().map(r => `<button class="pill ${r===spRoot?'active':''}" onclick="selectSpRoot('${r}')">${r}</button>`).join('');
+    getAvailableRoots().map(r => `<button class="pill ${r===spRoot?'active':''}" onclick="selectSpRoot('${r}')">${spLabel(r)}</button>`).join('');
 }
 
 function renderSpTones() {
-  const tones = getScaleTones(spRoot, spScale.intervals);
-  document.getElementById('sp-root-name').textContent = spRoot;
+  const tones = getScaleTones(spLabel(spRoot), spScale.intervals);
+  document.getElementById('sp-root-name').textContent = spLabel(spRoot);
   document.getElementById('sp-scale-name').textContent = spScale.name;
   document.getElementById('sp-tones').innerHTML = tones.map((t, i) => `
     <div class="tone-bubble lit" id="sp-tb-${i}">
@@ -1289,7 +1293,7 @@ function renderSpTones() {
 }
 
 function renderSpPattern() {
-  const tones = getScaleTones(spRoot, spScale.intervals);
+  const tones = getScaleTones(spLabel(spRoot), spScale.intervals);
   const steps = buildScalarSteps(tones);
   document.getElementById('sp-preview-formula').textContent = steps.map(s => s.deg).join('–');
 
@@ -1332,7 +1336,7 @@ async function playDigitalPattern() {
   if (isPlaying) return;
   isPlaying = true;
   const ctx = getAudioCtx();
-  const baseFreq = ROOT_FREQS[normalizeRoot(dpRoot)];
+  const baseFreq = JINotes.freq(dpRoot);
   const beat = 60 / dpTempo;
   const noteDur = beat * 0.82;
   const steps = dpMode === 'retrograde' ? [...dpPattern.steps].reverse() : dpPattern.steps;
@@ -1377,10 +1381,10 @@ async function playScalarPattern() {
   if (isPlaying) return;
   isPlaying = true;
   const ctx = getAudioCtx();
-  const baseFreq = ROOT_FREQS[normalizeRoot(spRoot)];
+  const baseFreq = JINotes.freq(spRoot);
   const beat = 60 / spTempo;
   const noteDur = beat * 0.82;
-  const tones = getScaleTones(spRoot, spScale.intervals);
+  const tones = getScaleTones(spLabel(spRoot), spScale.intervals);
   const steps = buildScalarSteps(tones);
 
   playBass(baseFreq, ctx.currentTime, steps.length * beat + 0.3, ctx);
@@ -1470,6 +1474,7 @@ function selectDpRoot(r) {
 function selectDpQuality(id) {
   dpQuality = QUALITIES.find(q => q.id === id);
   renderDpQualityPills();
+  renderDpRootPills();
   renderDpChordName();
   renderDpTones();
   renderPreviewSteps();
@@ -1478,6 +1483,7 @@ function selectDpQuality(id) {
 function selectScale(i) {
   spScale = SCALE_TYPES[i];
   renderScaleTypesGrid();
+  renderSpRootPills();
   renderSpTones();
   renderSpPattern();
 }
