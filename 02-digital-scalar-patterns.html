@@ -1141,6 +1141,11 @@ const SCALE_LETTER_STEPS = {
   '0,2,4,6,8,10':     [0,1,2,3,4,6],      // whole tone: 1 2 3 ♯4 ♯5 ♭7
   '0,1,3,4,6,7,9,10': [0,1,1,2,3,4,5,6],  // half-whole: 1 ♭9 ♯9 3 ♯11 5 13 ♭7
 };
+// Minor-3rd chords and scales take the minor key's root name: C♯ Dorian, not D♭
+const isMinorSet = (iv) => iv.includes(3) && !iv.includes(4);
+const dpLabel = (r) => JINotes.rootName(r, isMinorSet(dpQuality.intervals));
+const spLabel = (r) => JINotes.rootName(r, isMinorSet(spScale.intervals));
+
 function getScaleTones(rootName, intervals) {
   const letters = SCALE_LETTER_STEPS[intervals.join(',')] || intervals.map((_, i) => i);
   return intervals.map((semi, i) => ({ note: JINotes.spell(rootName, semi, letters[i]), semi, degree: i + 1 }));
@@ -1180,7 +1185,7 @@ function renderPatternGrid() {
 
 function renderDpRootPills() {
   document.getElementById('dp-root-pills').innerHTML =
-    selectedCycle.roots.map(r => `<button class="pill ${r===dpRoot?'active':''}" onclick="selectDpRoot('${r}')">${r}</button>`).join('');
+    selectedCycle.roots.map(r => `<button class="pill ${r===dpRoot?'active':''}" onclick="selectDpRoot('${r}')">${dpLabel(r)}</button>`).join('');
 }
 
 function getAvailableRoots() {
@@ -1193,13 +1198,13 @@ function renderDpQualityPills() {
 }
 
 function renderDpChordName() {
-  const r = dpRoot.replace('♭','<span style="font-size:0.65em">♭</span>').replace('♯','<span style="font-size:0.65em">♯</span>');
+  const r = dpLabel(dpRoot).replace('♭','<span style="font-size:0.65em">♭</span>').replace('♯','<span style="font-size:0.65em">♯</span>');
   document.getElementById('dp-chord-name').innerHTML = `${r}<sup style="font-size:0.55em">${dpQuality.symbol}</sup>`;
   document.getElementById('dp-scale-name').textContent = dpQuality.scaleLabel;
 }
 
 function renderDpTones() {
-  const tones = getScaleTones(dpRoot, dpQuality.intervals);
+  const tones = getScaleTones(dpLabel(dpRoot), dpQuality.intervals);
   const patternDegrees = dpPattern.steps.filter(s => s > 0);
   const container = document.getElementById('dp-tones');
   container.innerHTML = tones.map((t, i) => {
@@ -1213,7 +1218,7 @@ function renderDpTones() {
 }
 
 function renderPreviewSteps() {
-  const scale = getScaleTones(dpRoot, dpQuality.intervals);
+  const scale = getScaleTones(dpLabel(dpRoot), dpQuality.intervals);
   const formula = document.getElementById('preview-formula');
   formula.textContent = dpPattern.formula;
   document.getElementById('preview-desc').textContent = dpPattern.desc;
@@ -1272,12 +1277,12 @@ function renderScaleTypesGrid() {
 
 function renderSpRootPills() {
   document.getElementById('sp-root-pills').innerHTML =
-    getAvailableRoots().map(r => `<button class="pill ${r===spRoot?'active':''}" onclick="selectSpRoot('${r}')">${r}</button>`).join('');
+    getAvailableRoots().map(r => `<button class="pill ${r===spRoot?'active':''}" onclick="selectSpRoot('${r}')">${spLabel(r)}</button>`).join('');
 }
 
 function renderSpTones() {
-  const tones = getScaleTones(spRoot, spScale.intervals);
-  document.getElementById('sp-root-name').textContent = spRoot;
+  const tones = getScaleTones(spLabel(spRoot), spScale.intervals);
+  document.getElementById('sp-root-name').textContent = spLabel(spRoot);
   document.getElementById('sp-scale-name').textContent = spScale.name;
   document.getElementById('sp-tones').innerHTML = tones.map((t, i) => `
     <div class="tone-bubble lit" id="sp-tb-${i}">
@@ -1288,7 +1293,7 @@ function renderSpTones() {
 }
 
 function renderSpPattern() {
-  const tones = getScaleTones(spRoot, spScale.intervals);
+  const tones = getScaleTones(spLabel(spRoot), spScale.intervals);
   const steps = buildScalarSteps(tones);
   document.getElementById('sp-preview-formula').textContent = steps.map(s => s.deg).join('–');
 
@@ -1379,7 +1384,7 @@ async function playScalarPattern() {
   const baseFreq = JINotes.freq(spRoot);
   const beat = 60 / spTempo;
   const noteDur = beat * 0.82;
-  const tones = getScaleTones(spRoot, spScale.intervals);
+  const tones = getScaleTones(spLabel(spRoot), spScale.intervals);
   const steps = buildScalarSteps(tones);
 
   playBass(baseFreq, ctx.currentTime, steps.length * beat + 0.3, ctx);
@@ -1469,6 +1474,7 @@ function selectDpRoot(r) {
 function selectDpQuality(id) {
   dpQuality = QUALITIES.find(q => q.id === id);
   renderDpQualityPills();
+  renderDpRootPills();
   renderDpChordName();
   renderDpTones();
   renderPreviewSteps();
@@ -1477,6 +1483,7 @@ function selectDpQuality(id) {
 function selectScale(i) {
   spScale = SCALE_TYPES[i];
   renderScaleTypesGrid();
+  renderSpRootPills();
   renderSpTones();
   renderSpPattern();
 }

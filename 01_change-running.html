@@ -1046,13 +1046,18 @@ function selectCycle(cycleId) {
   }
 }
 
+// Chords with a minor 3rd take the minor key's root name: C♯m7, not D♭m7
+function rootLabel(r) {
+  return JINotes.rootName(r, selectedQuality.degrees.includes('♭3'));
+}
+
 // ─── BUILD CHORD TONES ─────────────────────────────────────────────────────
 function getChordTones() {
   const baseFreq = JINotes.freq(selectedRoot);
   return selectedQuality.intervals.map((semis, i) => {
     const freq = semitonesToFreq(baseFreq, semis);
     // spelled by degree, so the letter always matches: the 3 of A is C♯
-    const note = JINotes.degree(selectedRoot, selectedQuality.degrees[i]);
+    const note = JINotes.degree(rootLabel(selectedRoot), selectedQuality.degrees[i]);
     return {
       note,
       degree: selectedQuality.degrees[i],
@@ -1066,7 +1071,7 @@ function getChordTones() {
 function renderRootPills() {
   const container = document.getElementById('root-pills');
   container.innerHTML = selectedCycle.roots.map(r =>
-    `<button class="pill${r === selectedRoot ? ' active' : ''}" onclick="selectRoot('${r}')" aria-label="Select root note ${r}" ${r === selectedRoot ? 'aria-pressed="true"' : ''}>${r}</button>`
+    `<button class="pill${r === selectedRoot ? ' active' : ''}" onclick="selectRoot('${r}')" aria-label="Select root note ${rootLabel(r)}" ${r === selectedRoot ? 'aria-pressed="true"' : ''}>${rootLabel(r)}</button>`
   ).join('');
 }
 
@@ -1080,9 +1085,9 @@ function renderQualityPills() {
 function renderChordDisplay() {
   const sym = document.getElementById('chord-symbol');
   const qual = document.getElementById('chord-quality-label');
-  const display = selectedRoot.replace('♭','<span style="font-size:0.7em">♭</span>').replace('♯','<span style="font-size:0.7em">♯</span>');
+  const display = rootLabel(selectedRoot).replace('♭','<span style="font-size:0.7em">♭</span>').replace('♯','<span style="font-size:0.7em">♯</span>');
   sym.innerHTML = `${display}<sup>${selectedQuality.symbol}</sup>`;
-  sym.setAttribute('aria-label', selectedRoot + ' ' + selectedQuality.name);
+  sym.setAttribute('aria-label', JINotes.sr(rootLabel(selectedRoot)) + ' ' + selectedQuality.name);
   qual.textContent = selectedQuality.name;
 }
 
@@ -1165,6 +1170,7 @@ function selectQuality(id) {
   selectedQuality = QUALITIES.find(q => q.id === id);
   phrase = [];
   renderQualityPills();
+  renderRootPills();
   renderChordDisplay();
   renderTones();
   renderPhrase();

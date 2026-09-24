@@ -733,6 +733,8 @@ const LICK_FORMS = {
 // ─── STATE ─────────────────────────────────────────────────────────────
 let selectedRoot = 'G';
 let chordType = 'min7';      // 'min7' | 'dom7'
+// Minor 7 chords take the minor key's root name: C♯–7, not D♭–7
+const rootLabel = (r) => JINotes.rootName(r, chordType === 'min7');
 let progressionMode = 'chromatic'; // 'chromatic' | 'cycle4'
 let cycle4StartIdx = 0;      // index into the cycle of fourths
 let tempo = 100;
@@ -855,7 +857,7 @@ function getLickFreqs() {
 // ─── RENDERING ─────────────────────────────────────────────────────────
 function renderRootPills() {
   document.getElementById('root-pills').innerHTML = selectedCycle.roots.map(r =>
-    `<button class="pill ${r === selectedRoot ? 'active' : ''}" onclick="selectRoot('${r}')">${r}</button>`
+    `<button class="pill ${r === selectedRoot ? 'active' : ''}" onclick="selectRoot('${r}')">${rootLabel(r)}</button>`
   ).join('');
 }
 
@@ -863,13 +865,13 @@ function renderCycle4Pills() {
   const el = document.getElementById('cycle4-pills');
   if (el) {
     el.innerHTML = CYCLE_OF_FOURTHS.map((r, idx) =>
-      `<button class="pill ${idx === cycle4StartIdx ? 'active' : ''}" onclick="selectCycle4Start(${idx})">${r}</button>`
+      `<button class="pill ${idx === cycle4StartIdx ? 'active' : ''}" onclick="selectCycle4Start(${idx})">${rootLabel(r)}</button>`
     ).join('');
   }
 }
 
 function renderChordHeader() {
-  const sym = selectedRoot.replace('♭','<span style="font-size:0.65em">♭</span>').replace('♯','<span style="font-size:0.65em">♯</span>');
+  const sym = rootLabel(selectedRoot).replace('♭','<span style="font-size:0.65em">♭</span>').replace('♯','<span style="font-size:0.65em">♯</span>');
   const suffix = chordType === 'min7' ? `<sup>–7</sup>` : `<sup>7</sup>`;
   const formLabel = chordType === 'min7' ? 'Form B — 4-3-♭3-5-2-1' : 'Form A — 8-7-♭7-9-6-5';
   const typeLabel = chordType === 'min7' ? 'Minor seventh' : 'Dominant seventh';
@@ -886,7 +888,7 @@ function renderLickRow() {
   }
   const lick = getCurrentLick();
   const html = lick.map((n, i) => {
-    const name = JINotes.degree(selectedRoot, n.fn); // spelled by degree: the 7 of G is F♯
+    const name = JINotes.degree(rootLabel(selectedRoot), n.fn); // spelled by degree: the 7 of G is F♯
     const kindCls = n.kind === 'chord' ? 'chord-tone'
                   : n.kind === 'bebop' ? 'bebop-note'
                   : 'chromatic';
@@ -1144,6 +1146,8 @@ function updateProgressionButton() {
 
 function setChordType(t) {
   chordType = t;
+  renderRootPills();
+  renderCycle4Pills();
   document.querySelectorAll('.chord-type-row .mode-pill').forEach(el => el.classList.remove('active'));
   const idx = t === 'min7' ? 0 : 1;
   document.querySelectorAll('.chord-type-row .mode-pill')[idx].classList.add('active');

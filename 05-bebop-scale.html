@@ -712,20 +712,22 @@ const BEBOP_SCALES = {
 // ─── STATE ──────────────────────────────────────────────────────────────────
 let selectedRoot = 'C';
 let selectedFlavour = 'major';
+// The minor (Dorian) bebop scale takes the minor key's root name: C♯, not D♭
+const rootLabel = (r) => JINotes.rootName(r, BEBOP_SCALES[selectedFlavour].chordQuality === 'min7');
 let tempo = 120;
 let isPlaying = false;
 
 // ─── RENDER ─────────────────────────────────────────────────────────────────
 function renderRootPills() {
   document.getElementById('root-pills').innerHTML = selectedCycle.roots.map(r =>
-    `<button class="pill ${r===selectedRoot?'active':''}" onclick="selectRoot('${r}')">${r}</button>`
+    `<button class="pill ${r===selectedRoot?'active':''}" onclick="selectRoot('${r}')">${rootLabel(r)}</button>`
   ).join('');
 }
 
 function renderScaleDisplay() {
   const scale = BEBOP_SCALES[selectedFlavour];
   const base = JINotes.freq(selectedRoot);
-  const rFormatted = selectedRoot.replace('♭','<span style="font-size:0.65em">♭</span>').replace('♯','<span style="font-size:0.65em">♯</span>');
+  const rFormatted = rootLabel(selectedRoot).replace('♭','<span style="font-size:0.65em">♭</span>').replace('♯','<span style="font-size:0.65em">♯</span>');
 
   document.getElementById('chord-symbol').innerHTML = `${rFormatted}<sup>${scale.chordSymbol}</sup>`;
   document.getElementById('flavour-label').textContent = scale.flavourLabel;
@@ -743,7 +745,7 @@ function renderScaleDisplay() {
 
   // Scale steps
   document.getElementById('scale-steps').innerHTML = scale.steps.map((step, i) => {
-  const note = JINotes.degree(selectedRoot, step.deg); // spelled by degree: the ♭6 of C is A♭
+  const note = JINotes.degree(rootLabel(selectedRoot), step.deg); // spelled by degree: the ♭6 of C is A♭
     const isPassing = step.type === 'passing';
     const isRoot = step.type === 'root';
     const isChord = step.type === 'chord';
@@ -904,6 +906,7 @@ function selectRoot(r) {
 function selectFlavour(f) {
   selectedFlavour = f;
   renderFlavourTabs();
+  renderRootPills();
   renderScaleDisplay();
   document.getElementById('insight').classList.remove('visible');
 }

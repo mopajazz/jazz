@@ -9,8 +9,11 @@
   var ACC_SR = { '-2': ' double flat', '-1': ' flat', '0': '', '1': ' sharp', '2': ' double sharp' };
   var MAJOR = [0, 2, 4, 5, 7, 9, 11]; // semitones above the root for degrees 1–7
 
-  // One name per pitch class, as the key signatures have it
+  // One name per pitch class, as the major key signatures have it
   var KEYS = ['C', 'D♭', 'D', 'E♭', 'E', 'F', 'F♯', 'G', 'A♭', 'A', 'B♭', 'B'];
+  // Roots of minor-3rd chords (m7, m7♭5, °7) take the minor key's name:
+  // C♯m7, not D♭m7. E♭ minor and D♯ minor tie at six; E♭m7 is the jazz norm.
+  var MINOR_KEYS = ['C', 'C♯', 'D', 'E♭', 'E', 'F', 'F♯', 'G', 'G♯', 'A', 'B♭', 'B'];
 
   function mod(n, m) { return ((n % m) + m) % m; }
 
@@ -79,7 +82,11 @@
   window.JINotes = {
     KEYS: KEYS,
     FOURTHS: [0, 5, 10, 3, 8, 1, 6, 11, 4, 9, 2, 7].map(function (i) { return KEYS[i]; }),
+    MINOR_KEYS: MINOR_KEYS,
     keyName: function (p) { return KEYS[mod(p, 12)]; },
+    // The root's name for a chord standing on its own: minor-key spelling
+    // when the chord has a minor 3rd, major-key spelling otherwise
+    rootName: function (n, minor) { return (minor ? MINOR_KEYS : KEYS)[typeof n === 'number' ? mod(n, 12) : pc(n)]; },
     pc: pc,
     spell: spell,
     degree: degree,

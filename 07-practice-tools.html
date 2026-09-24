@@ -1111,8 +1111,15 @@ function activeSequence() {
     return seq;
   }
   return cycleIdx.map(rootIdx => ({
-    rootIdx, rootName: ROOT_NAMES[rootIdx], q: state.quality, keyRoot: rootIdx,
+    rootIdx, rootName: cycleRootName(rootIdx), q: state.quality, keyRoot: rootIdx,
   }));
+}
+
+// A chord on its own takes its key's name; minor-3rd chords take the minor
+// key's (C♯m7, not D♭m7). In ii–V–I mode the strip shows the major keys.
+const MINOR_THIRD = { m7: true, m7b5: true, dim7: true };
+function cycleRootName(rootIdx) {
+  return JINotes.rootName(rootIdx, MINOR_THIRD[state.quality] === true);
 }
 
 function chordSymbolHTML(chord) {
@@ -1692,10 +1699,10 @@ function renderCycleGrid() {
     cell.type = 'button';
     cell.className = 'cycle-cell';
     const status = (i < currentKeyIdx) ? 'played' : (i === currentKeyIdx ? 'current' : 'upcoming');
-    cell.setAttribute('aria-label', 'Position ' + (i+1) + ' of 12, ' + JINotes.sr(ROOT_NAMES[rootIdx]) + (status === 'current' ? ', current' : (status === 'played' ? ', played' : '')) + '. Jump to this key.');
+    cell.setAttribute('aria-label', 'Position ' + (i+1) + ' of 12, ' + JINotes.sr(cycleRootName(rootIdx)) + (status === 'current' ? ', current' : (status === 'played' ? ', played' : '')) + '. Jump to this key.');
     if (i < currentKeyIdx) cell.classList.add('played');
     if (i === currentKeyIdx) { cell.classList.add('current'); cell.setAttribute('aria-current','true'); }
-    cell.innerHTML = '<span class="num" aria-hidden="true">' + String(i+1).padStart(2,'0') + '</span><span aria-hidden="true">' + ROOT_NAMES[rootIdx] + '</span>';
+    cell.innerHTML = '<span class="num" aria-hidden="true">' + String(i+1).padStart(2,'0') + '</span><span aria-hidden="true">' + cycleRootName(rootIdx) + '</span>';
     cell.addEventListener('click', () => jumpToKey(i));
     grid.appendChild(cell);
   });
