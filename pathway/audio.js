@@ -7,20 +7,28 @@
   const midi = (name, oct) => (oct + 1) * 12 + (SEMI[norm(name)] ?? 0);
   const mtof = (m) => 440 * Math.pow(2, (m - 69) / 12);
 
-  // Canonical spellings for transposing a root by a semitone offset (used by
-  // the 12-bar blues progression below — I/IV/V relative to the tonic).
-  const NOTE_ORDER = ["C", "Db", "D", "Eb", "E", "F", "F#", "G", "Ab", "A", "Bb", "B"];
-  const transposeNote = (name, semis) => {
-    const i = (((SEMI[norm(name)] ?? 0) + semis) % 12 + 12) % 12;
-    return NOTE_ORDER[i];
+  // Spell a note by letter from the key, so IV and V get the right letter
+  // (key of F: IV is B♭, never A♯).
+  const LETTERS = "CDEFGAB";
+  const LETTER_PC = [0, 2, 4, 5, 7, 9, 11];
+  const ACC = { "-2": "𝄫", "-1": "♭", "0": "", "1": "♯", "2": "𝄪" };
+  const spellFrom = (key, semis, steps) => {
+    const letter = LETTERS.indexOf(key[0]);
+    let acc = 0;
+    for (const c of Array.from(key.slice(1))) acc += c === "♭" || c === "b" ? -1 : c === "♯" || c === "#" ? 1 : 0;
+    const target = (((LETTER_PC[letter] + acc + semis) % 12) + 12) % 12;
+    const newLetter = (letter + steps) % 7;
+    const newAcc = ((target - LETTER_PC[newLetter] + 18) % 12) - 6;
+    return LETTERS[newLetter] + ACC[newAcc];
   };
   // Standard 12-bar blues form — matches diagrams.jsx's BluesFormDiagram and
   // the capstone module's own "Bars 1-4 / 5-6 / 9-10" copy in data.js.
   const BLUES12_ROMAN = ["I", "I", "I", "I", "IV", "IV", "I", "I", "V", "IV", "I", "V"];
-  const ROMAN_OFFSET = { I: 0, IV: 5, V: 7 };
+  const ROMAN_OFFSET = { I: [0, 0], IV: [5, 3], V: [7, 4] }; // [semitones, letters]
   const chordForBar = (key, barIndex) => {
     const roman = BLUES12_ROMAN[((barIndex % 12) + 12) % 12];
-    return { root: transposeNote(key, ROMAN_OFFSET[roman]), quality: "dom7", roman };
+    const [semis, steps] = ROMAN_OFFSET[roman];
+    return { root: spellFrom(key, semis, steps), quality: "dom7", roman };
   };
 
   // scale interval sets (from root)

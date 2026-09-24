@@ -349,6 +349,7 @@ main { width: min(100%, 74rem); }
 </style>
 <link rel="stylesheet" href="./ji-polish.css">
 <script src="./ji-theme.js" defer></script>
+<script src="./ji-notes.js"></script>
 </head>
 <body>
 
@@ -390,7 +391,7 @@ main { width: min(100%, 74rem); }
         <button class="cycle-pill active" id="chromatic-cycle-btn" onclick="selectCycle('chromatic')" aria-label="Select chromatic cycle" aria-pressed="true">Chromatic</button>
         <button class="cycle-pill" id="fourths-cycle-btn" onclick="selectCycle('fourths')" aria-label="Select cycle of fourths" aria-pressed="false">4ths</button>
       </div>
-  <div class="cycle-description" id="cycle-desc">All 12 notes in chromatic order: C, D♭, D, E♭, E, F, G♭, G, A♭, A, B♭, B</div>
+  <div class="cycle-description" id="cycle-desc">All 12 notes in chromatic order: C, D♭, D, E♭, E, F, F♯, G, A♭, A, B♭, B</div>
     </div>
   </div>
 
@@ -561,11 +562,10 @@ const VOICING_SHAPES = {
   'dom7': { A:[4,7,10,14], B:[10,14,16,21] },
   'min7': { A:[3,7,10,14], B:[10,14,15,19] },
 };
-const VPC = {'C':0,'D♭':1,'D':2,'E♭':3,'E':4,'F':5,'F#':6,'G':7,'A♭':8,'A':9,'B♭':10,'B':11};
 function midiToHz(m) { return 440 * Math.pow(2, (m - 69) / 12); }
 function buildVoicing(root, quality, type='A') {
   const semis = (VOICING_SHAPES[quality] || VOICING_SHAPES['dom7'])[type] || VOICING_SHAPES[quality]['A'];
-  const r = VPC[normalizeRoot(root)] ?? 0;
+  const r = JINotes.pc(root);
   let rm = 53 - semis[0];
   rm += (r - ((rm % 12 + 12) % 12) + 12) % 12;
   const low = rm + semis[0];
@@ -621,28 +621,19 @@ function semisToHz(base, s) { return base * Math.pow(2, s / 12); }
 function sleep(ms) { return new Promise(r => setTimeout(r, ms)); }
 
 // ─── MUSIC DATA ────────────────────────────────────────────────────────────
-const ROOTS = ['C','D♭','D','E♭','E','F','G♭','G','A♭','A','B♭','B'];
-const NOTE_NAMES = ['C','D♭','D','E♭','E','F','F#','G','A♭','A','B♭','B'];
-const ROOT_FREQS = {'C':261.63,'D♭':277.18,'D':293.66,'E♭':311.13,'E':329.63,'F':349.23,'F#':369.99,'G':392.00,'A♭':415.30,'A':440.00,'B♭':466.16,'B':493.88};
-const ENHARMONIC_EQUIVS = { 'G♭': 'F#' };
-function normalizeRoot(rootName) {
-  return ENHARMONIC_EQUIVS[rootName] || rootName;
-}
-function displayRootSpelling(noteName, originalRoot) {
-  return normalizeRoot(originalRoot) === noteName ? originalRoot : noteName;
-}
+const ROOTS = JINotes.KEYS; // named as their key signatures name them
 
 // ─── CHORD CYCLES ──────────────────────────────────────────────────────────
 const CHROMATIC = {
   id: 'chromatic',
-  roots: ['C', 'D♭', 'D', 'E♭', 'E', 'F', 'G♭', 'G', 'A♭', 'A', 'B♭', 'B'],
-  description: 'All 12 notes in chromatic order: C, D♭, D, E♭, E, F, G♭, G, A♭, A, B♭, B'
+  roots: JINotes.KEYS,
+  description: 'All 12 notes in chromatic order: C, D♭, D, E♭, E, F, F♯, G, A♭, A, B♭, B'
 };
 
 const FOURTHS = {
   id: 'fourths',
-  roots: ['C', 'F', 'B♭', 'E♭', 'A♭', 'D♭', 'G♭', 'B', 'E', 'A', 'D', 'G'],
-  description: 'Harmonic progression: C, F, B♭, E♭, A♭, D♭, G♭, B, E, A, D, G'
+  roots: JINotes.FOURTHS,
+  description: 'Harmonic progression: C, F, B♭, E♭, A♭, D♭, F♯, B, E, A, D, G'
 };
 
 let selectedCycle = CHROMATIC;
@@ -733,8 +724,8 @@ function renderRootPills() {
 
 function renderScaleDisplay() {
   const scale = BEBOP_SCALES[selectedFlavour];
-  const base = ROOT_FREQS[normalizeRoot(selectedRoot)];
-  const rFormatted = selectedRoot.replace('♭','<span style="font-size:0.65em">♭</span>').replace('#','<span style="font-size:0.65em">#</span>');
+  const base = JINotes.freq(selectedRoot);
+  const rFormatted = selectedRoot.replace('♭','<span style="font-size:0.65em">♭</span>').replace('♯','<span style="font-size:0.65em">♯</span>');
 
   document.getElementById('chord-symbol').innerHTML = `${rFormatted}<sup>${scale.chordSymbol}</sup>`;
   document.getElementById('flavour-label').textContent = scale.flavourLabel;
@@ -752,7 +743,7 @@ function renderScaleDisplay() {
 
   // Scale steps
   document.getElementById('scale-steps').innerHTML = scale.steps.map((step, i) => {
-  const note = displayRootSpelling(NOTE_NAMES[(NOTE_NAMES.indexOf(normalizeRoot(selectedRoot)) + step.semis + 120) % 12], selectedRoot);
+  const note = JINotes.degree(selectedRoot, step.deg); // spelled by degree: the ♭6 of C is A♭
     const isPassing = step.type === 'passing';
     const isRoot = step.type === 'root';
     const isChord = step.type === 'chord';
@@ -778,7 +769,7 @@ function playStep(idx) {
   const ctx = getAudioCtx();
   const scale = BEBOP_SCALES[selectedFlavour];
   const step = scale.steps[idx];
-  const freq = semisToHz(ROOT_FREQS[normalizeRoot(selectedRoot)], step.semis);
+  const freq = semisToHz(JINotes.freq(selectedRoot), step.semis);
   const isPassing = step.type === 'passing';
 
   // Flash the step
@@ -797,7 +788,7 @@ async function playScale(descending=false) {
 
   const ctx = getAudioCtx();
   const scale = BEBOP_SCALES[selectedFlavour];
-  const base = ROOT_FREQS[normalizeRoot(selectedRoot)];
+  const base = JINotes.freq(selectedRoot);
   const beat = 60 / tempo;
   const noteDur = beat * 0.82;
   const steps = descending ? [...scale.steps].reverse() : scale.steps;
@@ -841,7 +832,7 @@ async function playWithChord() {
 
   const ctx = getAudioCtx();
   const scale = BEBOP_SCALES[selectedFlavour];
-  const base = ROOT_FREQS[normalizeRoot(selectedRoot)];
+  const base = JINotes.freq(selectedRoot);
   const beat = 60 / tempo;
 
   // Chord for 2 bars, then scale run
@@ -875,7 +866,7 @@ async function playWithChord() {
 
 async function cycleAllKeys() {
   if (isPlaying) return;
-  const cycle = ['C','F','B♭','E♭','A♭','D♭','G♭','B','E','A','D','G'];
+  const cycle = JINotes.FOURTHS;
   for (const root of cycle) {
     selectRoot(root);
     await playScaleQuick();
@@ -886,7 +877,7 @@ async function cycleAllKeys() {
 async function playScaleQuick() {
   const ctx = getAudioCtx();
   const scale = BEBOP_SCALES[selectedFlavour];
-  const base = ROOT_FREQS[normalizeRoot(selectedRoot)];
+  const base = JINotes.freq(selectedRoot);
   const beat = 60 / Math.max(tempo, 160);
   scale.steps.forEach((step, i) => {
     const isPassing = step.type === 'passing';
