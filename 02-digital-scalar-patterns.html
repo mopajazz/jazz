@@ -5,7 +5,7 @@
 <script>(function(){try{var s=localStorage.getItem('ji-theme');var d=s?s==='dark':matchMedia('(prefers-color-scheme: dark)').matches;if(d)document.documentElement.classList.add('dark');}catch(e){}})();</script>
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <meta name="description" content="Explore digital patterns and scalar runs through interactive jazz ear training, root changes, and playable pattern previews.">
-<meta name="theme-color" content="#f5f0e8">
+<meta name="theme-color" content="#fdfdfd">
 <meta property="og:type" content="website">
 <meta property="og:title" content="Digital and Scalar Patterns - Jazz Interactive">
 <meta property="og:description" content="Practice jazz pattern cells and scalar motion with interactive roots, chord qualities, and audio playback.">
@@ -15,27 +15,27 @@
 <title>Digital and Scalar Patterns - Jazz Interactive</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Spectral:ital,wght@0,400;0,500;0,600;0,700;1,500;1,600&family=DM+Sans:ital,opsz,wght@0,9..40,400;0,9..40,500;0,9..40,600;0,9..40,700&family=DM+Mono:ital,wght@0,300;0,400;0,500;1,300;1,400&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Serif:ital,wght@0,400;0,500;0,600;0,700;1,500;1,600&family=IBM+Plex+Sans:ital,wght@0,400;0,500;0,600;0,700;1,400&family=IBM+Plex+Mono:ital,wght@0,300;0,400;0,500;1,400&display=swap" rel="stylesheet">
 <style>
   *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
 
   :root {
-    --ink: #1a1814;
-    --ink-2: #4a4640;
-    --ink-3: #8a8480;
-    --paper: #f5f0e8;
-    --paper-2: #ede8dc;
-    --paper-3: #ddd8cc;
-    --gold: #c8922a;
-    --gold-light: #e8b84a;
-    --blue: #2a4a8a;
-    --red: #8a2a2a;
-    --green: #2a6a3a;
-    --radius: 4px;
+    --ink: var(--ji-ink);
+    --ink-2: var(--ji-ink-soft);
+    --ink-3: var(--ji-muted);
+    --paper: var(--ji-paper);
+    --paper-2: var(--ji-surface);
+    --paper-3: var(--ji-line);
+    --gold: var(--ji-brass);
+    --gold-light: var(--ji-tint);
+    --blue: var(--ji-blue);
+    --red: var(--ji-rouge);
+    --green: var(--ji-green);
+    --radius: var(--ji-radius);
   }
 
   body {
-    font-family: 'DM Mono', monospace;
+    font-family: 'IBM Plex Mono', monospace;
     background: var(--paper);
     color: var(--ink);
     min-height: 100vh;
@@ -52,7 +52,7 @@
     gap: 1.5rem;
   }
   .site-name {
-    font-family: 'Spectral', serif;
+    font-family: 'IBM Plex Serif', serif;
     font-size: 1.1rem;
     font-style: italic;
     color: var(--ink-3);
@@ -93,7 +93,7 @@
     padding-left: 1.25rem;
   }
   h1 {
-    font-family: 'Spectral', serif;
+    font-family: 'IBM Plex Serif', serif;
     font-size: 2.2rem;
     font-weight: 700;
     line-height: 1.1;
@@ -117,7 +117,7 @@
     border-bottom: 1px solid var(--paper-3);
   }
   .tab-btn {
-    font-family: 'DM Mono', monospace;
+    font-family: 'IBM Plex Mono', monospace;
     font-size: 0.72rem;
     font-weight: 500;
     letter-spacing: 0.06em;
@@ -164,11 +164,11 @@
     transition: all 0.12s ease;
     position: relative;
   }
-  .pattern-card:hover { border-color: var(--gold); transform: translateY(-2px); box-shadow: 0 4px 12px rgba(200,146,42,0.12); }
-  .pattern-card.selected { border-color: var(--gold); background: rgba(200,146,42,0.06); }
-  .pattern-card.playing { border-color: var(--blue); background: rgba(42,74,138,0.06); }
+  .pattern-card:hover { border-color: var(--gold); transform: translateY(-2px); box-shadow: 0 4px 12px color-mix(in srgb, var(--gold) 12%, transparent); }
+  .pattern-card.selected { border-color: var(--gold); background: color-mix(in srgb, var(--gold) 6%, transparent); }
+  .pattern-card.playing { border-color: var(--blue); background: color-mix(in srgb, var(--blue) 6%, transparent); }
   .pattern-formula {
-    font-family: 'Spectral', serif;
+    font-family: 'IBM Plex Serif', serif;
     font-size: 1.1rem;
     font-weight: 700;
     color: var(--ink);
@@ -190,8 +190,8 @@
     border-radius: 10px;
     font-weight: 500;
   }
-  .badge-4 { background: rgba(42,74,138,0.1); color: var(--blue); }
-  .badge-8 { background: rgba(42,106,58,0.1); color: var(--green); }
+  .badge-4 { background: color-mix(in srgb, var(--blue) 10%, transparent); color: var(--blue); }
+  .badge-8 { background: color-mix(in srgb, var(--green) 10%, transparent); color: var(--green); }
 
   /* — CONTROLS ROW — */
   .controls-row {
@@ -204,7 +204,7 @@
   .control-group { display: flex; flex-direction: column; gap: 0.5rem; }
   .pill-row { display: flex; flex-wrap: wrap; gap: 6px; }
   .pill {
-    font-family: 'DM Mono', monospace;
+    font-family: 'IBM Plex Mono', monospace;
     font-size: 0.72rem;
     font-weight: 500;
     padding: 5px 11px;
@@ -216,7 +216,7 @@
     transition: all 0.12s;
   }
   .pill:hover { border-color: var(--gold); color: var(--gold); }
-  .pill.active { background: var(--gold); border-color: var(--gold); color: white; }
+  .pill.active { background: var(--gold); border-color: var(--gold); color: var(--ji-on-accent); }
 
   /* — CHORD CYCLE SELECTORS — */
   .cycle-selector-group {
@@ -239,7 +239,7 @@
     color: var(--ink-2);
   }
   .cycle-pill {
-    font-family: 'DM Mono', monospace;
+    font-family: 'IBM Plex Mono', monospace;
     font-size: 0.72rem;
     font-weight: 500;
     padding: 6px 14px;
@@ -251,7 +251,7 @@
     transition: all 0.12s ease;
   }
   .cycle-pill:hover { border-color: var(--gold); color: var(--gold); }
-  .cycle-pill.active { background: var(--gold); border-color: var(--gold); color: white; }
+  .cycle-pill.active { background: var(--gold); border-color: var(--gold); color: var(--ji-on-accent); }
   .cycle-description {
     font-size: 0.68rem;
     color: var(--ink-3);
@@ -274,7 +274,7 @@
     margin-bottom: 1rem;
   }
   .chord-name-big {
-    font-family: 'Spectral', serif;
+    font-family: 'IBM Plex Serif', serif;
     font-size: 1.8rem;
     font-weight: 700;
   }
@@ -304,11 +304,11 @@
     background: var(--gold);
     border-color: var(--gold);
   }
-  .tone-bubble.lit .tb-deg { color: rgba(255,255,255,0.75); }
-  .tone-bubble.lit .tb-note { color: white; }
+  .tone-bubble.lit .tb-deg { color: color-mix(in srgb, var(--ji-on-accent) 75%, transparent); }
+  .tone-bubble.lit .tb-note { color: var(--ji-on-accent); }
   .tone-bubble.dim { opacity: 0.35; }
   .tb-deg { font-size: 0.58rem; color: var(--ink-3); letter-spacing: 0.05em; }
-  .tb-note { font-family: 'Spectral', serif; font-size: 1rem; font-weight: 700; color: var(--ink); }
+  .tb-note { font-family: 'IBM Plex Serif', serif; font-size: 1rem; font-weight: 700; color: var(--ink); }
 
   /* — PATTERN PREVIEW — */
   .pattern-preview {
@@ -325,7 +325,7 @@
     margin-bottom: 1rem;
   }
   .preview-formula {
-    font-family: 'Spectral', serif;
+    font-family: 'IBM Plex Serif', serif;
     font-size: 1.2rem;
     font-weight: 700;
     color: var(--ink);
@@ -352,14 +352,14 @@
     border-color: var(--gold);
     background: var(--gold);
     transform: translateY(-3px);
-    box-shadow: 0 4px 10px rgba(200,146,42,0.3);
+    box-shadow: 0 4px 10px color-mix(in srgb, var(--gold) 30%, transparent);
   }
-  .step-cell.active .step-deg { color: rgba(255,255,255,0.8); }
-  .step-cell.active .step-note { color: white; }
-  .step-cell.played { border-color: var(--blue); background: rgba(42,74,138,0.07); }
+  .step-cell.active .step-deg { color: color-mix(in srgb, var(--ji-on-accent) 80%, transparent); }
+  .step-cell.active .step-note { color: var(--ji-on-accent); }
+  .step-cell.played { border-color: var(--blue); background: color-mix(in srgb, var(--blue) 7%, transparent); }
   .step-sep { color: var(--ink-3); font-size: 0.7rem; }
   .step-deg { font-size: 0.58rem; color: var(--ink-3); }
-  .step-note { font-family: 'Spectral', serif; font-size: 0.95rem; font-weight: 700; color: var(--ink); }
+  .step-note { font-family: 'IBM Plex Serif', serif; font-size: 0.95rem; font-weight: 700; color: var(--ink); }
   .repeat-arrow {
     font-size: 0.7rem;
     color: var(--ink-3);
@@ -376,7 +376,7 @@
     align-items: center;
   }
   .btn {
-    font-family: 'DM Mono', monospace;
+    font-family: 'IBM Plex Mono', monospace;
     font-size: 0.72rem;
     font-weight: 500;
     letter-spacing: 0.06em;
@@ -389,8 +389,8 @@
     align-items: center;
     gap: 8px;
   }
-  .btn-primary { background: var(--gold); color: white; border-color: var(--gold); }
-  .btn-primary:hover { background: #b07a1e; }
+  .btn-primary { background: var(--gold); color: var(--ji-on-accent); border-color: var(--gold); }
+  .btn-primary:hover { background: var(--ji-brass-deep); }
   .btn-primary:disabled { opacity: 0.4; cursor: not-allowed; }
   .btn-secondary { background: transparent; color: var(--ink-2); border-color: var(--paper-3); }
   .btn-secondary:hover { border-color: var(--ink-3); }
@@ -419,7 +419,7 @@
   }
   .mode-label { font-size: 0.65rem; color: var(--ink-3); }
   .mode-pill {
-    font-family: 'DM Mono', monospace;
+    font-family: 'IBM Plex Mono', monospace;
     font-size: 0.65rem;
     padding: 4px 12px;
     border: 1px solid var(--paper-3);
@@ -466,7 +466,7 @@
     flex-wrap: wrap;
   }
   .stat-number {
-    font-family: 'Spectral', serif;
+    font-family: 'IBM Plex Serif', serif;
     font-size: 3rem;
     font-weight: 700;
     color: var(--gold);
@@ -491,7 +491,7 @@
     transition: all 0.12s;
   }
   .scale-card:hover { border-color: var(--green); transform: translateY(-1px); }
-  .scale-card.selected { border-color: var(--green); background: rgba(42,106,58,0.05); }
+  .scale-card.selected { border-color: var(--green); background: color-mix(in srgb, var(--green) 5%, transparent); }
   .scale-card-name { font-size: 0.78rem; font-weight: 500; color: var(--ink); margin-bottom: 3px; }
   .scale-card-desc { font-size: 0.62rem; color: var(--ink-3); line-height: 1.4; }
 
@@ -545,7 +545,7 @@
     outline-offset: 2px;
   }
   .nav-label { font-size: 0.6rem; color: var(--ink-3); letter-spacing: 0.1em; text-transform: uppercase; }
-  .nav-name { font-family: 'Spectral', serif; font-size: 1rem; font-style: italic; color: var(--ink-2); }
+  .nav-name { font-family: 'IBM Plex Serif', serif; font-size: 1rem; font-style: italic; color: var(--ink-2); }
   .nav-arrow { font-size: 1.2rem; color: var(--gold); cursor: pointer; transition: transform 0.15s; text-decoration: none; align-self: center; }
   .nav-arrow:hover { transform: translateX(3px); }
 
@@ -599,7 +599,7 @@
     position: sticky;
     top: 0;
     z-index: 100;
-    background: rgba(245, 240, 232, 0.92);
+    background: color-mix(in srgb, var(--paper) 92%, transparent);
     backdrop-filter: blur(14px);
   }
   main { width: min(100%, 74rem); }
@@ -638,7 +638,7 @@
     .pattern-card:hover,
     .scale-card:hover {
       transform: translateY(-1px);
-      box-shadow: 0 10px 24px rgba(26, 24, 20, 0.08);
+      box-shadow: 0 10px 24px rgba(22, 22, 22, 0.08);
     }
   }
   @media (max-width: 720px) {
@@ -1403,7 +1403,7 @@ async function playScalarPattern() {
       const bubble = document.getElementById(`sp-tb-${bubbleIdx}`);
       if (bubble) {
         bubble.style.transform = 'translateY(-4px)';
-        bubble.style.boxShadow = '0 6px 14px rgba(200,146,42,0.3)';
+        bubble.style.boxShadow = '0 6px 14px color-mix(in srgb, var(--gold) 30%, transparent)';
       }
       document.querySelectorAll('#sp-preview-steps .step-cell').forEach(el => el.classList.remove('active'));
       const stepEl = document.getElementById(`sp-step-${i}`);
