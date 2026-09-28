@@ -60,7 +60,7 @@ function ModuleScreen({ module, modules, completed, onToggleComplete, onOpen, on
         <div className="mod-content">
           {tab === "see" && <SeeTab module={module} />}
           {tab === "hear" && <HearTab module={module} />}
-          {tab === "play" && <window.Player key={module.slug} module={module} />}
+          {tab === "play" && <PlayTab />}
           {tab === "apply" && <ApplyTab module={module} />}
 
           {/* Tab nav */}
@@ -130,66 +130,27 @@ function SeeTab({ module }) {
 }
 
 // ── Hear ─────────────────────────────────────────────────────────────────
+// Audio examples are on hold until they sound right.
 function HearTab({ module }) {
-  const h = module.hear;
-  const [active, setActive] = msU(null);
-  const A = window.JazzAudio;
-
-  const clipKind = (label) => {
-    const l = label.toLowerCase();
-    if (l.includes("scale")) return module.slug === "pentatonic-patterns" ? "pent" : "scale";
-    if (l.includes("arpeggio")) return "arpeggio";
-    if (l.includes("solo")) return "solo";
-    if (l.includes("phrase") || l.includes("cell") || l.includes("notes") || l.includes("resolution")) return "phrase";
-    return "groove";
-  };
-  const durSec = (s) => { const [m, sec] = String(s).split(":").map(Number); return (m * 60 + sec) || 12; };
-
-  const toggle = (i, clip) => {
-    if (!A) return;
-    if (active === i) { A.stopClips(); setActive(null); return; }
-    setActive(i);
-    A.playClip({
-      feel: clip.feel, kind: clipKind(clip.label), quality: "maj7",
-      key: module.play.keys[0], dur: durSec(clip.dur),
-      onEnd: () => setActive((cur) => (cur === i ? null : cur)),
-    });
-  };
-
-  React.useEffect(() => () => { if (A) A.stopClips(); }, []);
-
   return (
     <section className="pane">
       <div className="pane-head"><span className="pane-step"><window.Icons.Ear size={16} />Hear</span></div>
-      <p className="pane-intro"><window.GlossText>{h.intro}</window.GlossText></p>
-      <div className="clips">
-        {h.clips.map((c, i) => <ClipCard key={i} clip={c} playing={active === i} onToggle={() => toggle(i, c)} />)}
-      </div>
+      <p className="pane-intro"><window.GlossText>{module.hear.intro}</window.GlossText></p>
+      <window.ComingSoon title="Audio examples coming soon">
+        We're preparing new examples for this module. Until they're ready, move on to Play and Apply.
+      </window.ComingSoon>
     </section>
   );
 }
 
-function ClipCard({ clip, playing, onToggle }) {
+function PlayTab() {
   return (
-    <div className={"clip" + (playing ? " is-playing" : "")}>
-      <button className="clip-play" onClick={onToggle}>
-        {playing ? <window.Icons.Pause size={18} /> : <window.Icons.Play size={18} />}
-      </button>
-      <div className="clip-main">
-        <div className="clip-top">
-          <span className="clip-label">{clip.label}</span>
-          <span className={"clip-feel feel-" + clip.feel}>{clip.feel}</span>
-        </div>
-        <span className="clip-desc">{clip.desc}</span>
-        <div className="clip-wave" aria-hidden="true">
-          {Array.from({ length: 48 }).map((_, i) => (
-            <span key={i} className={playing ? "is-live" : ""}
-              style={{ height: (12 + Math.abs(Math.sin(i * 0.55 + (clip.feel === "swung" ? 1 : 0))) * 75) + "%", animationDelay: (i * 28) + "ms" }} />
-          ))}
-        </div>
-      </div>
-      <span className="clip-dur">{clip.dur}</span>
-    </div>
+    <section className="pane">
+      <div className="pane-head"><span className="pane-step"><window.Icons.Hand size={16} />Play</span></div>
+      <window.ComingSoon title="Play-along coming soon">
+        The backing track and record-yourself tools are being rebuilt. For now, practise along with a metronome or your favourite recording.
+      </window.ComingSoon>
+    </section>
   );
 }
 
