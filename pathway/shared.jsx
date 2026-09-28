@@ -121,10 +121,11 @@ function TopNav({ onHome, dark, onToggleDark, compact }) {
   return (
     <header className="nav">
       <div className="nav-inner">
-        <button className="brand" onClick={onHome}>
-          <span className="brand-mark">JI</span>
+        {/* The logo always goes to the site's home page; "Beginner Pathway" goes to the pathway start */}
+        <a className="brand" href="index.html" aria-label="Jazz Interactive home">
+          <span className="brand-mark" aria-hidden="true">JI</span>
           <span className="brand-name">Jazz Interactive</span>
-        </button>
+        </a>
         <nav className="nav-links">
           {items.map((it) => (
             <button
