@@ -85,6 +85,14 @@ header {
   color: var(--ji-ink);
 }
 
+/* The site name in every lesson header goes home */
+a.site-name {
+  text-decoration: none;
+}
+a.site-name:hover {
+  color: var(--ji-brass);
+}
+
 .logo-dot,
 .dot.done,
 .dot.current {
