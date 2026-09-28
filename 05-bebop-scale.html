@@ -354,6 +354,7 @@ main { width: min(100%, 74rem); }
 <link rel="stylesheet" href="./ji-polish.css">
 <script src="./ji-theme.js" defer></script>
 <script src="./ji-notes.js"></script>
+<script src="./ji-audio.js"></script>
 </head>
 <body>
 
@@ -544,21 +545,8 @@ main { width: min(100%, 74rem); }
 </main>
 
 <script>
-// ─── AUDIO ENGINE ─────────────────────────────────────────────────────────
-let audioCtx = null, masterBus = null;
-function getAudioCtx() {
-  if (!audioCtx) {
-    audioCtx = new (window.AudioContext || window.webkitAudioContext)();
-    const comp = audioCtx.createDynamicsCompressor();
-    comp.threshold.value = -18; comp.knee.value = 10;
-    comp.ratio.value = 4; comp.attack.value = 0.003; comp.release.value = 0.15;
-    const mg = audioCtx.createGain(); mg.gain.value = 0.72;
-    comp.connect(mg); mg.connect(audioCtx.destination);
-    masterBus = comp;
-  }
-  return audioCtx;
-}
-function getBus() { getAudioCtx(); return masterBus; }
+// ─── AUDIO: piano, bass and room from ji-audio.js, the practice page's sound ───
+function getAudioCtx() { return JIAudio.ctx(); }
 
 // Jazz voicing engine
 const VOICING_SHAPES = {
@@ -583,27 +571,10 @@ function playJazzChord(root, quality, t, dur, ctx, type='A') {
   });
 }
 function playVoiceTone(freq, t, dur, ctx, vol, type='sine') {
-  const osc = ctx.createOscillator(), gain = ctx.createGain(), filt = ctx.createBiquadFilter();
-  filt.type = 'lowpass'; filt.frequency.value = 2200; filt.Q.value = 0.4;
-  osc.connect(filt); filt.connect(gain); gain.connect(getBus());
-  osc.type = type; osc.frequency.setValueAtTime(freq, t);
-  gain.gain.setValueAtTime(0, t);
-  gain.gain.linearRampToValueAtTime(vol, t + 0.04);
-  gain.gain.setValueAtTime(vol * 0.85, t + dur * 0.3);
-  gain.gain.linearRampToValueAtTime(vol * 0.5, t + dur * 0.7);
-  gain.gain.linearRampToValueAtTime(0, t + dur + 0.1);
-  osc.start(t); osc.stop(t + dur + 0.2);
+  JIAudio.piano(freq, t, dur, vol >= 0.15 ? 0.95 : 0.8);
 }
 function playTone(freq, t, dur, ctx, vol=0.45, isPassing=false) {
-  const osc = ctx.createOscillator(), gain = ctx.createGain(), filt = ctx.createBiquadFilter();
-  filt.type = 'lowpass'; filt.frequency.value = isPassing ? 1800 : 2600; filt.Q.value = 0.5;
-  osc.connect(filt); filt.connect(gain); gain.connect(getBus());
-  osc.type = 'triangle'; osc.frequency.setValueAtTime(freq, t);
-  gain.gain.setValueAtTime(0, t);
-  gain.gain.linearRampToValueAtTime(isPassing ? vol * 0.7 : vol, t + 0.025);
-  gain.gain.setValueAtTime(isPassing ? vol * 0.6 : vol, t + dur * 0.65);
-  gain.gain.linearRampToValueAtTime(0, t + dur);
-  osc.start(t); osc.stop(t + dur + 0.05);
+  JIAudio.piano(freq, t, dur, vol * 3.2); // the tune leads, above the chord
 }
 function playCurrentChord() {
   const ctx = getAudioCtx();
@@ -613,13 +584,7 @@ function playCurrentChord() {
 }
 
 function playBass(freq, t, dur, ctx) {
-  const osc = ctx.createOscillator(), gain = ctx.createGain(), filt = ctx.createBiquadFilter();
-  filt.type = 'lowpass'; filt.frequency.value = 340;
-  osc.connect(filt); filt.connect(gain); gain.connect(getBus());
-  osc.type = 'sine'; osc.frequency.value = freq / 2;
-  gain.gain.setValueAtTime(0, t); gain.gain.linearRampToValueAtTime(0.28, t + 0.04);
-  gain.gain.setValueAtTime(0.28, t + dur * 0.5); gain.gain.linearRampToValueAtTime(0, t + dur);
-  osc.start(t); osc.stop(t + dur + 0.05);
+  JIAudio.bass(freq, t, dur);
 }
 function semisToHz(base, s) { return base * Math.pow(2, s / 12); }
 function sleep(ms) { return new Promise(r => setTimeout(r, ms)); }

@@ -758,6 +758,7 @@
 <link rel="stylesheet" href="./ji-polish.css">
 <script src="./ji-theme.js" defer></script>
 <script src="./ji-notes.js"></script>
+<script src="./ji-audio.js"></script>
 </head>
 <body>
 
@@ -966,59 +967,16 @@ let selectedQuality = QUALITIES[0];
 let phrase = [];
 let tempo = 120;
 let isPlaying = false;
-let audioCtx = null;
-let masterBus = null;
 
-// ─── AUDIO ─────────────────────────────────────────────────────────
-function getAudioCtx() {
-  if (!audioCtx) {
-    audioCtx = new (window.AudioContext || window.webkitAudioContext)();
-    const comp = audioCtx.createDynamicsCompressor();
-    comp.threshold.value = -18;
-    comp.knee.value = 10;
-    comp.ratio.value = 4;
-    comp.attack.value = 0.003;
-    comp.release.value = 0.15;
-    const masterGain = audioCtx.createGain();
-    masterGain.gain.value = 0.72;
-    comp.connect(masterGain);
-    masterGain.connect(audioCtx.destination);
-    masterBus = comp;
-  }
-  return audioCtx;
-}
-
-function getBus() { getAudioCtx(); return masterBus; }
+// ─── AUDIO: piano, bass and room from ji-audio.js, the practice page's sound ───
+function getAudioCtx() { return JIAudio.ctx(); }
 
 function playNote(freq, startTime, duration, ctx, amp) {
-  const osc = ctx.createOscillator();
-  const gain = ctx.createGain();
-  osc.connect(gain);
-  gain.connect(getBus());
-  osc.frequency.value = freq;
-  gain.gain.setValueAtTime(amp, startTime);
-  gain.gain.linearRampToValueAtTime(0, startTime + duration);
-  osc.start(startTime);
-  osc.stop(startTime + duration + 0.05);
+  JIAudio.piano(freq, startTime, duration, amp * 3.2); // the tune leads
 }
 
 function playBassNote(freq, startTime, duration, ctx) {
-  const filter = ctx.createBiquadFilter();
-  filter.type = 'lowpass';
-  filter.frequency.value = 60;
-  const osc = ctx.createOscillator();
-  const gain = ctx.createGain();
-  osc.connect(filter);
-  filter.connect(gain);
-  gain.connect(getBus());
-  osc.type = 'sine';
-  osc.frequency.value = freq / 2;
-  gain.gain.setValueAtTime(0, startTime);
-  gain.gain.linearRampToValueAtTime(0.28, startTime + 0.04);
-  gain.gain.setValueAtTime(0.28, startTime + duration * 0.6);
-  gain.gain.linearRampToValueAtTime(0, startTime + duration);
-  osc.start(startTime);
-  osc.stop(startTime + duration + 0.05);
+  JIAudio.bass(freq, startTime, duration);
 }
 
 function semitonesToFreq(baseFreq, semitones) {
@@ -1263,9 +1221,10 @@ function playChordBlock() {
   const startTime = ctx.currentTime;
   const duration = 1.5;
   
-  // Play all chord tones together as a voicing
-  tones.forEach(tone => {
-    playBassNote(tone.freq, startTime, duration, ctx);
+  // Bass on the root, piano on the chord tones, rolled a touch like a hand
+  playBassNote(tones[0].freq, startTime, duration, ctx);
+  tones.forEach((tone, i) => {
+    JIAudio.piano(tone.freq, startTime + i * 0.018, duration, 0.9);
   });
   
   animateWaveform(1400);
