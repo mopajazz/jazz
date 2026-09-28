@@ -5,7 +5,7 @@
 <script>(function(){try{var s=localStorage.getItem('ji-theme');var d=s?s==='dark':matchMedia('(prefers-color-scheme: dark)').matches;if(d)document.documentElement.classList.add('dark');}catch(e){}})();</script>
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <meta name="description" content="Interactive lesson on Change-Running: spelling out chord tones as a melodic phrase. Build your own phrases, hear how masters use it, and master the foundation of jazz improvisation.">
-<meta name="theme-color" content="#f5f0e8">
+<meta name="theme-color" content="#fdfdfd">
 <meta property="og:type" content="website">
 <meta property="og:title" content="Change-Running - Jazz Interactive">
 <meta property="og:description" content="Build change-running phrases, hear them in context, and strengthen your jazz harmony instincts.">
@@ -15,30 +15,30 @@
 <title>Change-Running - Jazz Interactive</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Spectral:ital,wght@0,400;0,500;0,600;0,700;1,500;1,600&family=DM+Sans:ital,opsz,wght@0,9..40,400;0,9..40,500;0,9..40,600;0,9..40,700&family=DM+Mono:ital,wght@0,300;0,400;0,500;1,300;1,400&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Serif:ital,wght@0,400;0,500;0,600;0,700;1,500;1,600&family=IBM+Plex+Sans:ital,wght@0,400;0,500;0,600;0,700;1,400&family=IBM+Plex+Mono:ital,wght@0,300;0,400;0,500;1,400&display=swap" rel="stylesheet">
 <style>
   *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
 
   :root {
-    --ink: #1a1814;
-    --ink-2: #4a4640;
-    --ink-3: #5a5650;
-    --paper: #f5f0e8;
-    --paper-2: #ede8dc;
-    --paper-3: #ddd8cc;
-    --gold: #c8922a;
-    --gold-light: #e8b84a;
-    --blue: #2a4a8a;
-    --red: #8a2a2a;
-    --active: #c8922a;
-    --played: #2a4a8a;
-    --radius: 4px;
+    --ink: var(--ji-ink);
+    --ink-2: var(--ji-ink-soft);
+    --ink-3: var(--ji-muted);
+    --paper: var(--ji-paper);
+    --paper-2: var(--ji-surface);
+    --paper-3: var(--ji-line);
+    --gold: var(--ji-brass);
+    --gold-light: var(--ji-tint);
+    --blue: var(--ji-blue);
+    --red: var(--ji-rouge);
+    --active: var(--ji-brass);
+    --played: var(--ji-blue);
+    --radius: var(--ji-radius);
   }
 
   html { scroll-behavior: smooth; }
 
   body {
-    font-family: 'DM Mono', monospace;
+    font-family: 'IBM Plex Mono', monospace;
     background: var(--paper);
     color: var(--ink);
     min-height: 100vh;
@@ -83,7 +83,7 @@
     gap: 1.5rem;
   }
   .site-name {
-    font-family: 'Spectral', serif;
+    font-family: 'IBM Plex Serif', serif;
     font-size: 1.1rem;
     font-style: italic;
     color: var(--ink);
@@ -118,7 +118,7 @@
     padding-left: 1.25rem;
   }
   h1 {
-    font-family: 'Spectral', serif;
+    font-family: 'IBM Plex Serif', serif;
     font-size: 2.4rem;
     font-weight: 700;
     line-height: 1.1;
@@ -166,7 +166,7 @@
     gap: 6px;
   }
   .pill {
-    font-family: 'DM Mono', monospace;
+    font-family: 'IBM Plex Mono', monospace;
     font-size: 1rem;
     font-weight: 500;
     padding: 5px 11px;
@@ -186,7 +186,7 @@
   .pill.active {
     background: var(--gold);
     border-color: var(--gold);
-    color: white;
+    color: var(--ji-on-accent);
   }
 
   /* ═══ CHORD CYCLE SELECTORS ═══ */
@@ -213,7 +213,7 @@
   }
 
   .cycle-pill {
-    font-family: 'DM Mono', monospace;
+    font-family: 'IBM Plex Mono', monospace;
     font-size: 0.72rem;
     font-weight: 500;
     padding: 6px 14px;
@@ -238,7 +238,7 @@
   .cycle-pill.active {
     background: var(--gold);
     border-color: var(--gold);
-    color: white;
+    color: var(--ji-on-accent);
   }
 
   .cycle-description {
@@ -262,7 +262,7 @@
   }
   .chord-name-block {}
   .chord-symbol {
-    font-family: 'Spectral', serif;
+    font-family: 'IBM Plex Serif', serif;
     font-size: 3rem;
     font-weight: 700;
     color: var(--ink);
@@ -330,7 +330,7 @@
   .tone-btn:hover {
     border-color: var(--gold);
     transform: translateY(-2px);
-    box-shadow: 0 4px 12px rgba(200,146,42,0.15);
+    box-shadow: 0 4px 12px color-mix(in srgb, var(--gold) 15%, transparent);
   }
   .tone-btn:focus-visible {
     outline: 3px solid var(--blue);
@@ -338,13 +338,13 @@
   }
   .tone-btn.in-phrase {
     border-color: var(--played);
-    background: rgba(42,74,138,0.06);
+    background: color-mix(in srgb, var(--blue) 6%, transparent);
   }
   .tone-btn.playing {
     border-color: var(--gold);
-    background: rgba(200,146,42,0.1);
+    background: color-mix(in srgb, var(--gold) 10%, transparent);
     transform: translateY(-3px);
-    box-shadow: 0 6px 16px rgba(200,146,42,0.25);
+    box-shadow: 0 6px 16px color-mix(in srgb, var(--gold) 25%, transparent);
   }
   .tone-degree {
     font-size: 1rem;
@@ -354,7 +354,7 @@
     text-transform: uppercase;
   }
   .tone-note {
-    font-family: 'Spectral', serif;
+    font-family: 'IBM Plex Serif', serif;
     font-size: 1.3rem;
     font-weight: 700;
     color: var(--ink);
@@ -411,10 +411,10 @@
     outline-offset: 1px;
   }
   .phrase-note .pn-degree { color: var(--ink-2); font-size: 0.9rem; }
-  .phrase-note .pn-name { font-family: 'Spectral', serif; font-weight: 700; font-size: 1rem; }
+  .phrase-note .pn-name { font-family: 'IBM Plex Serif', serif; font-weight: 700; font-size: 1rem; }
   .phrase-note.pn-playing {
     border-color: var(--gold);
-    background: rgba(200,146,42,0.1);
+    background: color-mix(in srgb, var(--gold) 10%, transparent);
   }
   .phrase-arrow {
     color: var(--ink-3);
@@ -439,7 +439,7 @@
     padding: 10px 16px;
     border: none;
     border-radius: var(--radius);
-    font-family: 'DM Mono', monospace;
+    font-family: 'IBM Plex Mono', monospace;
     font-size: 1rem;
     font-weight: 500;
     cursor: pointer;
@@ -618,7 +618,7 @@
     font-weight: 500;
   }
   .nav-name {
-    font-family: 'Spectral', serif;
+    font-family: 'IBM Plex Serif', serif;
     font-size: 1.1rem;
     font-style: italic;
     color: var(--ink);
@@ -689,7 +689,7 @@
     position: sticky;
     top: 0;
     z-index: 100;
-    background: rgba(245, 240, 232, 0.92);
+    background: color-mix(in srgb, var(--paper) 92%, transparent);
     backdrop-filter: blur(14px);
   }
   main { width: min(100%, 72rem); }
@@ -716,7 +716,7 @@
     .btn:hover,
     .nav-item:hover {
       transform: translateY(-1px);
-      box-shadow: 0 10px 24px rgba(26, 24, 20, 0.08);
+      box-shadow: 0 10px 24px rgba(22, 22, 22, 0.08);
     }
   }
   @media (max-width: 720px) {

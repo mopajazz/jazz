@@ -2,31 +2,32 @@
    Shared across the standalone lesson pages. */
 
 :root {
-  /* Same palette and type system as index.html / pathway/styles.css,
-     for visual continuity across the site. --ji-rouge is intentionally
-     aliased to the same value as --ji-brass: the old palette used them
-     as two separate warm accents, but the new 3-accent system (warm /
-     cool / blue) only has one warm accent. */
-  --ji-ink: #221d16;
-  --ji-ink-soft: #6b6356;
-  --ji-muted: #8c8475;
-  --ji-paper: #f5f0e8;
-  --ji-paper-warm: #efe7d8;
-  --ji-paper-cool: #efe7d8;
-  --ji-surface: #fbf8f2;
-  --ji-line: #ddd2bd;
-  --ji-brass: #b1481e;
-  --ji-brass-deep: #8a3316;
-  --ji-rouge: #b1481e;
-  --ji-green: #2f6f62;
-  --ji-blue: #1b4965;
+  /* One colour: slate for everything you can press and for what's sounding;
+     everything else is grey. The old accent names are kept so every page's
+     existing rules pick up the new values: --ji-brass is the slate accent,
+     --ji-blue a deeper slate (played / notes), --ji-green a neutral grey. */
+  --ji-ink: #161616;
+  --ji-ink-soft: #525252;
+  --ji-muted: #6b6b6b;         /* 4.5:1+ on page and panels */
+  --ji-paper: #fdfdfd;
+  --ji-paper-warm: #f2f2f2;
+  --ji-paper-cool: #f2f2f2;
+  --ji-surface: #f2f2f2;
+  --ji-line: #e4e4e4;
+  --ji-edge: #858585;          /* button and control edges: 3:1 on page and panels */
+  --ji-brass: #415380;         /* slate accent */
+  --ji-brass-deep: #2f3d63;    /* slate, pressed / hover */
+  --ji-rouge: #415380;
+  --ji-green: #525252;
+  --ji-blue: #2f3d63;
+  --ji-tint: #dfe4f0;          /* the note that's sounding */
   --ji-on-accent: #fff;
-  --ji-shadow: 0 24px 50px -22px rgba(60, 45, 20, 0.3);
-  --ji-shadow-sm: 0 6px 22px -10px rgba(60, 45, 20, 0.18);
-  --ji-radius: 12px;
-  --ji-sans: "DM Sans", system-ui, -apple-system, BlinkMacSystemFont, sans-serif;
-  --ji-mono: "DM Mono", "SFMono-Regular", Consolas, monospace;
-  --ji-display: "Spectral", Georgia, serif;
+  --ji-shadow: 0 6px 18px rgba(22, 22, 22, 0.16);
+  --ji-shadow-sm: 0 3px 10px rgba(22, 22, 22, 0.14);
+  --ji-radius: 4.6px;
+  --ji-sans: "IBM Plex Sans", "Helvetica Neue", Arial, sans-serif;
+  --ji-mono: "IBM Plex Mono", "SFMono-Regular", Consolas, monospace;
+  --ji-display: "IBM Plex Serif", Georgia, serif;
 
   --ink: var(--ji-ink);
   --ink-2: var(--ji-ink-soft);
@@ -41,7 +42,7 @@
   --active: var(--ji-brass);
   --played: var(--ji-blue);
   --radius: var(--ji-radius);
-  --focus-outline: 3px solid var(--ji-blue);
+  --focus-outline: 2px solid var(--ji-brass);
 }
 
 html {
@@ -57,16 +58,12 @@ body {
 }
 
 *::selection {
-  background: var(--ji-brass-deep);
-  color: #fff;
-}
-html.dark *::selection {
   background: var(--ji-brass);
-  color: #1a120c;
+  color: var(--ji-on-accent);
 }
 
 *:focus-visible {
-  outline: 3px solid var(--ji-blue);
+  outline: 2px solid var(--ji-brass);
   outline-offset: 3px;
 }
 
@@ -179,8 +176,8 @@ h1 em {
   top: 0.25rem;
   bottom: 0.25rem;
   width: 5px;
-  background: linear-gradient(var(--ji-brass), var(--ji-blue) 55%, var(--ji-green));
-  border-radius: 99px;
+  background: var(--ji-brass);
+  border-radius: 2px;
 }
 
 .definition,
@@ -246,7 +243,7 @@ h1 em {
 .nav-item:hover,
 .pattern-card:hover,
 .scale-card:hover {
-  transform: translateY(-3px);
+  transform: translateY(-1px);
   border-color: color-mix(in srgb, var(--ji-brass) 55%, transparent) !important;
   box-shadow: var(--ji-shadow-sm) !important;
 }
@@ -292,7 +289,7 @@ h1 em {
 
 .cta-button,
 .btn-primary,
-.btn:not(.btn-secondary),
+.btn:not(.btn-secondary):not(.secondary),
 .cta-button-light {
   background: var(--ji-brass) !important;
   border-color: var(--ji-brass) !important;
@@ -302,7 +299,7 @@ h1 em {
 
 .cta-button:hover,
 .btn-primary:hover,
-.btn:not(.btn-secondary):hover,
+.btn:not(.btn-secondary):not(.secondary):hover,
 .cta-button-light:hover {
   background: var(--ji-brass-deep) !important;
   border-color: var(--ji-brass-deep) !important;
@@ -316,8 +313,8 @@ h1 em {
 .cycle-pill,
 .mode-pill,
 .tab-btn {
-  background: var(--ji-surface) !important;
-  border-color: var(--ji-line) !important;
+  background: var(--ji-paper) !important;
+  border-color: var(--ji-edge) !important;
   color: var(--ji-ink-soft) !important;
 }
 
@@ -335,8 +332,8 @@ h1 em {
 .tab-btn.active,
 .pattern-card.active,
 .scale-card.active {
-  background: var(--ji-green) !important;
-  border-color: var(--ji-green) !important;
+  background: var(--ji-brass) !important;
+  border-color: var(--ji-brass) !important;
   color: var(--ji-on-accent) !important;
 }
 
@@ -359,13 +356,38 @@ h1 em {
 .beat-cell,
 .note-pip,
 .tone-bubble {
-  border-color: var(--ji-line) !important;
+  border-color: var(--ji-edge) !important;
 }
 
 .tone-btn:hover,
 .scale-step:hover,
 .beat-cell:hover {
-  border-color: var(--ji-rouge) !important;
+  border-color: var(--ji-brass) !important;
+}
+
+/* Hover: a light, blurred lift on anything you can press */
+.btn-secondary,
+.pill,
+.cycle-pill,
+.mode-pill,
+.tab-btn,
+.tone-btn,
+.scale-step,
+.phrase-note,
+.theme-toggle {
+  transition: transform 150ms ease, box-shadow 150ms ease, border-color 150ms ease, background-color 150ms ease, color 150ms ease;
+}
+.btn-secondary:hover,
+.pill:hover,
+.cycle-pill:hover,
+.mode-pill:hover,
+.tab-btn:hover,
+.tone-btn:hover,
+.scale-step:hover,
+.phrase-note:hover,
+.theme-toggle:hover {
+  transform: translateY(-1px);
+  box-shadow: var(--ji-shadow-sm) !important;
 }
 
 .wave-bar,
@@ -378,7 +400,7 @@ h1 em {
 }
 
 input[type="range"] {
-  accent-color: var(--ji-green);
+  accent-color: var(--ji-brass);
 }
 
 .nav-strip {
@@ -444,20 +466,24 @@ footer .footer-bottom {
 /* Shared dark mode layer */
 html.dark {
   color-scheme: dark;
-  --ji-ink: #f5f0e8;
-  --ji-ink-soft: #d0c8b8;
-  --ji-muted: #a89f90;
-  --ji-paper: #1a1714;
-  --ji-paper-warm: #2a241a;
-  --ji-paper-cool: #2a241a;
-  --ji-surface: #221d16;
-  --ji-line: #3d3628;
-  --ji-brass: #d9764a;
-  --ji-brass-deep: #e8916a;
-  --ji-rouge: #d9764a;
-  --ji-green: #5fb3a0;
-  --ji-blue: #5b94c9;
-  --ji-on-accent: #1a120c;
+  --ji-ink: #f8f9fb;
+  --ji-ink-soft: #d3d7df;
+  --ji-muted: #aab0bd;
+  --ji-paper: #15171c;
+  --ji-paper-warm: #1f222a;
+  --ji-paper-cool: #1f222a;
+  --ji-surface: #1f222a;
+  --ji-line: #2e323c;
+  --ji-edge: #767d8c;
+  --ji-brass: #8fa3d6;         /* slate, lifted so it reads on the dark page */
+  --ji-brass-deep: #bccaec;
+  --ji-rouge: #8fa3d6;
+  --ji-green: #d3d7df;
+  --ji-blue: #bccaec;
+  --ji-tint: #2b3452;
+  --ji-on-accent: #10131a;
+  --ji-shadow: 0 6px 20px rgba(143, 163, 214, 0.24), 0 3px 8px rgba(0, 0, 0, 0.5);
+  --ji-shadow-sm: 0 3px 14px rgba(143, 163, 214, 0.22), 0 2px 6px rgba(0, 0, 0, 0.5);
   --ink: var(--ji-ink);
   --ink-2: var(--ji-ink-soft);
   --ink-3: var(--ji-muted);
@@ -470,7 +496,7 @@ html.dark {
   --green: var(--ji-green);
   --active: var(--ji-brass);
   --played: var(--ji-blue);
-  --focus-outline: 3px solid var(--ji-blue);
+  --focus-outline: 2px solid var(--ji-brass);
 }
 
 html.dark body {

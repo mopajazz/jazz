@@ -5,7 +5,7 @@
 <script>(function(){try{var s=localStorage.getItem('ji-theme');var d=s?s==='dark':matchMedia('(prefers-color-scheme: dark)').matches;if(d)document.documentElement.classList.add('dark');}catch(e){}})();</script>
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <meta name="description" content="Practice a classic bebop lick with chromatic and cycle-of-fourths roots, chord context, and progression playback.">
-<meta name="theme-color" content="#f5f0e8">
+<meta name="theme-color" content="#fdfdfd">
 <meta property="og:type" content="website">
 <meta property="og:title" content="Bebop Lick - Jazz Interactive">
 <meta property="og:description" content="Hear and rehearse a signature bebop line across roots and ii-V contexts.">
@@ -15,29 +15,29 @@
 <title>Bebop Lick - Jazz Interactive</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Spectral:ital,wght@0,400;0,500;0,600;0,700;1,500;1,600&family=DM+Sans:ital,opsz,wght@0,9..40,400;0,9..40,500;0,9..40,600;0,9..40,700&family=DM+Mono:ital,wght@0,300;0,400;0,500;1,300;1,400&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Serif:ital,wght@0,400;0,500;0,600;0,700;1,500;1,600&family=IBM+Plex+Sans:ital,wght@0,400;0,500;0,600;0,700;1,400&family=IBM+Plex+Mono:ital,wght@0,300;0,400;0,500;1,400&display=swap" rel="stylesheet">
 <style>
   *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
 
   :root {
-    --ink: #1a1814;
-    --ink-2: #4a4640;
-    --ink-3: #8a8480;
-    --paper: #f5f0e8;
-    --paper-2: #ede8dc;
-    --paper-3: #ddd8cc;
-    --gold: #c8922a;
-    --blue: #2a4a8a;
-    --red: #8a2a2a;
-    --green: #2a6a3a;
-    --radius: 4px;
-    --lick-color: #8a2a2a;
-    --scale-color: #2a6a3a;
-    --chrom-color: #c8922a;
+    --ink: var(--ji-ink);
+    --ink-2: var(--ji-ink-soft);
+    --ink-3: var(--ji-muted);
+    --paper: var(--ji-paper);
+    --paper-2: var(--ji-surface);
+    --paper-3: var(--ji-line);
+    --gold: var(--ji-brass);
+    --blue: var(--ji-blue);
+    --red: var(--ji-rouge);
+    --green: var(--ji-green);
+    --radius: var(--ji-radius);
+    --lick-color: var(--ji-green);
+    --scale-color: var(--ji-ink);
+    --chrom-color: var(--ji-brass);
   }
 
   body {
-    font-family: 'DM Mono', monospace;
+    font-family: 'IBM Plex Mono', monospace;
     background: var(--paper);
     color: var(--ink);
     min-height: 100vh;
@@ -52,7 +52,7 @@
     align-items: baseline;
     gap: 1.5rem;
   }
-  .site-name { font-family: 'Spectral', serif; font-size: 1.1rem; font-style: italic; color: var(--ink-3); }
+  .site-name { font-family: 'IBM Plex Serif', serif; font-size: 1.1rem; font-style: italic; color: var(--ink-3); }
   .element-badge { font-size: 0.65rem; font-weight: 500; letter-spacing: 0.12em; text-transform: uppercase; color: var(--gold); border: 1px solid var(--gold); padding: 3px 8px; border-radius: var(--radius); }
   .progress-dots { display: flex; gap: 6px; align-items: center; margin-left: auto; }
   .dot { width: 6px; height: 6px; border-radius: 50%; background: var(--paper-3); }
@@ -62,7 +62,7 @@
   main { flex: 1; max-width: 900px; margin: 0 auto; padding: 3rem 2rem 4rem; width: 100%; }
 
   .title-block { margin-bottom: 2.5rem; border-left: 3px solid var(--gold); padding-left: 1.25rem; }
-  h1 { font-family: 'Spectral', serif; font-size: 2.2rem; font-weight: 700; line-height: 1.1; letter-spacing: -0.02em; }
+  h1 { font-family: 'IBM Plex Serif', serif; font-size: 2.2rem; font-weight: 700; line-height: 1.1; letter-spacing: -0.02em; }
   h1 em { font-style: italic; color: var(--ink-2); }
   .definition { margin-top: 0.75rem; font-size: 0.78rem; color: var(--ink-3); line-height: 1.65; max-width: 620px; }
   .definition strong { color: var(--ink-2); font-weight: 500; }
@@ -84,7 +84,7 @@
   .conn-badge {
     width: 42px; height: 42px; border-radius: 50%;
     display: flex; align-items: center; justify-content: center;
-    font-size: 0.82rem; font-weight: 500; color: white;
+    font-size: 0.82rem; font-weight: 500; color: var(--ji-on-accent);
   }
   .conn-badge.scale { background: var(--scale-color); }
   .conn-badge.lick { background: var(--lick-color); }
@@ -99,7 +99,7 @@
   .control-group { display: flex; flex-direction: column; gap: 0.5rem; }
   .pill-row { display: flex; flex-wrap: wrap; gap: 6px; }
   .pill {
-    font-family: 'DM Mono', monospace;
+    font-family: 'IBM Plex Mono', monospace;
     background: transparent;
     border: 1px solid var(--paper-3);
     border-radius: var(--radius);
@@ -122,7 +122,7 @@
   .chord-type-row .label { margin-right: 6px; }
 
   .mode-pill {
-    font-family: 'DM Mono', monospace;
+    font-family: 'IBM Plex Mono', monospace;
     background: transparent;
     border: 1px solid var(--paper-3);
     border-radius: var(--radius);
@@ -155,7 +155,7 @@
     border-bottom: 1px solid var(--paper-3);
   }
   .chord-symbol-xl {
-    font-family: 'Spectral', serif;
+    font-family: 'IBM Plex Serif', serif;
     font-size: 2.2rem;
     font-weight: 700;
     color: var(--ink);
@@ -209,9 +209,9 @@
     border: 1px solid var(--paper-3);
     transition: all 0.15s;
   }
-  .note-pip.chord-tone { color: var(--scale-color); border-color: var(--scale-color); background: #f0f5f0; }
-  .note-pip.bebop-note { color: var(--chrom-color); border-color: var(--chrom-color); background: #fbf4e4; font-style: italic; }
-  .note-pip.chromatic { color: var(--lick-color); border-color: var(--lick-color); background: #fbefef; }
+  .note-pip.chord-tone { color: var(--scale-color); border-color: var(--scale-color); background: color-mix(in srgb, var(--scale-color) 7%, var(--ji-paper)); }
+  .note-pip.bebop-note { color: var(--chrom-color); border-color: var(--chrom-color); background: var(--ji-tint); font-style: italic; }
+  .note-pip.chromatic { color: var(--lick-color); border-color: var(--lick-color); background: var(--ji-paper); border-style: dashed; }
 
   .note-pip.playing {
     background: var(--ink);
@@ -243,9 +243,9 @@
     width: 10px; height: 10px; border-radius: 50%;
     border: 1px solid;
   }
-  .legend-swatch.chord-tone { border-color: var(--scale-color); background: #f0f5f0; }
-  .legend-swatch.bebop-note { border-color: var(--chrom-color); background: #fbf4e4; }
-  .legend-swatch.chromatic { border-color: var(--lick-color); background: #fbefef; }
+  .legend-swatch.chord-tone { border-color: var(--scale-color); background: color-mix(in srgb, var(--scale-color) 7%, var(--ji-paper)); }
+  .legend-swatch.bebop-note { border-color: var(--chrom-color); background: var(--ji-tint); }
+  .legend-swatch.chromatic { border-color: var(--lick-color); background: var(--ji-paper); border-style: dashed; }
 
   /* — ACTIONS — */
   .actions {
@@ -256,7 +256,7 @@
     margin-bottom: 2rem;
   }
   .btn {
-    font-family: 'DM Mono', monospace;
+    font-family: 'IBM Plex Mono', monospace;
     border: 1px solid var(--ink-2);
     background: var(--ink);
     color: var(--paper);
@@ -311,7 +311,7 @@
     margin-bottom: 2.5rem;
   }
   .tritone-card-title {
-    font-family: 'Spectral', serif;
+    font-family: 'IBM Plex Serif', serif;
     font-size: 1rem;
     font-style: italic;
     color: var(--ink);
@@ -320,7 +320,7 @@
   .tritone-card-body { font-size: 0.74rem; color: var(--ink-2); line-height: 1.6; }
   .tritone-card-body strong { color: var(--ink); font-weight: 500; }
   .tritone-card-body code {
-    font-family: 'DM Mono', monospace;
+    font-family: 'IBM Plex Mono', monospace;
     background: var(--paper-2);
     padding: 1px 5px;
     border-radius: 2px;
@@ -347,7 +347,7 @@
     outline-offset: 2px;
   }
   .nav-label { font-size: 0.6rem; color: var(--ink-3); letter-spacing: 0.1em; text-transform: uppercase; }
-  .nav-name { font-family: 'Spectral', serif; font-size: 1rem; font-style: italic; color: var(--ink-2); }
+  .nav-name { font-family: 'IBM Plex Serif', serif; font-size: 1rem; font-style: italic; color: var(--ink-2); }
   .nav-arrow { font-size: 1.2rem; color: var(--gold); cursor: pointer; transition: transform 0.15s; text-decoration: none; align-self: center; }
   .nav-arrow:hover { transform: translateX(3px); }
 
@@ -408,7 +408,7 @@
     position: sticky;
     top: 0;
     z-index: 100;
-    background: rgba(245, 240, 232, 0.92);
+    background: color-mix(in srgb, var(--paper) 92%, transparent);
     backdrop-filter: blur(14px);
   }
   main { width: min(100%, 74rem); }
@@ -439,7 +439,7 @@
     .mode-pill:hover,
     .nav-item:hover {
       transform: translateY(-1px);
-      box-shadow: 0 10px 24px rgba(26, 24, 20, 0.08);
+      box-shadow: 0 10px 24px rgba(22, 22, 22, 0.08);
     }
   }
   @media (max-width: 720px) {

@@ -5,7 +5,7 @@
 <script>(function(){try{var s=localStorage.getItem('ji-theme');var d=s?s==='dark':matchMedia('(prefers-color-scheme: dark)').matches;if(d)document.documentElement.classList.add('dark');}catch(e){}})();</script>
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <meta name="description" content="Hear and see the 7-3 resolution through interactive ii-V-I examples, key changes, and guided bebop voice leading.">
-<meta name="theme-color" content="#f5f0e8">
+<meta name="theme-color" content="#fdfdfd">
 <meta property="og:type" content="website">
 <meta property="og:title" content="7-3 Resolution - Jazz Interactive">
 <meta property="og:description" content="Study the core ii-V voice-leading motion with interactive chord displays and playback.">
@@ -15,28 +15,28 @@
 <title>7-3 Resolution - Jazz Interactive</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Spectral:ital,wght@0,400;0,500;0,600;0,700;1,500;1,600&family=DM+Sans:ital,opsz,wght@0,9..40,400;0,9..40,500;0,9..40,600;0,9..40,700&family=DM+Mono:ital,wght@0,300;0,400;0,500;1,300;1,400&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Serif:ital,wght@0,400;0,500;0,600;0,700;1,500;1,600&family=IBM+Plex+Sans:ital,wght@0,400;0,500;0,600;0,700;1,400&family=IBM+Plex+Mono:ital,wght@0,300;0,400;0,500;1,400&display=swap" rel="stylesheet">
 <style>
   *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
 
   :root {
-    --ink: #1a1814;
-    --ink-2: #4a4640;
-    --ink-3: #8a8480;
-    --paper: #f5f0e8;
-    --paper-2: #ede8dc;
-    --paper-3: #ddd8cc;
-    --gold: #c8922a;
-    --blue: #2a4a8a;
-    --red: #8a2a2a;
-    --green: #2a6a3a;
-    --radius: 4px;
-    --pull-color: #8a2a2a;
-    --resolve-color: #2a6a3a;
+    --ink: var(--ji-ink);
+    --ink-2: var(--ji-ink-soft);
+    --ink-3: var(--ji-muted);
+    --paper: var(--ji-paper);
+    --paper-2: var(--ji-surface);
+    --paper-3: var(--ji-line);
+    --gold: var(--ji-brass);
+    --blue: var(--ji-blue);
+    --red: var(--ji-rouge);
+    --green: var(--ji-green);
+    --radius: var(--ji-radius);
+    --pull-color: var(--ji-ink);
+    --resolve-color: var(--ji-brass);
   }
 
   body {
-    font-family: 'DM Mono', monospace;
+    font-family: 'IBM Plex Mono', monospace;
     background: var(--paper);
     color: var(--ink);
     min-height: 100vh;
@@ -51,7 +51,7 @@
     align-items: baseline;
     gap: 1.5rem;
   }
-  .site-name { font-family: 'Spectral', serif; font-size: 1.1rem; font-style: italic; color: var(--ink-3); }
+  .site-name { font-family: 'IBM Plex Serif', serif; font-size: 1.1rem; font-style: italic; color: var(--ink-3); }
   .element-badge { font-size: 0.65rem; font-weight: 500; letter-spacing: 0.12em; text-transform: uppercase; color: var(--gold); border: 1px solid var(--gold); padding: 3px 8px; border-radius: var(--radius); }
   .progress-dots { display: flex; gap: 6px; align-items: center; margin-left: auto; }
   .dot { width: 6px; height: 6px; border-radius: 50%; background: var(--paper-3); }
@@ -61,7 +61,7 @@
   main { flex: 1; max-width: 900px; margin: 0 auto; padding: 3rem 2rem 4rem; width: 100%; }
 
   .title-block { margin-bottom: 2.5rem; border-left: 3px solid var(--gold); padding-left: 1.25rem; }
-  h1 { font-family: 'Spectral', serif; font-size: 2.2rem; font-weight: 700; line-height: 1.1; letter-spacing: -0.02em; }
+  h1 { font-family: 'IBM Plex Serif', serif; font-size: 2.2rem; font-weight: 700; line-height: 1.1; letter-spacing: -0.02em; }
   h1 em { font-style: italic; color: var(--ink-2); }
   .definition { margin-top: 0.75rem; font-size: 0.78rem; color: var(--ink-3); line-height: 1.65; max-width: 580px; }
   .definition strong { color: var(--ink-2); font-weight: 500; }
@@ -96,13 +96,13 @@
   }
   .chord-block.active {
     border-color: var(--gold);
-    background: rgba(200,146,42,0.06);
+    background: color-mix(in srgb, var(--gold) 6%, transparent);
     transform: translateY(-2px);
-    box-shadow: 0 6px 20px rgba(200,146,42,0.15);
+    box-shadow: 0 6px 20px color-mix(in srgb, var(--gold) 15%, transparent);
   }
   .chord-block.resolved {
     border-color: var(--resolve-color);
-    background: rgba(42,106,58,0.06);
+    background: color-mix(in srgb, var(--green) 6%, transparent);
   }
 
   .chord-roman {
@@ -113,7 +113,7 @@
     margin-bottom: 4px;
   }
   .chord-symbol-large {
-    font-family: 'Spectral', serif;
+    font-family: 'IBM Plex Serif', serif;
     font-size: 2rem;
     font-weight: 700;
     color: var(--ink);
@@ -141,7 +141,7 @@
     display: flex;
     align-items: center;
     justify-content: center;
-    font-family: 'Spectral', serif;
+    font-family: 'IBM Plex Serif', serif;
     font-weight: 700;
     font-size: 0.85rem;
     border: 1.5px solid var(--paper-3);
@@ -152,26 +152,26 @@
   .tone-pip.is-seven {
     border-color: var(--pull-color);
     color: var(--pull-color);
-    background: rgba(138,42,42,0.06);
+    background: color-mix(in srgb, var(--red) 6%, transparent);
   }
   .tone-pip.is-three {
     border-color: var(--resolve-color);
     color: var(--resolve-color);
-    background: rgba(42,106,58,0.06);
+    background: color-mix(in srgb, var(--green) 6%, transparent);
   }
   .tone-pip.lit-seven {
     background: var(--pull-color);
-    color: white;
+    color: var(--ji-on-accent);
     border-color: var(--pull-color);
     transform: scale(1.15);
-    box-shadow: 0 4px 12px rgba(138,42,42,0.35);
+    box-shadow: 0 4px 12px color-mix(in srgb, var(--red) 35%, transparent);
   }
   .tone-pip.lit-three {
     background: var(--resolve-color);
-    color: white;
+    color: var(--ji-on-accent);
     border-color: var(--resolve-color);
     transform: scale(1.15);
-    box-shadow: 0 4px 12px rgba(42,106,58,0.35);
+    box-shadow: 0 4px 12px color-mix(in srgb, var(--green) 35%, transparent);
   }
   .tone-name { color: var(--ink-2); }
   .tone-degree { color: var(--ink-3); font-size: 0.62rem; }
@@ -215,7 +215,7 @@
     gap: 4px;
   }
   .eq-number {
-    font-family: 'Spectral', serif;
+    font-family: 'IBM Plex Serif', serif;
     font-size: 1.8rem;
     font-weight: 700;
     line-height: 1;
@@ -247,22 +247,22 @@
   .control-group { display: flex; flex-direction: column; gap: 0.5rem; }
   .pill-row { display: flex; flex-wrap: wrap; gap: 6px; }
   .pill {
-    font-family: 'DM Mono', monospace;
+    font-family: 'IBM Plex Mono', monospace;
     font-size: 0.72rem; font-weight: 500;
     padding: 5px 11px; border: 1px solid var(--paper-3);
     border-radius: 20px; background: var(--paper-2);
     color: var(--ink-2); cursor: pointer; transition: all 0.12s;
   }
   .pill:hover { border-color: var(--gold); color: var(--gold); }
-  .pill.active { background: var(--gold); border-color: var(--gold); color: white; }
+  .pill.active { background: var(--gold); border-color: var(--gold); color: var(--ji-on-accent); }
 
   /* — CHORD CYCLE SELECTORS — */
   .cycle-selector-group { display: flex; flex-direction: column; gap: 1.5rem; margin-bottom: 2.5rem; }
   .cycle-toggle { display: flex; gap: 12px; align-items: center; margin-bottom: 1rem; }
   .cycle-label { font-size: 0.72rem; font-weight: 600; letter-spacing: 0.12em; text-transform: uppercase; color: var(--ink-2); }
-  .cycle-pill { font-family: 'DM Mono', monospace; font-size: 0.72rem; font-weight: 500; padding: 6px 14px; border: 1.5px solid var(--paper-3); border-radius: 20px; background: var(--paper-2); color: var(--ink-2); cursor: pointer; transition: all 0.12s ease; }
+  .cycle-pill { font-family: 'IBM Plex Mono', monospace; font-size: 0.72rem; font-weight: 500; padding: 6px 14px; border: 1.5px solid var(--paper-3); border-radius: 20px; background: var(--paper-2); color: var(--ink-2); cursor: pointer; transition: all 0.12s ease; }
   .cycle-pill:hover { border-color: var(--gold); color: var(--gold); }
-  .cycle-pill.active { background: var(--gold); border-color: var(--gold); color: white; }
+  .cycle-pill.active { background: var(--gold); border-color: var(--gold); color: var(--ji-on-accent); }
   .cycle-description { font-size: 0.68rem; color: var(--ink-3); font-style: italic; margin-top: 0.5rem; }
 
 
@@ -270,7 +270,7 @@
   .mode-row { display: flex; gap: 8px; align-items: center; margin-bottom: 1.5rem; flex-wrap: wrap; }
   .mode-label { font-size: 0.65rem; color: var(--ink-3); }
   .mode-pill {
-    font-family: 'DM Mono', monospace; font-size: 0.65rem;
+    font-family: 'IBM Plex Mono', monospace; font-size: 0.65rem;
     padding: 4px 12px; border: 1px solid var(--paper-3);
     border-radius: 20px; background: transparent; color: var(--ink-2); cursor: pointer; transition: all 0.12s;
   }
@@ -279,13 +279,13 @@
   /* — ACTIONS — */
   .actions { display: flex; gap: 10px; margin-bottom: 2rem; flex-wrap: wrap; align-items: center; }
   .btn {
-    font-family: 'DM Mono', monospace; font-size: 0.72rem; font-weight: 500;
+    font-family: 'IBM Plex Mono', monospace; font-size: 0.72rem; font-weight: 500;
     letter-spacing: 0.06em; padding: 10px 20px; border-radius: var(--radius);
     border: 1.5px solid transparent; cursor: pointer; transition: all 0.12s;
     display: flex; align-items: center; gap: 8px;
   }
-  .btn-primary { background: var(--gold); color: white; border-color: var(--gold); }
-  .btn-primary:hover { background: #b07a1e; }
+  .btn-primary { background: var(--gold); color: var(--ji-on-accent); border-color: var(--gold); }
+  .btn-primary:hover { background: var(--ji-brass-deep); }
   .btn-primary:disabled { opacity: 0.4; cursor: not-allowed; }
   .btn-secondary { background: transparent; color: var(--ink-2); border-color: var(--paper-3); }
   .btn-secondary:hover { border-color: var(--ink-3); }
@@ -315,16 +315,16 @@
   }
   .chain-chord.playing {
     border-color: var(--gold);
-    background: rgba(200,146,42,0.08);
+    background: color-mix(in srgb, var(--gold) 8%, transparent);
     transform: translateY(-3px);
-    box-shadow: 0 6px 16px rgba(200,146,42,0.2);
+    box-shadow: 0 6px 16px color-mix(in srgb, var(--gold) 20%, transparent);
   }
   .chain-chord.resolution-point {
     border-color: var(--pull-color);
-    background: rgba(138,42,42,0.05);
+    background: color-mix(in srgb, var(--red) 5%, transparent);
   }
   .chain-roman { font-size: 0.6rem; color: var(--ink-3); margin-bottom: 3px; }
-  .chain-symbol { font-family: 'Spectral', serif; font-size: 1rem; font-weight: 700; }
+  .chain-symbol { font-family: 'IBM Plex Serif', serif; font-size: 1rem; font-weight: 700; }
   .chain-symbol sup { font-size: 0.55em; }
   .chain-note {
     font-size: 0.6rem;
@@ -333,8 +333,8 @@
     border-radius: 10px;
     display: inline-block;
   }
-  .chain-note.note-seven { background: rgba(138,42,42,0.1); color: var(--pull-color); }
-  .chain-note.note-three { background: rgba(42,106,58,0.1); color: var(--resolve-color); }
+  .chain-note.note-seven { background: color-mix(in srgb, var(--red) 10%, transparent); color: var(--pull-color); }
+  .chain-note.note-three { background: color-mix(in srgb, var(--green) 10%, transparent); color: var(--resolve-color); }
 
   .resolution-marker {
     display: flex;
@@ -360,7 +360,7 @@
     flex-wrap: wrap;
   }
   .stat-col { text-align: center; }
-  .stat-number { font-family: 'Spectral', serif; font-size: 2.4rem; font-weight: 700; line-height: 1; }
+  .stat-number { font-family: 'IBM Plex Serif', serif; font-size: 2.4rem; font-weight: 700; line-height: 1; }
   .stat-number.red { color: var(--pull-color); }
   .stat-number.amber { color: var(--gold); }
   .stat-sub { font-size: 0.62rem; color: var(--ink-3); margin-top: 2px; }
@@ -412,7 +412,7 @@
     outline-offset: 2px;
   }
   .nav-label { font-size: 0.6rem; color: var(--ink-3); letter-spacing: 0.1em; text-transform: uppercase; }
-  .nav-name { font-family: 'Spectral', serif; font-size: 1rem; font-style: italic; color: var(--ink-2); }
+  .nav-name { font-family: 'IBM Plex Serif', serif; font-size: 1rem; font-style: italic; color: var(--ink-2); }
   .nav-arrow { font-size: 1.2rem; color: var(--gold); cursor: pointer; transition: transform 0.15s; text-decoration: none; align-self: center; }
   .nav-arrow:hover { transform: translateX(3px); }
 
@@ -471,7 +471,7 @@
     position: sticky;
     top: 0;
     z-index: 100;
-    background: rgba(245, 240, 232, 0.92);
+    background: color-mix(in srgb, var(--paper) 92%, transparent);
     backdrop-filter: blur(14px);
   }
   main { width: min(100%, 74rem); }
@@ -501,7 +501,7 @@
     .mode-pill:hover,
     .nav-item:hover {
       transform: translateY(-1px);
-      box-shadow: 0 10px 24px rgba(26, 24, 20, 0.08);
+      box-shadow: 0 10px 24px rgba(22, 22, 22, 0.08);
     }
   }
   @media (max-width: 720px) {
@@ -656,12 +656,12 @@
         <svg class="arrow-svg" width="50" height="80" viewBox="0 0 50 80">
           <defs>
             <marker id="ah" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="6" markerHeight="6" orient="auto">
-              <path d="M1 1L9 5L1 9" fill="none" stroke="#8a2a2a" stroke-width="1.5" stroke-linecap="round"/>
+              <path d="M1 1L9 5L1 9" fill="none" style="stroke: var(--pull-color)" stroke-width="1.5" stroke-linecap="round"/>
             </marker>
           </defs>
           <!-- Curved arrow showing half-step descent -->
           <path id="res-arrow-path" d="M 25 15 C 45 15, 45 65, 25 65"
-            fill="none" stroke="#ddd8cc" stroke-width="1.5" stroke-dasharray="4 3"
+            fill="none" style="stroke: var(--ji-edge)" stroke-width="1.5" stroke-dasharray="4 3"
             marker-end="url(#ah)" transition="stroke 0.3s"/>
         </svg>
         <div class="half-step-label" id="halfstep-label">½ step<br>down</div>
@@ -1008,7 +1008,7 @@ function renderChain() {
     <div class="chain-chord" id="chain-i">
       <div class="chain-roman">I maj7</div>
       <div class="chain-symbol">${iRoot}<sup>maj7</sup></div>
-      <span class="chain-note" style="background:rgba(42,74,138,0.08);color:var(--blue)">home</span>
+      <span class="chain-note" style="background:color-mix(in srgb, var(--blue) 8%, transparent);color:var(--blue)">home</span>
     </div>
   `;
 }
@@ -1025,7 +1025,7 @@ function resetPips() {
   });
   document.getElementById('ii-block').classList.remove('active','resolved');
   document.getElementById('v-block').classList.remove('active','resolved');
-  document.getElementById('res-arrow-path').setAttribute('stroke','#ddd8cc');
+  document.getElementById('res-arrow-path').style.stroke = 'var(--ji-edge)';
   document.getElementById('halfstep-label').classList.remove('visible');
   ['chain-ii','chain-v','chain-i'].forEach(id => {
     const el = document.getElementById(id);
@@ -1059,7 +1059,7 @@ async function playResolution() {
   await sleep(beat * slowMult * 1000);
 
   // Step 2: animate the arrow
-  document.getElementById('res-arrow-path').setAttribute('stroke', '#8a2a2a');
+  document.getElementById('res-arrow-path').style.stroke = 'var(--pull-color)';
   document.getElementById('halfstep-label').classList.add('visible');
   sevenEl.className = 'tone-pip is-seven';
 
@@ -1115,7 +1115,7 @@ async function playIIVI() {
   document.getElementById('v-block').classList.add('active');
   document.getElementById('pip-seven-ii').className = 'tone-pip is-seven';
   document.getElementById('pip-three-v').className = 'tone-pip lit-three';
-  document.getElementById('res-arrow-path').setAttribute('stroke','#8a2a2a');
+  document.getElementById('res-arrow-path').style.stroke = 'var(--pull-color)';
   document.getElementById('halfstep-label').classList.add('visible');
   document.getElementById('chain-ii').classList.remove('playing');
   document.getElementById('chain-v').classList.add('playing');

@@ -5,11 +5,11 @@
 <script>(function(){try{var s=localStorage.getItem('ji-theme');var d=s?s==='dark':matchMedia('(prefers-color-scheme: dark)').matches;if(d)document.documentElement.classList.add('dark');}catch(e){}})();</script>
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <meta name="description" content="Jazz Interactive practice tools: loop chord changes through the chromatic cycle or the cycle of fourths, with a tempo slider, count-in, swing, and pattern preview. Practice your vocabulary in every key.">
-<meta name="theme-color" content="#f4efe3">
+<meta name="theme-color" content="#fdfdfd">
 <title>Practice Tools — Jazz Interactive</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Spectral:ital,wght@0,400;0,500;0,600;0,700;1,500;1,600&family=DM+Sans:ital,opsz,wght@0,9..40,400;0,9..40,500;0,9..40,600;0,9..40,700&family=DM+Mono:ital,wght@0,300;0,400;0,500;1,300;1,400&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Serif:ital,wght@0,400;0,500;0,600;0,700;1,500;1,600&family=IBM+Plex+Sans:ital,wght@0,400;0,500;0,600;0,700;1,400&family=IBM+Plex+Mono:ital,wght@0,300;0,400;0,500;1,400&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="./ji-polish.css">
 <script src="./ji-theme.js" defer></script>
 <script src="./ji-notes.js"></script>
@@ -17,22 +17,23 @@
   *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
 
   :root {
-    --ink: #181713;
-    --ink-2: #3d382f;
-    --ink-3: #5a5247;        /* darkened from #6c6457 → 5.6:1 on paper for AA body */
-    --paper: #f4efe3;
-    --paper-2: #ece2d0;
-    --paper-3: #cdbf9f;
-    --gold: #b97824;
-    --gold-deep: #6e3f12;     /* darkened from #7d4a17 for 4.5:1 on warm card */
-    --rouge: #7d1f2c;          /* darkened from #8d2736 → 7.5:1 on paper */
-    --green: #1f5a4b;          /* darkened from #2f6f5f → 5.7:1 on paper */
-    --blue: #1c3d5e;           /* darkened from #264e73 for AA */
-    --line:    rgba(24, 23, 19, 0.42);   /* 3:1+ ui control border */
-    --line-2:  rgba(24, 23, 19, 0.55);   /* 4.5:1+ stronger border */
-    --radius: 7px;
-    --mono: "DM Mono", "SFMono-Regular", Consolas, monospace;
-    --display: "Spectral", Georgia, serif;
+    /* This page's names for the shared slate palette in ji-polish.css */
+    --ink: var(--ji-ink);
+    --ink-2: var(--ji-ink-soft);
+    --ink-3: var(--ji-muted);
+    --paper: var(--ji-paper);
+    --paper-2: var(--ji-surface);
+    --paper-3: var(--ji-line);
+    --gold: var(--ji-brass);
+    --gold-deep: var(--ji-brass-deep);
+    --rouge: var(--ji-brass);
+    --green: var(--ji-green);
+    --blue: var(--ji-blue);
+    --line:    var(--ji-edge);        /* 3:1+ control border */
+    --line-2:  var(--ji-ink-soft);    /* stronger border */
+    --radius: var(--ji-radius);
+    --mono: var(--ji-mono);
+    --display: var(--ji-display);
   }
 
   html { scroll-behavior: smooth; scroll-padding-top: 5.5rem; }
@@ -151,8 +152,8 @@
   }
 
   .panel {
-    background: linear-gradient(180deg, rgba(255, 252, 244, 0.84), rgba(236, 226, 208, 0.78));
-    border: 1px solid rgba(24, 23, 19, 0.18);
+    background: linear-gradient(180deg, color-mix(in srgb, var(--ji-surface) 84%, transparent), color-mix(in srgb, var(--paper-2) 78%, transparent));
+    border: 1px solid color-mix(in srgb, var(--ink) 18%, transparent);
     border-radius: var(--radius);
     padding: 1.5rem;
     position: relative;
@@ -215,11 +216,11 @@
     flex: 1 1 auto;
     max-width: 22rem;
     padding: 1.1rem 1rem 1.2rem;
-    border: 1px solid rgba(24, 23, 19, 0.22);
+    border: 1px solid color-mix(in srgb, var(--ink) 22%, transparent);
     border-radius: var(--radius);
     background:
-      repeating-linear-gradient(180deg, rgba(38, 78, 115, 0.045) 0 1px, transparent 1px 18px),
-      rgba(255, 252, 244, 0.88);
+      repeating-linear-gradient(180deg, color-mix(in srgb, var(--blue) 4.5%, transparent) 0 1px, transparent 1px 18px),
+      color-mix(in srgb, var(--ji-surface) 88%, transparent);
     position: relative;
     transition: transform 180ms ease, border-color 180ms ease;
   }
@@ -276,13 +277,13 @@
     font-size: .9rem;
     font-weight: 500;
     color: var(--ink);
-    background: rgba(255, 252, 244, 0.7);
+    background: color-mix(in srgb, var(--ji-surface) 70%, transparent);
     transition: background 90ms ease, color 90ms ease, border-color 90ms ease;
   }
   .beat-cell.on {
     background: var(--rouge);
     border-color: var(--rouge);
-    color: #f9f4e8;
+    color: var(--ji-on-accent);
   }
   .beat-cell.downbeat.on {
     background: var(--ink);
@@ -292,7 +293,7 @@
   /* ─── BAR LINE / PROGRESS ─────────────────────────────────────── */
   .bar-progress {
     height: 3px;
-    background: rgba(24, 23, 19, 0.12);
+    background: color-mix(in srgb, var(--ink) 12%, transparent);
     border-radius: 99px;
     margin: 0 auto 1.25rem;
     max-width: 22rem;
@@ -325,7 +326,7 @@
     background: var(--ink);
     color: var(--paper);
     cursor: pointer;
-    box-shadow: 5px 5px 0 var(--gold);
+    box-shadow: none;
     transition: transform 140ms ease, box-shadow 140ms ease, background 140ms ease, color 140ms ease, border-color 140ms ease;
     min-height: 44px;
     display: inline-flex;
@@ -335,35 +336,36 @@
   .btn:hover {
     background: var(--rouge);
     border-color: var(--rouge);
-    color: #fff8e8;
-    transform: translate(-1px, -1px);
-    box-shadow: 7px 7px 0 var(--green);
+    color: var(--ji-on-accent);
+    transform: translateY(-1px);
+    box-shadow: var(--ji-shadow-sm);
   }
   .btn:active {
-    transform: translate(2px, 2px);
-    box-shadow: 2px 2px 0 var(--gold);
+    transform: translateY(0);
+    box-shadow: none;
   }
   .btn:focus-visible {
-    outline: 3px solid var(--green);
+    outline: 2px solid var(--gold);
     outline-offset: 3px;
   }
   .btn.secondary {
-    background: rgba(255, 252, 244, 0.7);
-    border-color: rgba(24, 23, 19, 0.28);
+    background: color-mix(in srgb, var(--ji-surface) 70%, transparent);
+    border-color: color-mix(in srgb, var(--ink) 28%, transparent);
     color: var(--ink-2);
-    box-shadow: 4px 4px 0 rgba(24, 23, 19, 0.12);
+    border-color: var(--line);
+    box-shadow: none;
   }
   .btn.secondary:hover {
     border-color: var(--gold);
     color: var(--gold-deep);
-    background: rgba(255, 252, 244, 0.95);
-    box-shadow: 5px 5px 0 var(--gold);
+    background: color-mix(in srgb, var(--ji-surface) 95%, transparent);
+    box-shadow: var(--ji-shadow-sm);
   }
   .btn.playing {
     background: var(--rouge);
     border-color: var(--rouge);
-    color: #fff8e8;
-    box-shadow: 5px 5px 0 var(--green);
+    color: var(--ji-on-accent);
+    box-shadow: none;
   }
   .btn .icon {
     width: .9rem; height: .9rem;
@@ -404,7 +406,7 @@
     padding: .5rem .9rem;
     border: 1.5px solid var(--line);
     border-radius: var(--radius);
-    background: rgba(255, 252, 244, 0.85);
+    background: color-mix(in srgb, var(--ji-surface) 85%, transparent);
     color: var(--ink);
     cursor: pointer;
     min-height: 44px;
@@ -418,9 +420,9 @@
   .pill[aria-pressed="true"],
   .pill[aria-checked="true"],
   .pill.active {
-    background: var(--green);
-    border-color: var(--green);
-    color: #f9f4e8;
+    background: var(--rouge);
+    border-color: var(--rouge);
+    color: var(--ji-on-accent);
   }
 
   /* ─── TEMPO ─────────────────────────────────────── */
@@ -463,12 +465,12 @@
   }
   input[type="range"].tempo::-webkit-slider-runnable-track {
     height: 4px;
-    background: linear-gradient(90deg, var(--ink) 0 var(--p, 50%), rgba(24, 23, 19, 0.18) var(--p, 50%) 100%);
+    background: linear-gradient(90deg, var(--gold) 0 var(--p, 50%), color-mix(in srgb, var(--ink) 18%, transparent) var(--p, 50%) 100%);
     border-radius: 99px;
   }
   input[type="range"].tempo::-moz-range-track {
     height: 4px;
-    background: rgba(24, 23, 19, 0.18);
+    background: color-mix(in srgb, var(--ink) 18%, transparent);
     border-radius: 99px;
   }
   input[type="range"].tempo::-moz-range-progress {
@@ -481,9 +483,9 @@
     appearance: none;
     width: 28px; height: 28px;
     border-radius: 50%;
-    background: var(--paper);
-    border: 2.5px solid var(--ink);
-    box-shadow: 2px 2px 0 var(--gold);
+    background: var(--gold);
+    border: 2.5px solid var(--paper);
+    box-shadow: 0 1px 4px rgba(22, 22, 22, 0.3);
     margin-top: -12px;
     cursor: pointer;
     transition: transform 120ms ease;
@@ -498,8 +500,8 @@
   input[type="range"].tempo::-moz-range-thumb {
     width: 28px; height: 28px;
     border-radius: 50%;
-    background: var(--paper);
-    border: 2.5px solid var(--ink);
+    background: var(--gold);
+    border: 2.5px solid var(--paper);
     cursor: pointer;
   }
 
@@ -516,7 +518,7 @@
     padding: .55rem .35rem;
     border: 1.5px solid var(--line);
     border-radius: var(--radius);
-    background: rgba(255, 252, 244, 0.85);
+    background: color-mix(in srgb, var(--ji-surface) 85%, transparent);
     color: var(--ink);
     cursor: pointer;
     text-align: center;
@@ -565,7 +567,7 @@
     border-radius: var(--radius);
     padding: .65rem .25rem;
     text-align: center;
-    background: rgba(255, 252, 244, 0.85);
+    background: color-mix(in srgb, var(--ji-surface) 85%, transparent);
     font-family: var(--display);
     font-size: 1.05rem;
     color: var(--ink);
@@ -587,17 +589,17 @@
     color: var(--gold-deep);
   }
   .cycle-cell.played {
-    background: rgba(28, 61, 94, 0.16);
+    background: color-mix(in srgb, var(--blue) 16%, transparent);
     border-color: var(--blue);
     color: var(--blue);
   }
   .cycle-cell.current {
     background: var(--rouge);
     border-color: var(--rouge);
-    color: #fff8e8;
+    color: var(--ji-on-accent);
     transform: translateY(-1px);
   }
-  .cycle-cell.current .num { color: rgba(255, 248, 232, 0.74); }
+  .cycle-cell.current .num { color: color-mix(in srgb, var(--ji-on-accent) 74%, transparent); }
 
   /* ─── TONE / HINT ─────────────────────────────────────── */
   .hint-row {
@@ -607,7 +609,7 @@
     align-items: baseline;
     padding-top: 1.1rem;
     margin-top: 1.25rem;
-    border-top: 1px dashed rgba(24, 23, 19, 0.18);
+    border-top: 1px dashed color-mix(in srgb, var(--ink) 18%, transparent);
     font-family: var(--mono);
     font-size: .78rem;
     color: var(--ink-3);
@@ -621,11 +623,11 @@
     font-family: var(--mono);
     font-size: .72rem;
     padding: 2px 6px;
-    border: 1px solid rgba(24, 23, 19, 0.28);
+    border: 1px solid color-mix(in srgb, var(--ink) 28%, transparent);
     border-bottom-width: 2px;
     border-radius: 4px;
     color: var(--ink);
-    background: rgba(255, 252, 244, 0.85);
+    background: color-mix(in srgb, var(--ji-surface) 85%, transparent);
     margin: 0 .15rem;
   }
 
@@ -633,9 +635,9 @@
   .context {
     margin-top: 2.5rem;
     padding: 1.5rem 1.75rem;
-    border: 1px solid rgba(24, 23, 19, 0.16);
+    border: 1px solid color-mix(in srgb, var(--ink) 16%, transparent);
     border-radius: var(--radius);
-    background: linear-gradient(180deg, rgba(255, 252, 244, 0.78), rgba(236, 226, 208, 0.62));
+    background: linear-gradient(180deg, color-mix(in srgb, var(--ji-surface) 78%, transparent), color-mix(in srgb, var(--paper-2) 62%, transparent));
     display: grid;
     grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
     gap: 1.5rem 2rem;
@@ -675,7 +677,7 @@
     padding: .55rem .8rem;
     border: 1.5px solid var(--line);
     border-radius: var(--radius);
-    background: rgba(255, 252, 244, 0.85);
+    background: color-mix(in srgb, var(--ji-surface) 85%, transparent);
     cursor: pointer;
     user-select: none;
     min-height: 44px;
@@ -726,8 +728,8 @@
 
   /* element badge override (use mono color from polish) */
   .element-badge {
-    border: 1px solid rgba(125, 74, 23, 0.42);
-    background: rgba(255, 251, 239, 0.54);
+    border: 1px solid color-mix(in srgb, var(--gold) 42%, transparent);
+    background: color-mix(in srgb, var(--paper) 54%, transparent);
     color: var(--gold-deep);
   }
 
@@ -788,21 +790,21 @@
      html.dark overrides rather than relying on ji-polish.css's shared list. */
   html.dark .chord-now,
   html.dark .context {
-    background: rgba(36, 32, 23, 0.88) !important;
-    border-color: rgba(244, 239, 227, 0.18) !important;
+    background: var(--ji-surface) !important;
+    border-color: var(--ji-line) !important;
   }
-  html.dark .beat-cell,
+  html.dark .beat-cell:not(.on),
   html.dark .btn.secondary,
-  html.dark .pill,
-  html.dark .tempo-preset,
-  html.dark .cycle-cell,
+  html.dark .pill:not([aria-pressed="true"]):not([aria-checked="true"]):not(.active),
+  html.dark .tempo-preset:not([aria-pressed="true"]):not(.active),
+  html.dark .cycle-cell:not(.current),
   html.dark .kbd,
   html.dark .toggle {
-    background: rgba(36, 32, 23, 0.72) !important;
-    border-color: rgba(244, 239, 227, 0.2) !important;
+    background: var(--ji-paper) !important;
+    border-color: var(--ji-edge) !important;
   }
   html.dark .btn.secondary:hover {
-    background: rgba(36, 32, 23, 0.92) !important;
+    background: var(--ji-surface) !important;
   }
 </style>
 </head>
