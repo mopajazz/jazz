@@ -479,6 +479,7 @@
 <link rel="stylesheet" href="./ji-polish.css">
 <script src="./ji-theme.js" defer></script>
 <script src="./ji-notes.js"></script>
+<script src="./ji-audio.js"></script>
 </head>
 <body>
 
@@ -661,9 +662,9 @@
   </div>
 
   <div class="nav-strip" role="navigation" aria-label="Element navigation">
-    <a href="./05-bebop-scale.html" class="nav-item" aria-label="Go to previous element: Bebop Scale">
+    <a href="./02-digital-scalar-patterns.html" class="nav-item" aria-label="Go to previous element: Digital and Scalar Patterns">
       <span class="nav-label">Previous</span>
-      <span class="nav-name">Bebop Scale</span>
+      <span class="nav-name">Digital &amp; Scalar Patterns</span>
     </a>
     <div></div>
   </div>
@@ -743,31 +744,12 @@ let progressionMode = 'chromatic'; // 'chromatic' | 'cycle4'
 let cycle4StartIdx = 0;      // index into the cycle of fourths
 let tempo = 100;
 let isPlaying = false;
-let audioCtx = null;
-let masterBus = null;
 
 // Cycle of fourths: descending by 4ths (ascending by 5ths)
 const CYCLE_OF_FOURTHS = JINotes.FOURTHS;
 
-// ─── AUDIO ENGINE ──────────────────────────────────────────────────────
-function getAudioCtx() {
-  if (!audioCtx) {
-    audioCtx = new (window.AudioContext || window.webkitAudioContext)();
-    const comp = audioCtx.createDynamicsCompressor();
-    comp.threshold.value = -18;
-    comp.knee.value = 10;
-    comp.ratio.value = 4;
-    comp.attack.value = 0.003;
-    comp.release.value = 0.15;
-    const masterGain = audioCtx.createGain();
-    masterGain.gain.value = 0.72;
-    comp.connect(masterGain);
-    masterGain.connect(audioCtx.destination);
-    masterBus = comp;
-  }
-  return audioCtx;
-}
-function getBus() { getAudioCtx(); return masterBus; }
+// ─── AUDIO: piano, bass and room from ji-audio.js, the practice page's sound ───
+function getAudioCtx() { return JIAudio.ctx(); }
 
 const VOICING_SHAPES = {
   'maj7': { A:[4,7,11,14], B:[11,14,16,21] },
@@ -794,34 +776,11 @@ function playJazzChord(rootName, quality, startTime, dur, ctx, type='A') {
   });
 }
 function playVoiceTone(freq, startTime, dur, ctx, vol, type='sine') {
-  const osc = ctx.createOscillator();
-  const gain = ctx.createGain();
-  const filt = ctx.createBiquadFilter();
-  filt.type = 'lowpass'; filt.frequency.value = 2200; filt.Q.value = 0.4;
-  osc.connect(filt); filt.connect(gain); gain.connect(getBus());
-  osc.type = type;
-  osc.frequency.setValueAtTime(freq, startTime);
-  gain.gain.setValueAtTime(0, startTime);
-  gain.gain.linearRampToValueAtTime(vol, startTime + 0.04);
-  gain.gain.setValueAtTime(vol * 0.85, startTime + dur * 0.3);
-  gain.gain.linearRampToValueAtTime(vol * 0.5, startTime + dur * 0.7);
-  gain.gain.linearRampToValueAtTime(0, startTime + dur + 0.1);
-  osc.start(startTime); osc.stop(startTime + dur + 0.2);
+  JIAudio.piano(freq, startTime, dur, vol >= 0.15 ? 0.95 : 0.8);
 }
 
 function playTone(freq, startTime, dur, ctx, vol = 0.5, type = 'triangle') {
-  const osc = ctx.createOscillator();
-  const gain = ctx.createGain();
-  const filt = ctx.createBiquadFilter();
-  filt.type = 'lowpass'; filt.frequency.value = 2600; filt.Q.value = 0.5;
-  osc.connect(filt); filt.connect(gain); gain.connect(getBus());
-  osc.type = type;
-  osc.frequency.setValueAtTime(freq, startTime);
-  gain.gain.setValueAtTime(0, startTime);
-  gain.gain.linearRampToValueAtTime(vol, startTime + 0.02);
-  gain.gain.setValueAtTime(vol, startTime + dur * 0.6);
-  gain.gain.linearRampToValueAtTime(0, startTime + dur);
-  osc.start(startTime); osc.stop(startTime + dur + 0.05);
+  JIAudio.piano(freq, startTime, dur, vol * 3.2); // the tune leads, above the chord
 }
 
 function playCurrentChord() {
@@ -831,17 +790,7 @@ function playCurrentChord() {
 }
 
 function playBass(freq, startTime, dur, ctx) {
-  const osc = ctx.createOscillator();
-  const gain = ctx.createGain();
-  const filt = ctx.createBiquadFilter();
-  filt.type = 'lowpass'; filt.frequency.value = 340;
-  osc.connect(filt); filt.connect(gain); gain.connect(getBus());
-  osc.type = 'sine'; osc.frequency.value = freq / 2;
-  gain.gain.setValueAtTime(0, startTime);
-  gain.gain.linearRampToValueAtTime(0.28, startTime + 0.04);
-  gain.gain.setValueAtTime(0.28, startTime + dur * 0.5);
-  gain.gain.linearRampToValueAtTime(0, startTime + dur);
-  osc.start(startTime); osc.stop(startTime + dur + 0.05);
+  JIAudio.bass(freq, startTime, dur);
 }
 
 // ─── LICK TO FREQUENCIES ────────────────────────────────────────────────

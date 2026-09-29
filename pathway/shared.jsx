@@ -182,7 +182,18 @@ function TipsSidebar() {
   );
 }
 
+// Stands in for audio that isn't ready yet
+function ComingSoon({ title, children }) {
+  return (
+    <div className="soon" role="status">
+      <span className="soon-label"><window.Icons.Clock size={15} />Currently in development</span>
+      <p className="soon-title">{title}</p>
+      <p className="soon-text">{children}</p>
+    </div>
+  );
+}
+
 Object.assign(window, {
   DiffBadge, MetaChip, Btn, GlossText, GlossaryTerm, ItalicTitle,
-  TopNav, TipsSidebar, FlowDots, STEP_META,
+  TopNav, TipsSidebar, FlowDots, STEP_META, ComingSoon,
 });

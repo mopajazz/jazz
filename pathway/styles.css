@@ -502,6 +502,12 @@ em { font-style: italic; }
 .links-card-note { font-size: 13px; color: var(--ink-2); }
 .links-card svg { color: var(--accent); flex-shrink: 0; }
 
+/* Coming soon (audio on hold) */
+.soon { background: var(--accent-soft); border: 1px dashed color-mix(in srgb, var(--accent) 55%, transparent); border-radius: var(--r); padding: 22px 24px; margin-top: 8px; }
+.soon-label { display: inline-flex; align-items: center; gap: 8px; font-size: 12.5px; font-weight: 600; letter-spacing: .06em; text-transform: uppercase; color: var(--accent); margin-bottom: 8px; }
+.soon-title { font-family: var(--serif); font-size: 20px; font-weight: 600; color: var(--ink); margin-bottom: 6px; }
+.soon-text { font-size: 15px; line-height: 1.55; color: var(--ink-2); }
+
 /* Tab nav + foot */
 .tab-nav { display: flex; justify-content: space-between; align-items: center; gap: 16px; margin-top: 32px; padding-top: 24px; border-top: 1px solid var(--line); }
 .mod-foot { display: flex; justify-content: space-between; gap: 16px; padding: 28px 0 8px; margin-top: 32px; border-top: 1px solid var(--line); }
