@@ -116,7 +116,7 @@ function Landing({ modules, completed, onOpen, onStart }) {
           <div className="more-chips">
             <a className="more-chip" href="01_change-running.html">Change-Running <em>Beginner</em></a>
             <a className="more-chip" href="06-bebop-lick.html">Bebop Lick <em>Beginner</em></a>
-            <a className="more-chip more-chip-all" href="index.html#modules">Explore all 18 <window.Icons.ArrowRight size={14} /></a>
+            <a className="more-chip more-chip-all" href="index.html#modules">Explore all devices <window.Icons.ArrowRight size={14} /></a>
           </div>
         </div>
       </section>
